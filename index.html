@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umbra - A Guerra dos Espíritos | Jogo Épico 2D</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-dark: #000000;
+            --primary-medium: #0a0a0a;
+            --primary-light: #1a1a1a;
+            --accent-gold: #d4af37;
+            --accent-gold-light: #f5d76e;
+            --text-light: #f0f0f0;
+            --text-gray: #aaaaaa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Header e Navegação */
+        header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            transition: all 0.4s ease;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+        }
+
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            color: var(--text-light);
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: var(--accent-gold);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        nav a:hover {
+            color: var(--accent-gold);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent-gold);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section - MELHORADA */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9));
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .hero-gif {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+            z-index: 2;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+            z-index: 3;
+            position: relative;
+        }
+
+        .hero-title {
+            font-family: 'Cinzel', serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
+            line-height: 1.2;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-title span {
+            color: var(--accent-gold);
+            display: block;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            color: var(--text-gray);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+            opacity: 0;
+        }
+
+        /* Botões de CTA - NOVOS E MELHORADOS */
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            animation: fadeInUp 1s ease-out 0.4s forwards;
+            opacity: 0;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(145deg, var(--accent-gold), #b8941f);
+            color: var(--primary-dark);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.2),
+                rgba(255, 255, 255, 0)
+            );
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.6);
+        }
+
+        .cta-button:hover:before {
+            animation: shine 1.5s ease infinite;
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            color: var(--accent-gold);
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .cta-button.secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .cta-button i {
+            margin-right: 0.8rem;
+            font-size: 1.4rem;
+        }
+
+        /* Efeito de partículas */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background-color: var(--accent-gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Story Section */
+        .section {
+            padding: 6rem 2rem;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--text-light);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: var(--accent-gold);
+            margin: 1rem auto;
+            border-radius: 2px;
+        }
+
+        .story-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .story-content {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .story-text {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            color: var(--text-gray);
+        }
+
+        .story-text p {
+            margin-bottom: 1.5rem;
+        }
+
+        .story-media {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .story-gif {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            border: 2px solid var(--accent-gold);
+            transition: transform 0.5s ease;
+        }
+
+        .story-gif:hover {
+            transform: scale(1.02);
+        }
+
+        .story-gif img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Game Modes */
+        .game-modes {
+            background: rgba(10, 10, 10, 0.9);
+            position: relative;
+        }
+
+        .modes-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        .mode-card {
+            background: linear-gradient(145deg, var(--primary-light), var(--primary-medium));
+            border-radius: 15px;
+            overflow: hidden;
+            width: 350px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
+            border-color: var(--accent-gold);
+        }
+
+        .mode-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            background: var(--primary-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+            font-size: 4rem;
+        }
+
+        .mode-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+        }
+
+        .mode-number {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            opacity: 0.3;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .mode-content {
+            padding: 2rem;
+        }
+
+        .mode-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .mode-desc {
+            margin-bottom: 1.5rem;
+            color: var(--text-gray);
+        }
+
+        .mode-features {
+            margin-bottom: 2rem;
+        }
+
+        .mode-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-gray);
+        }
+
+        .mode-feature i {
+            color: var(--accent-gold);
+        }
+
+        .mode-btn {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--accent-gold);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: 5px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn:hover {
+            background-color: var(--accent-gold-light);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .mode-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            transition: all 0.5s ease;
+        }
+
+        .mode-btn:hover:before {
+            left: 100%;
+        }
+
+        /* Characters Section - MELHORADA */
+        .characters-section {
+            position: relative;
+        }
+
+        .characters-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .characters-intro {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .character-card {
+            background: linear-gradient(145deg, var(--primary-light), var(--primary-medium));
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
+            border-color: var(--accent-gold);
+        }
+
+        .character-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            background: var(--primary-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+        }
+
+        .character-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .character-name {
+            padding: 1rem 0.5rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--text-light);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .character-lore {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .character-card.active .character-lore {
+            transform: translateY(0);
+        }
+
+        .character-lore-content {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .character-lore-title {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        /* Modal para lore dos personagens */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            overflow: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--primary-light);
+            margin: auto;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            background: var(--primary-medium);
+            border-bottom: 2px solid var(--accent-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--accent-gold);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .modal-character {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .modal-character-image {
+            flex: 0 0 200px;
+            height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .modal-character-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-character-info {
+            flex: 1;
+        }
+
+        .modal-character-name {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-character-role {
+            font-style: italic;
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+        }
+
+        .modal-character-lore {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .modal-character-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-gold);
+        }
+
+        .stat-name {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-medium);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .footer-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .footer-logo span {
+            color: var(--accent-gold);
+        }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Efeitos de brilho e destaque */
+        .gold-glow {
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .gold-border {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+            20% {
+                left: 100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 3.5rem;
+            }
+            
+            nav ul {
+                gap: 1.5rem;
+            }
+            
+            .modal-character {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .modal-character-image {
+                flex: 0 0 150px;
+                width: 150px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero-title {
+                font-size: 2.8rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 4rem 1rem;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .story-container, .modes-container {
+                gap: 2rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .characters-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 576px) {
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .mode-card {
+                width: 100%;
+            }
+            
+            .characters-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 1rem;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+            
+            .modal-header {
+                padding: 1rem;
+            }
+            
+            .modal-title {
+                font-size: 1.5rem;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="header-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">⚔️</div>
+                <div class="logo-text">UMBRA<span>:Guerra dos Espíritos</span></div>
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="#story">História</a></li>
+                    <li><a href="#modes">Modos de Jogo</a></li>
+                    <li><a href="#characters">Personagens</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section - MELHORADA -->
+    <section class="hero">
+        <div class="hero-bg">
+            <!-- Substitua pelo seu GIF real -->
+            <img class="hero-gif" src="teste.gif" alt="Umbra - A Guerra dos Espíritos">
+            <div class="hero-overlay"></div>
+            <div class="particles" id="particles"></div>
+        </div>
+        
+        <div class="hero-content">
+            <h1 class="hero-title">UMBRA<br><span>A Guerra dos Espíritos</span></h1>
+            <p class="hero-subtitle">Embarque em uma jornada épica através de cinco reinos espirituais, onde suas decisões moldarão o destino de um mundo à beira do caos.</p>
+            
+            <div class="cta-buttons">
+                <a href="#modes" class="cta-button">
+                    <i class="fas fa-play-circle"></i> Jogar Agora
+                </a>
+                <a href="#story" class="cta-button secondary">
+                    <i class="fas fa-book-open"></i> Conhecer História
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Story Section -->
+    <section id="story" class="section">
+        <h2 class="section-title">A História</h2>
+        
+        <div class="story-container">
+            <div class="story-content">
+                <div class="story-text">
+                    <p>Em um mundo onde o equilíbrio espiritual está ameaçado, Umbra, a entidade primordial da criação, chama um guerreiro escolhido para reunir as essências das cinco regiões e evitar que o caos consuma tudo.</p>
+                    <p>O arauto do caos, Anhangá, espalha corrupção por Ybyrá (floresta), Nharõ (areia), Karú (montanha) e Tupãry (gelo). Cada região guarda fragmentos de poder que podem restaurar o equilíbrio - ou mergulhar o mundo na escuridão eterna.</p>
+                    <p>Viaje por reinos diversos, faça aliados poderosos e enfrente chefes temíveis nesta épica batalha entre criação e destruição.</p>
+                </div>
+            </div>
+            
+            <div class="story-media">
+                <div class="story-gif">
+                    <!-- Substitua pelo seu GIF real -->
+                    <img src="teste.gif" alt="Cena do jogo Umbra">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Modes -->
+    <section id="modes" class="section game-modes">
+        <h2 class="section-title">Modos de Jogo</h2>
+        
+        <div class="modes-container">
+            <div class="mode-card" onclick="window.location.href='modo-historia/'">
+                <div class="mode-image">
+                    <i class="fas fa-book-open"></i>
+                    <div class="mode-overlay"></div>
+                    <div class="mode-number">01</div>
+                </div>
+                <div class="mode-content">
+                    <h3 class="mode-title">Modo História</h3>
+                    <p class="mode-desc">Embarque em uma jornada épica através de 5 capítulos repletos de desafios, chefes e decisões que afetam o destino de Umbra.</p>
+                    
+                    <div class="mode-features">
+                        <div class="mode-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>5 capítulos emocionantes</span>
+                        </div>
+                        <div class="mode-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Mais de 10 horas de gameplay</span>
+                        </div>
+                        <div class="mode-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Múltiplos finais</span>
+                        </div>
+                    </div>
+                    
+                    <button class="mode-btn">Jogar História</button>
+                </div>
+            </div>
+            
+            <div class="mode-card" onclick="window.location.href='modo-batalha/'">
+                <div class="mode-image">
+                    <i class="fas fa-fist-raised"></i>
+                    <div class="mode-overlay"></div>
+                    <div class="mode-number">02</div>
+                </div>
+                <div class="mode-content">
+                    <h3 class="mode-title">Modo Batalha</h3>
+                    <p class="mode-desc">Lute contra a IA em batalhas intensas estilo Mortal Kombat, com todos os 21 personagens e arenas especiais.</p>
+                    
+                    <div class="mode-features">
+                        <div class="mode-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>21 personagens únicos</span>
+                        </div>
+                        <div class="mode-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Diversas arenas interativas</span>
+                        </div>
+                        <div class="mode-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Combos especiais e fatalities</span>
+                        </div>
+                    </div>
+                    
+                    <button class="mode-btn">Batalhar Agora</button>
+                </div>
+            </div>
+            
+            <div class="mode-card" onclick="window.location.href='modo-multiplayer/'">
+                <div class="mode-image">
+                    <i class="fas fa-users"></i>
+                    <div class="mode-overlay"></div>
+                    <div class="mode-number">03</div>
+                </div>
+                <div class="mode-content">
+                    <h3 class="mode-title">Multiplayer X1</h3>
+                    <p class="mode-desc">Desafie outros jogadores em batalhas PvP emocionantes através de conexão WebSocket em tempo real.</p>
+                    
+                    <div class="mode-features">
+                        <div class="mode-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Batalhas em tempo real</span>
+                        </div>
+                        <div class="mode-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Sistema de ranqueamento</span>
+                        </div>
+                        <div class="mode-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Ligas e torneios</span>
+                        </div>
+                    </div>
+                    
+                    <button class="mode-btn">Jogar Multiplayer</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Characters Section -->
+    <section id="characters" class="section characters-section">
+        <h2 class="section-title">Personagens</h2>
+        
+        <p class="characters-intro">Escolha entre 21 personagens únicos, cada um com habilidades especiais e estilos de luta diferentes. Clique em um personagem para conhecer sua história e habilidades especiais.</p>
+        
+        <div class="characters-container">
+            <div class="characters-grid">
+                <!-- Personagens com lore -->
+                <div class="character-card" data-character="maga-luz">
+                    <div class="character-image">
+                       <img src="maga-luz.gif" alt="Maga da Luz">
+                    </div>
+                    <div class="character-name">Maga da Luz</div>
+                    <div class="character-lore">
+                        <div class="character-lore-title">Lore</div>
+                        <div class="character-lore-content">Guardiã ancestral do Reino de Lumen, a Maga da Luz canaliza a energia solar para purificar a escuridão. Sua linhagem remonta aos primeiros protetores do equilíbrio espiritual.</div>
+                    </div>
+                </div>
+                
+                <div class="character-card" data-character="ekko">
+                    <div class="character-image">
+                        <img src="ekko.gif" alt="Ekko">
+                    </div>
+                    <div class="character-name">Ekko</div>
+                    <div class="character-lore">
+                        <div class="character-lore-title">Lore</div>
+                        <div class="character-lore-content">Um jovem prodígio que descobriu como manipular o tempo após encontrar um artefato ancestral nas ruínas de uma civilização esquecida. Ele usa sua habilidade para corrigir erros do passado.</div>
+                    </div>
+                </div>
+                
+                <div class="character-card" data-character="illaoi">
+                    <div class="character-image">
+                        <img src="illaoi.gif" alt="Illaoi">
+                    </div>
+                    <div class="character-name">Illaoi</div>
+                    <div class="character-lore">
+                        <div class="character-lore-title">Lore</div>
+                        <div class="character-lore-content">Sacerdotisa do Deus Serpente Marinha, Illaoi testa a força de espírito dos guerreiros. Aqueles que falham em sua provação são transformados em estátuas de coral.</div>
+                    </div>
+                </div>
+                
+                <div class="character-card" data-character="shaco">
+                    <div class="character-image">
+                        <img src="shaco.gif" alt="Shaco">
+                    </div>
+                    <div class="character-name">Shaco</div>
+                    <div class="character-lore">
+                        <div class="character-lore-title">Lore</div>
+                        <div class="character-lore-content">Uma marionete encantada criada por um rei louco para entreter seu filho doente. Após a morte da criança, Shaco ganhou vida própria, agora usando seu humor perturbador para aterrorizar os reinos.</div>
+                    </div>
+                </div>
+                
+                <div class="character-card" data-character="warwick">
+                    <div class="character-image">
+                        <img src="warwick.gif" alt="Warwick">
+                    </div>
+                    <div class="character-name">Warwick</div>
+                    <div class="character-lore">
+                        <div class="character-lore-title">Lore</div>
+                        <div class="character-lore-content">Antigo caçador de recompensas transformado em uma besta por experimentos alquímicos. Agora ele caça os criminosos das ruas de Zaun, lutando contra a fera dentro de si.</div>
+                    </div>
+                </div>
+                
+                <div class="character-card" data-character="ashe">
+                    <div class="character-image">
+                        <img src="ASHE.gif" alt="Guardiã Arqueira">
+                    </div>
+                    <div class="character-name">Guardiã Arqueira</div>
+                    <div class="character-lore">
+                        <div class="character-lore-title">Lore</div>
+                        <div class="character-lore-content">A última de uma linhagem de guerreiras geladas que protegem o Templo de Cristal. Suas flechas nunca erram o alvo e podem congelar até mesmo o tempo.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal para lore dos personagens -->
+    <div class="modal" id="characterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalCharacterName">Nome do Personagem</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalCharacterContent">
+                <!-- Conteúdo será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">UMBRA<span>.</span></div>
+        <p>Um jogo épico 2D com três modos de jogo emocionantes e 21 personagens únicos.</p>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 Umbra - A Guerra dos Espíritos. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.style.background = "rgba(0, 0, 0, 0.95)";
+                header.style.borderBottom = "1px solid rgba(212, 175, 55, 0.4)";
+            } else {
+                header.style.background = "rgba(0, 0, 0, 0.9)";
+                header.style.borderBottom = "1px solid rgba(212, 175, 55, 0.3)";
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Criar partículas para efeito de fundo
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const numberOfParticles = 50;
+            
+            for (let i = 0; i < numberOfParticles; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Tamanho aleatório
+                const size = Math.random() * 5 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Posição aleatória
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Duração da animação aleatória
+                const duration = Math.random() * 10 + 10;
+                particle.style.animationDuration = `${duration}s`;
+                
+                // Atraso aleatório
+                const delay = Math.random() * 5;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Dados dos personagens (em um cenário real, isso viria de uma API ou banco de dados)
+        const charactersData = {
+            "maga-luz": {
+                name: "Maga da Luz",
+                role: "Guardiã de Lumen",
+                image: "maga-luz.gif",
+                lore: "Guardiã ancestral do Reino de Lumen, a Maga da Luz canaliza a energia solar para purificar a escuridão. Sua linhagem remonta aos primeiros protetores do equilíbrio espiritual. Treinada desde criança nos antigos templos solares, ela é a última de sua linhagem após o ataque surpresa das forças de Anhangá.",
+                stats: {
+                    poder: "8/10",
+                    defesa: "6/10",
+                    magia: "10/10",
+                    velocidade: "7/10"
+                }
+            },
+            "ekko": {
+                name: "Ekko",
+                role: "Manipulador do Tempo",
+                image: "ekko.gif",
+                lore: "Um jovem prodígio que descobriu como manipular o tempo após encontrar um artefato ancestral nas ruínas de uma civilização esquecida. Ele usa sua habilidade para corrigir erros do passado. Apesar de sua juventude, Ekko carrega a sabedoria de múltiplas linhas do tempo que já testemunhou.",
+                stats: {
+                    poder: "5/10",
+                    defesa: "6/10",
+                    magia: "9/10",
+                    velocidade: "10/10"
+                }
+            },
+            "illaoi": {
+                name: "Illaoi",
+                role: "Sacerdotisa do Deus Serpente",
+                image: "illaoi.gif",
+                lore: "Sacerdotisa do Deus Serpente Marinha, Illaoi testa a força de espírito dos guerreiros. Aqueles que falham em sua provação são transformados em estátuas de coral. Ela acredita que apenas os fortes de espírito devem determinar o destino do mundo, e não hesita em eliminar os fracos.",
+                stats: {
+                    poder: "9/10",
+                    defesa: "8/10",
+                    magia: "7/10",
+                    velocidade: "4/10"
+                }
+            },
+            "shaco": {
+                name: "Shaco",
+                role: "Marionete Encantada",
+                image: "shaco.gif",
+                lore: "Uma marionete encantada criada por um rei louco para entreter seu filho doente. Após a morte da criança, Shaco ganhou vida própria, agora usando seu humor perturbador para aterrorizar os reinos. Sua verdadeira origem e natureza permanecem um mistério, mesmo para os sábios mais eruditos.",
+                stats: {
+                    poder: "6/10",
+                    defesa: "5/10",
+                    magia: "8/10",
+                    velocidade: "9/10"
+                }
+            },
+            "warwick": {
+                name: "Warwick",
+                role: "A Fera de Zaun",
+                image: "warwick.gif",
+                lore: "Antigo caçador de recompensas transformado em uma besta por experimentos alquímicos. Agora ele caça os criminosos das ruas de Zaun, lutando contra a fera dentro de si. Apesar de sua aparência aterrorizante, Warwick ainda mantém traços de sua humanidade, especialmente quando crianças estão em perigo.",
+                stats: {
+                    poder: "10/10",
+                    defesa: "9/10",
+                    magia: "3/10",
+                    velocidade: "8/10"
+                }
+            },
+            "ashe": {
+                name: "Guardiã Arqueira",
+                role: "Protetora Gélida",
+                image: "ASHE.gif",
+                lore: "A última de uma linhagem de guerreiras geladas que protegem o Templo de Cristal. Suas flechas nunca erram o alvo e podem congelar até mesmo o tempo. Ela jurou proteger os reinos da ambição de Anhangá, mesmo que isso signifique sacrificar sua própria humanidade.",
+                stats: {
+                    poder: "7/10",
+                    defesa: "6/10",
+                    magia: "8/10",
+                    velocidade: "9/10"
+                }
+            }
+        };
+
+        // Abrir modal com informações do personagem
+        document.querySelectorAll('.character-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const characterId = this.getAttribute('data-character');
+                const character = charactersData[characterId];
+                
+                if (character) {
+                    const modal = document.getElementById('characterModal');
+                    const modalName = document.getElementById('modalCharacterName');
+                    const modalContent = document.getElementById('modalCharacterContent');
+                    
+                    modalName.textContent = character.name;
+                    
+                    // Construir conteúdo do modal
+                    modalContent.innerHTML = `
+                        <div class="modal-character">
+                            <div class="modal-character-image">
+                                <img src="${character.image}" alt="${character.name}">
+                            </div>
+                            <div class="modal-character-info">
+                                <h3 class="modal-character-name">${character.name}</h3>
+                                <p class="modal-character-role">${character.role}</p>
+                                <p class="modal-character-lore">${character.lore}</p>
+                                
+                                <div class="modal-character-stats">
+                                    ${Object.entries(character.stats).map(([key, value]) => `
+                                        <div class="stat">
+                                            <div class="stat-value">${value}</div>
+                                            <div class="stat-name">${key.charAt(0).toUpperCase() + key.slice(1)}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        });
+
+        // Fechar modal
+        document.querySelector('.close-modal').addEventListener('click', function() {
+            const modal = document.getElementById('characterModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        // Fechar modal ao clicar fora do conteúdo
+        document.getElementById('characterModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Inicializar partículas quando a página carregar
+        window.addEventListener('load', createParticles);
+    </script>
+</body>
+</html>
