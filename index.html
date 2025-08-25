@@ -15,8 +15,30 @@
             --primary-light: #1a1a1a;
             --accent-gold: #d4af37;
             --accent-gold-light: #f5d76e;
+            --accent-blue: #3a86ff;
+            --accent-ice: #90e0ef;
+            --accent-fire: #ff6b6b;
+            --accent-nature: #52b788;
             --text-light: #f0f0f0;
             --text-gray: #aaaaaa;
+        }
+
+        /* Personalização da barra de rolagem */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--primary-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-gold);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-gold-light);
         }
 
         * {
@@ -26,15 +48,22 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Raleway', sans-serif;
             background-color: var(--primary-dark);
             color: var(--text-light);
             overflow-x: hidden;
             line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(42, 15, 85, 0.1) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(20, 30, 100, 0.1) 0%, transparent 25%);
         }
 
-        /* Header e Navegação - MELHORADO PARA MOBILE */
+        /* Header e Navegação - MELHORADO */
         header {
             background: rgba(0, 0, 0, 0.95);
             padding: 0.8rem 1rem;
@@ -44,6 +73,7 @@
             z-index: 1000;
             border-bottom: 1px solid rgba(212, 175, 55, 0.3);
             transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
         }
 
         .header-container {
@@ -65,6 +95,11 @@
         .logo-icon {
             font-size: 2rem;
             color: var(--accent-gold);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(15deg);
         }
 
         .logo-text {
@@ -73,6 +108,22 @@
             font-size: 1.5rem;
             color: var(--text-light);
             letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .logo-text::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-gold);
+            transition: width 0.3s ease;
+        }
+
+        .logo:hover .logo-text::after {
+            width: 100%;
         }
 
         .logo-text span {
@@ -143,7 +194,7 @@
             width: 100%;
         }
 
-        /* Hero Section - OTIMIZADA PARA MOBILE */
+        /* Hero Section - OTIMIZADA */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -217,7 +268,7 @@
             padding: 0 0.5rem;
         }
 
-        /* Botões de CTA - OTIMIZADOS PARA TOUCH */
+        /* Botões de CTA - OTIMIZADOS */
         .cta-buttons {
             display: flex;
             gap: 1rem;
@@ -322,6 +373,7 @@
         /* Story Section */
         .section {
             padding: 4rem 1rem;
+            position: relative;
         }
 
         .section-title {
@@ -535,7 +587,7 @@
             left: 100%;
         }
 
-        /* Characters Section - MELHORADA PARA MOBILE */
+        /* Characters Section - MELHORADA */
         .characters-section {
             position: relative;
         }
@@ -594,6 +646,11 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .character-card:hover .character-image img {
+            transform: scale(1.1);
         }
 
         .character-name {
@@ -635,7 +692,7 @@
             font-size: 0.9rem;
         }
 
-        /* Modal para lore dos personagens - OTIMIZADO PARA MOBILE */
+        /* Modal para lore dos personagens - OTIMIZADO */
         .modal {
             display: none;
             position: fixed;
@@ -791,12 +848,41 @@
             letter-spacing: 0.5px;
         }
 
+        /* Novos personagens adicionados */
+        .character-element-ice {
+            border-color: rgba(144, 224, 239, 0.3);
+        }
+        
+        .character-element-ice:hover {
+            border-color: var(--accent-ice);
+            box-shadow: 0 8px 20px rgba(144, 224, 239, 0.2);
+        }
+        
+        .character-element-fire {
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+        
+        .character-element-fire:hover {
+            border-color: var(--accent-fire);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.2);
+        }
+        
+        .character-element-nature {
+            border-color: rgba(82, 183, 136, 0.3);
+        }
+        
+        .character-element-nature:hover {
+            border-color: var(--accent-nature);
+            box-shadow: 0 8px 20px rgba(82, 183, 136, 0.2);
+        }
+
         /* Footer */
         footer {
             background: var(--primary-medium);
             padding: 2.5rem 1rem;
             text-align: center;
             border-top: 1px solid rgba(212, 175, 55, 0.2);
+            position: relative;
         }
 
         .footer-logo {
@@ -814,6 +900,39 @@
             margin-top: 1.5rem;
             color: var(--text-gray);
             font-size: 0.85rem;
+        }
+
+        /* Botão de voltar ao topo */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            background: var(--accent-gold-light);
+            transform: translateY(-3px);
         }
 
         /* Efeitos de brilho e destaque */
@@ -847,6 +966,48 @@
             100% {
                 left: 100%;
             }
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .loading-logo span {
+            color: var(--accent-gold);
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-gold);
+            transition: width 0.5s ease;
         }
 
         /* Responsividade - MELHORADA */
@@ -1058,6 +1219,14 @@
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">UMBRA<span>.</span></div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header id="header">
         <div class="header-container">
@@ -1115,7 +1284,7 @@
                 <div class="story-text">
                   <p>Em um mundo onde o equilíbrio entre luz e sombra está à beira do colapso, Umbra — a entidade primordial da criação — convoca um guerreiro escolhido para reunir as essências das cinco regiões e restaurar a harmonia perdida.</p>
 
-<p>Mas a escuridão tem seu próprio arauto: Anhangá, espírito ancestral e portador do caos. Ele espalha sua corrupção por Ybyrá (a floresta viva), Nharõ (as areias do deserto), Karú (as montanhas ancestrais) e Tupãry (as terras congeladas), contaminando cada fragmento de poder com trevas capazes de devorar o mundo.</p>
+<p>Mais a escuridão tem seu próprio arauto: Anhangá, espírito ancestral e portador do caos. Ele espalha sua corrupção por Ybyrá (a floresta viva), Nharõ (as areias do deserto), Karú (as montanhas ancestrais) e Tupãry (as terras congeladas), contaminando cada fragmento de poder com trevas capazes de devorar o mundo.</p>
 
 <p>A jornada exige coragem e sacrifício: explorar reinos únicos, conquistar a confiança de guardiões lendários e enfrentar inimigos que encarnam o próprio medo. O destino da criação repousa em suas mãos — e cada escolha pode reacender a luz ou mergulhar tudo na escuridão eterna.</p>
 
@@ -1136,7 +1305,7 @@
         <h2 class="section-title">Modos de Jogo</h2>
         
         <div class="modes-container">
-            <div class="mode-card" onclick="window.location.href='modo-historia/'">
+            <div class="mode-card" onclick="window.location.href='modo-historia/modo-historia.html'">
                 <div class="mode-image">
                     <i class="fas fa-book-open"></i>
                     <div class="mode-overlay"></div>
@@ -1186,7 +1355,7 @@
                         </div>
                         <div class="mode-feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>Combos especiais e fatalities</span>
+                            <span>Combos especiais и fatalities</span>
                         </div>
                     </div>
                     
@@ -1234,14 +1403,14 @@
         <div class="characters-container">
             <div class="characters-grid">
                 <!-- Personagens com lore -->
-                <div class="character-card" data-character="maga-luz">
+                <div class="character-card" data-character="solenne">
                     <div class="character-image">
-                       <img src="maga-luz.gif" alt="Maga da Luz">
+                       <img src="maga-luz.gif" alt="Solenne - Maga da Luz">
                     </div>
-                    <div class="character-name">Maga da Luz</div>
+                    <div class="character-name">Solenne</div>
                     <div class="character-lore">
                         <div class="character-lore-title">Lore</div>
-                        <div class="character-lore-content">Guardiã ancestral do Reino de Lumen, a Maga da Luz canaliza a energia solar para purificar a escuridão. Sua linhagem remonta aos primeiros protetores do equilíbrio espiritual.</div>
+                        <div class="character-lore-content">Guardiã ancestral do Reino de Lumen, Solenne canaliza a energia solar para purificar a escuridão. Sua linhagem remonta aos primeiros protetores do equilíbrio espiritual.</div>
                     </div>
                 </div>
                 
@@ -1278,27 +1447,53 @@
                     </div>
                 </div>
                 
-                <div class="character-card" data-character="warwick">
+                <div class="character-card" data-character="fenrath">
                     <div class="character-image">
-                        <img src="teste1.gif" alt="Warwick">
+                        <img src="teste1.gif" alt="Fenrath - A Besta Alquímica">
                     </div>
-                    <div class="character-name">Warwick</div>
+                    <div class="character-name">Fenrath</div>
                     <div class="character-lore">
                         <div class="character-lore-title">Lore</div>
-                        <div class="character-lore-content">Antigo caçador de recompensas transformado em uma besta por experimentos alquímicos. Agora ele caça os criminosos das ruas de Zaun, lutando contra a fera dentro de si.</div>
+                        <div class="character-lore-content">Antigo caçador de Tupãry, corrompido por experimentos de alquimistas exilados de Karú. Agora é uma fera dividida entre a brutalidade animal e fragmentos de humanidade.</div>
                     </div>
                 </div>
                 
-                <div class="character-card" data-character="ashe">
+                <div class="character-card character-element-ice" data-character="aislin">
                     <div class="character-image">
-                        <img src="ASHE.gif" alt="Guardiã Arqueira">
+                        <img src="ASHE.gif" alt="Aislin - Guardiã Arqueira">
                     </div>
-                    <div class="character-name">Guardiã Arqueira</div>
+                    <div class="character-name">Aislin</div>
                     <div class="character-lore">
                         <div class="character-lore-title">Lore</div>
-                        <div class="character-lore-content">A última de uma linhagem de guerreiras geladas que protegem o Templo de Cristal. Suas flechas nunca erram o alvo e podem congelar até mesmo o tempo.</div>
+                        <div class="character-lore-content">A última de uma linhagem de arqueiras sagradas que juraram proteger o Templo de Cristal. Treinada desde a infância, suas flechas nunca erram o alvo e podem até congelar o próprio tempo.</div>
                     </div>
                 </div>
+                
+                <!-- Adicione mais personagens aqui para completar 21 -->
+                <div class="character-card character-element-fire" data-character="ignis">
+                    <div class="character-image">
+                        <div style="width:100%;height:100%;background:linear-gradient(135deg, #6a040f, #d00000);display:flex;align-items:center;justify-content:center;color:var(--accent-fire);font-size:3rem;">🔥</div>
+                    </div>
+                    <div class="character-name">Ignis</div>
+                    <div class="character-lore">
+                        <div class="character-lore-title">Lore</div>
+                        <div class="character-lore-content">Mestre das chamas eternas, forjado no coração de um vulcão. Sua raiva queima tão intensamente quanto o fogo que controla.</div>
+                    </div>
+                </div>
+                
+                <div class="character-card character-element-nature" data-character="flora">
+                    <div class="character-image">
+                        <div style="width:100%;height:100%;background:linear-gradient(135deg, #1b4332, #2d6a4f);display:flex;align-items:center;justify-content:center;color:var(--accent-nature);font-size:3rem;">🌿</div>
+                    </div>
+                    <div class="character-name">Flora</div>
+                    <div class="character-lore">
+                        <div class="character-lore-title">Lore</div>
+                        <div class="character-lore-content">Druida da floresta de Ybyrá, capaz de comandar as plantas e criaturas naturais. Sua conexão com a natureza é absoluta.</div>
+                    </div>
+                </div>
+                
+                <!-- Adicione os demais personagens seguindo o mesmo padrão -->
+                
             </div>
         </div>
     </section>
@@ -1326,16 +1521,50 @@
         </div>
     </footer>
 
+    <!-- Botão de voltar ao topo -->
+    <a href="#" class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
     <script>
+        // Simular carregamento
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingProgress = document.getElementById('loadingProgress');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                loadingProgress.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingScreen.style.opacity = '0';
+                        loadingScreen.style.visibility = 'hidden';
+                    }, 500);
+                }
+            }, 200);
+        });
+
         // Header scroll effect
         window.addEventListener('scroll', function() {
             const header = document.getElementById('header');
+            const backToTop = document.getElementById('backToTop');
+            
             if (window.scrollY > 50) {
                 header.style.background = "rgba(0, 0, 0, 0.97)";
                 header.style.borderBottom = "1px solid rgba(212, 175, 55, 0.4)";
             } else {
                 header.style.background = "rgba(0, 0, 0, 0.95)";
                 header.style.borderBottom = "1px solid rgba(212, 175, 55, 0.3)";
+            }
+            
+            // Mostrar/ocultar botão de voltar ao topo
+            if (window.scrollY > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
             }
         });
         
@@ -1416,11 +1645,11 @@
         
         // Dados dos personagens (em um cenário real, isso viria de uma API ou banco de dados)
         const charactersData = {
-            "maga-luz": {
-                name: "Maga da Luz",
-                role: "Guardiã de Lumen",
+            "solenne": {
+                name: "Solenne",
+                role: "Maga da Luz",
                 image: "maga-luz.gif",
-                lore: "Guardiã ancestral do Reino de Lumen, a Maga da Luz canaliza a energia solar para purificar a escuridão. Sua linhagem remonta aos primeiros protetores do equilíbrio espiritual. Treinada desde criança nos antigos templos solares, ela é a última de sua linhagem após o ataque surpresa das forças de Anhangá.",
+                lore: "Guardiã ancestral do Reino de Lumen, Solenne canaliza a energia solar para purificar a escuridão. Sua linhagem remonta aos primeiros protetores do equilíbrio espiritual. Treinada desde criança nos antigos templos solares, ela é a última de sua linhagem após o ataque surpresa das forças de Anhangá.",
                 stats: {
                     poder: "8/10",
                     defesa: "6/10",
@@ -1464,30 +1693,55 @@
                     velocidade: "9/10"
                 }
             },
-            "warwick": {
-                name: "Warwick",
-                role: "A Fera de Zaun",
+            "fenrath": {
+                name: "Fenrath",
+                role: "A Besta Alquímica",
                 image: "teste1.gif",
-                lore: "Antigo caçador de recompensas transformado em uma besta por experimentos alquímicos. Agora ele caça os criminosos das ruas de Zaun, lutando contra a fera dentro de si. Apesar de sua aparência aterrorizante, Warwick ainda mantém traços de sua humanidade, especialmente quando crianças estão em perigo.",
+                lore: "Antigo caçador de Tupãry, corrompido por experimentos de alquimistas exilados de Karú. Agora é uma fera dividida entre a brutalidade animal e fragmentos de humanidade. Temido pelos habitantes do gelo, Fenrath vaga pelas sombras caçando qualquer um que ameace o reino — criminoso, invasor ou aliado.",
                 stats: {
-                    poder: "10/10",
-                    defesa: "9/10",
-                    magia: "3/10",
-                    velocidade: "8/10"
+                    poder: "8/10",
+                    defesa: "7/10",
+                    agilidade: "9/10",
+                    regeneração: "8/10"
                 }
             },
-            "ashe": {
-                name: "Guardiã Arqueira",
-                role: "Protetora Gélida",
+            "aislin": {
+                name: "Aislin",
+                role: "Guardiã Arqueira",
                 image: "ASHE.gif",
-                lore: "A última de uma linhagem de guerreiras geladas que protegem o Templo de Cristal. Suas flechas nunca erram o alvo e podem congelar até mesmo o tempo. Ela jurou proteger os reinos da ambição de Anhangá, mesmo que isso signifique sacrificar sua própria humanidade.",
+                lore: "A última de uma linhagem de arqueiras sagradas que juraram proteger o Templo de Cristal. Treinada desde a infância, suas flechas nunca erram o alvo e podem até congelar o próprio tempo. Apesar de sua devoção, Aislin questiona o sacrifício eterno exigido de sua linhagem — guardar o selo de Anhangá até que a própria humanidade se perca.",
                 stats: {
                     poder: "7/10",
                     defesa: "6/10",
+                    precisão: "10/10",
+                    velocidade: "8/10"
+                }
+            },
+            "ignis": {
+                name: "Ignis",
+                role: "Mestre das Chamas",
+                image: "",
+                lore: "Forjado no coração de um vulcão, Ignis domina as chamas eternas que consomem tudo em seu path. Sua raiva queima tão intensamente quanto o fogo que controla, tornando-o um aliado perigoso e um inimigo temível.",
+                stats: {
+                    poder: "9/10",
+                    defesa: "7/10",
                     magia: "8/10",
-                    velocidade: "9/10"
+                    velocidade: "6/10"
+                }
+            },
+            "flora": {
+                name: "Flora",
+                role: "Druida da Floresta",
+                image: "",
+                lore: "Druida da floresta de Ybyrá, Flora possui uma conexão absoluta com a natureza. Ela comanda as plantas e criaturas naturais, usando seus poderes para proteger o equilíbrio da vida contra a corrupção de Anhangá.",
+                stats: {
+                    poder: "6/10",
+                    defesa: "7/10",
+                    magia: "9/10",
+                    velocidade: "7/10"
                 }
             }
+            // Adicione os dados dos demais personagens aqui
         };
 
         // Abrir modal com informações do personagem
@@ -1507,7 +1761,10 @@
                     modalContent.innerHTML = `
                         <div class="modal-character">
                             <div class="modal-character-image">
-                                <img src="${character.image}" alt="${character.name}">
+                                ${character.image ? 
+                                    `<img src="${character.image}" alt="${character.name}">` : 
+                                    `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, var(--primary-medium), var(--primary-dark));color:var(--accent-gold);font-size:3rem;">⚔️</div>`
+                                }
                             </div>
                             <div class="modal-character-info">
                                 <h3 class="modal-character-name">${character.name}</h3>
@@ -1545,6 +1802,15 @@
                 this.classList.remove('active');
                 document.body.style.overflow = 'auto';
             }
+        });
+
+        // Botão voltar ao topo funcionando
+        document.getElementById('backToTop').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
 
         // Inicializar partículas quando a página carregar
