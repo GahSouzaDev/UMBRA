@@ -646,16 +646,17 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        /* Play Section */
+        /* Play Section - Agora dentro de cada região */
         .play-section {
             text-align: center;
-            padding: 5rem 1rem;
+            padding: 3rem 1rem;
             background: linear-gradient(to bottom, var(--primary-medium), var(--primary-dark));
-            margin-top: 2rem;
+            margin: 2rem auto;
             border-radius: 12px;
             border: 1px solid rgba(212, 175, 55, 0.2);
             position: relative;
             overflow: hidden;
+            max-width: 800px;
         }
 
         .play-section::before {
@@ -679,7 +680,7 @@
 
         .play-title {
             font-family: 'Cinzel', serif;
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--accent-gold);
             margin-bottom: 1rem;
             text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
@@ -687,7 +688,7 @@
 
         .play-desc {
             color: var(--text-gray);
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
@@ -973,8 +974,8 @@
             
             <nav id="mainNav">
                 <ul>
-                    <li><a href="../index.html#story" class="nav-link">História</a></li>
-                    <li><a href="../index.html#modes" class="nav-link">Modos de Jogo</a></li>
+                    <li><a href="../index.html" class="nav-link">Inicio</a></li>
+                    <li><a href="#regions" class="nav-link">Reinos</a></li>
                     <li><a href="../index.html#characters" class="nav-link">Personagens</a></li>
                 </ul>
             </nav>
@@ -1069,7 +1070,7 @@
                                     <strong>Desafio:</strong> Sentinelas Congeladas e Armadilhas Ancestrais
                                 </div>
                                 <div class="mission-dialogue">
-                                    "Auroras dançam no céu, mas não se deixe enganar pela beleza - a morte espreita em cada sombra."
+                                    "Auroras dançam no céu, mas não se deixe enganar pela belleza - a morte espreita em cada sombra."
                                 </div>
                                 <img src="assets/gifs/teste.gif" alt="Muralhas da Aurora" class="mission-gif">
                             </div>
@@ -1133,6 +1134,18 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Botão de Jogar específico para Tupary -->
+                <div class="play-section">
+                    <h2 class="play-title">Inicie Sua Jornada em Tupãry</h2>
+                    <p class="play-desc">Adentre o reino congelado de Tupãry e descubra segredos há muito enterrados sob o gelo eterno. Sua coragem será testada a cada passo.</p>
+                    
+                    <div class="cta-buttons">
+                        <a href="game-historia.html" class="cta-button pulse">
+                            <i class="fas fa-play-circle"></i> Iniciar Aventura
+                        </a>
+                    </div>
+                </div>
             </div>
             
             <!-- Conteúdo de Ignys -->
@@ -1151,6 +1164,12 @@
                     <div style="background: linear-gradient(to right, #8B0000, #FF4500, #FF8C00); height: 200px; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.5rem;">
                         Conteúdo em Breve
                     </div>
+                </div>
+
+                <!-- Seção de play para Ignys (vazia por enquanto) -->
+                <div class="play-section">
+                    <h2 class="play-title">Ignys em Breve</h2>
+                    <p class="play-desc">O reino vulcânico de Ignys estará disponível em uma atualização futura. Prepare-se para enfrentar o calor intenso e as criaturas de fogo!</p>
                 </div>
             </div>
             
@@ -1171,6 +1190,12 @@
                         Conteúdo em Breve
                     </div>
                 </div>
+
+                <!-- Seção de play para Veridia (vazia por enquanto) -->
+                <div class="play-section">
+                    <h2 class="play-title">Veridia em Breve</h2>
+                    <p class="play-desc">A floresta ancestral de Veridia estará disponível em uma atualização futura. Prepare-se para explorar densas florestas e encontrar espíritos da natureza!</p>
+                </div>
             </div>
             
             <!-- Conteúdo de Aquaria -->
@@ -1181,7 +1206,7 @@
                 </div>
                 
                 <p class="region-desc">
-                    Em breve! Um mundo subaquático repleto de mistérios, onde criaturas marinhas guardam segredos abissais. 
+                    Em breve! Um mundo subaquático repleto de mistérios, onde criaturas marinhas guardan segredos abissais. 
                     Aquaria é um reino de beleza serena e perigos ocultos, onde a pressão das profundezas esconde tesouros e tragédias.
                 </p>
                 
@@ -1190,19 +1215,13 @@
                         Conteúdo em Breve
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Play Section -->
-    <section class="play-section">
-        <h2 class="play-title">Inicie Sua Jornada</h2>
-        <p class="play-desc">Adentre o reino congelado de Tupãry e descubra segredos há muito enterrados sob o gelo eterno. Sua coragem será testada a cada passo.</p>
-        
-        <div class="cta-buttons">
-            <a href="game-historia.html" class="cta-button pulse">
-                <i class="fas fa-play-circle"></i> Iniciar Aventura em Tupãry
-            </a>
+                <!-- Seção de play para Aquaria (vazia por enquanto) -->
+                <div class="play-section">
+                    <h2 class="play-title">Aquaria em Breve</h2>
+                    <p class="play-desc">O reino subaquático de Aquaria estará disponível em uma atualização futura. Prepare-se para mergulhar nas profundezas e descobrir segredos abissais!</p>
+                </div>
+            </div>
         </div>
     </section>
 
