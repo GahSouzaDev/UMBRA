@@ -203,7 +203,7 @@
             position: relative;
             overflow: hidden;
             padding: 80px 1rem 2rem;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('teste.gif');
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('https://i.imgur.com/3Q6ZQ0q.gif');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -269,20 +269,23 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem 1.8rem;
+            padding: 1.2rem 2.5rem;
             background: linear-gradient(145deg, var(--accent-gold), #b8941f);
             color: var(--primary-dark);
             text-decoration: none;
-            font-weight: 700;
-            font-size: 1rem;
+            font-weight: 800;
+            font-size: 1.2rem;
             border-radius: 50px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
             position: relative;
             overflow: hidden;
             border: none;
             cursor: pointer;
-            min-height: 50px;
+            min-height: 60px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 2;
         }
 
         .cta-button:before {
@@ -294,41 +297,44 @@
             height: 200%;
             background: linear-gradient(
                 to bottom right,
-                rgba(255, 255, 255, 0.2),
+                rgba(255, 255, 255, 0.3),
                 rgba(255, 255, 255, 0)
             );
             transform: rotate(45deg);
             transition: all 0.5s ease;
-        }
-
-        .cta-button:hover, .cta-button:focus {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.6);
+            z-index: 1;
         }
 
         .cta-button:hover:before {
             animation: shine 1.5s ease infinite;
         }
 
+        .cta-button:hover, .cta-button:focus {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.8);
+        }
+
         .cta-button.secondary {
             background: transparent;
             color: var(--accent-gold);
             border: 2px solid var(--accent-gold);
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         .cta-button.secondary:hover, .cta-button.secondary:focus {
             background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-3px);
         }
 
         .cta-button i {
             margin-right: 0.5rem;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
         }
 
-        /* Story Section */
-        .section {
+        /* Seção do Mapa de Regiões */
+        .regions-section {
             padding: 4rem 1rem;
+            background: var(--primary-medium);
             position: relative;
         }
 
@@ -336,7 +342,7 @@
             font-family: 'Cinzel', serif;
             font-size: 2.2rem;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
             color: var(--text-light);
             position: relative;
         }
@@ -349,6 +355,138 @@
             background: var(--accent-gold);
             margin: 1rem auto;
             border-radius: 2px;
+        }
+
+        .regions-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .world-map {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 2rem auto;
+        }
+
+        .region-circle {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            transform: rotate(-45deg);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+            border: 3px solid var(--accent-gold);
+        }
+
+        .region {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .region:nth-child(1) {
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, var(--accent-ice), #48cae4);
+            transform: rotate(0deg) skew(45deg);
+        }
+
+        .region:nth-child(2) {
+            top: 0;
+            right: 0;
+            background: linear-gradient(135deg, #666, #999);
+            transform: rotate(90deg) skew(45deg);
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+
+        .region:nth-child(3) {
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(135deg, #666, #999);
+            transform: rotate(180deg) skew(45deg);
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+
+        .region:nth-child(4) {
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(135deg, #666, #999);
+            transform: rotate(270deg) skew(45deg);
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+
+        .region-content {
+            transform: rotate(45deg);
+            text-align: center;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .region-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .region-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .region.active {
+            box-shadow: inset 0 0 25px rgba(255, 255, 255, 0.6);
+            z-index: 2;
+        }
+
+        .region.active:hover {
+            transform: rotate(0deg) skew(45deg) scale(1.05);
+        }
+
+        .region-info {
+            margin-top: 2rem;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .region-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+        }
+
+        .region-desc {
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .region-gif {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--accent-gold);
+        }
+
+        /* Story Section */
+        .section {
+            padding: 4rem 1rem;
+            position: relative;
         }
 
         .story-container {
@@ -493,82 +631,59 @@
             border-radius: 4px;
         }
 
-        /* Choice Section */
-        .choice-section {
-            background: linear-gradient(145deg, var(--primary-light), var(--primary-medium));
+        .mission-gif {
+            width: 100%;
             border-radius: 8px;
-            padding: 2rem;
-            margin: 2rem 0;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            text-align: center;
-        }
-
-        .choice-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            color: var(--accent-gold);
-            margin-bottom: 1rem;
-        }
-
-        .choices-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 1.5rem;
-        }
-
-        .choice {
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid var(--accent-gold);
-            border-radius: 8px;
-            padding: 1rem;
-            flex: 1;
-            min-width: 250px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .choice:hover {
-            background: rgba(212, 175, 55, 0.2);
-            transform: translateY(-3px);
-        }
-
-        .choice-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            color: var(--accent-gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .choice-desc {
-            color: var(--text-gray);
-            font-size: 0.9rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         /* Play Section */
         .play-section {
             text-align: center;
-            padding: 3rem 1rem;
-            background: rgba(10, 10, 10, 0.9);
+            padding: 4rem 1rem;
+            background: linear-gradient(to bottom, var(--primary-medium), var(--primary-dark));
             margin-top: 2rem;
             border-radius: 12px;
             border: 1px solid rgba(212, 175, 55, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.imgur.com/7QzJq0z.gif');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .play-section > * {
+            position: relative;
+            z-index: 2;
         }
 
         .play-title {
             font-family: 'Cinzel', serif;
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: var(--accent-gold);
             margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
         }
 
         .play-desc {
             color: var(--text-gray);
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
+            font-size: 1.1rem;
         }
 
         /* Footer */
@@ -654,6 +769,25 @@
             }
         }
 
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 12px 35px rgba(212, 175, 55, 0.8);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
         /* Responsividade */
         @media (min-width: 576px) {
             .hero-title {
@@ -666,6 +800,19 @@
             
             .logo-text span {
                 display: inline;
+            }
+
+            .world-map {
+                width: 400px;
+                height: 400px;
+            }
+
+            .region-icon {
+                font-size: 2.5rem;
+            }
+
+            .region-name {
+                font-size: 1.1rem;
             }
         }
 
@@ -715,8 +862,13 @@
             }
             
             .cta-button {
-                padding: 1rem 2.2rem;
-                font-size: 1.1rem;
+                padding: 1.5rem 3rem;
+                font-size: 1.3rem;
+            }
+
+            .world-map {
+                width: 500px;
+                height: 500px;
             }
         }
 
@@ -735,6 +887,11 @@
             
             .section-title {
                 font-size: 2.8rem;
+            }
+
+            .world-map {
+                width: 550px;
+                height: 550px;
             }
         }
 
@@ -826,155 +983,178 @@
         
         <div class="hero-content">
             <h1 class="hero-title">MODO HISTÓRIA<br><span>O Coração de Gelo</span></h1>
-            <p class="hero-subtitle">Embarque em uma jornada épica através do reino congelado de Tupãry, onde suas decisões moldarão o destino do mundo.</p>
+            <p class="hero-subtitle">Aventure-se no reino congelado de Tupãry, onde segredos ancestrais e perigos iminentes aguardam. Suas escolhas determinarão o destino deste mundo.</p>
             
             <div class="cta-buttons">
-                <a href="#play" class="cta-button">
-                    <i class="fas fa-play-circle"></i> Começar Jornada
+                <a href="modo-historia/game-historia.html" class="cta-button pulse" id="playButton">
+                    <i class="fas fa-play-circle"></i> Jogar Agora
                 </a>
-                <a href="#chapter" class="cta-button secondary">
-                    <i class="fas fa-book-open"></i> Conhecer a Campanha
+                <a href="#regions" class="cta-button secondary">
+                    <i class="fas fa-book-open"></i> Explorar Regiões
                 </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Regions Section -->
+    <section id="regions" class="regions-section">
+        <h2 class="section-title">Mapa de Umbralia</h2>
+        
+        <div class="regions-container">
+            <div class="world-map">
+                <div class="region-circle">
+                    <div class="region active">
+                        <div class="region-content">
+                            <div class="region-icon">❄️</div>
+                            <div class="region-name">Tupãry</div>
+                        </div>
+                    </div>
+                    <div class="region">
+                        <div class="region-content">
+                            <div class="region-icon">🌋</div>
+                            <div class="region-name">Ignys</div>
+                        </div>
+                    </div>
+                    <div class="region">
+                        <div class="region-content">
+                            <div class="region-icon">🌿</div>
+                            <div class="region-name">Veridia</div>
+                        </div>
+                    </div>
+                    <div class="region">
+                        <div class="region-content">
+                            <div class="region-icon">🌊</div>
+                            <div class="region-name">Aquaria</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="region-info">
+                <h3 class="region-title">Tupãry – O Reino Congelado</h3>
+                <p class="region-desc">
+                    A primeira região disponível para explorar em Umbralia. Um reino gelado onde o eterno inverno 
+                    domina as paisagens. Aqui, você enfrentará criaturas do gelo, descobrirá segredos ancestrais 
+                    e desvendará mistérios que podem mudar o destino de todo o mundo.
+                </p>
+                <img src="https://i.imgur.com/9zJQq0z.gif" alt="Reino de Gelo Tupãry" class="region-gif">
             </div>
         </div>
     </section>
 
     <!-- Story Section -->
     <section id="chapter" class="section">
-        <h2 class="section-title">Capítulo 4: O Coração de Gelo</h2>
+        <h2 class="section-title">A Jornada em Tupãry</h2>
         
         <div class="story-container">
             <div class="story-content">
                 <div class="story-text">
-                  <p>Em um mundo onde o equilíbrio entre luz e sombra está à beira do colapso, Umbra — a entidade primordial da criação — convoca um guerreiro escolhido para reunir as essências das cinco regiões e restaurar a harmonia perdida.</p>
+                  <p>Nas terras congeladas de Tupãry, uma ameaça ancestral desperta. Como o Escolhido de Umbra, você deve enfrentar os perigos deste reino gelado e descobrir os segredos que foram enterrados sob o gelo por eras.</p>
 
-                  <p>Mas a escuridão tem seu próprio arauto: Anhangá, espírito ancestral e portador do caos. Ele espalha sua corrupção por Ybyrá (a floresta viva), Nharõ (as areias do deserto), Karú (as montanhas ancestrais) e Tupãry (as terras congeladas), contaminando cada fragmento de poder com trevas capazes de devorar o mundo.</p>
-
-                  <p>A jornada exige coragem e sacrifício: explorar reinos únicos, conquistar a confiança de guardiões lendários e enfrentar inimigos que encarnam o próprio medo. O destino da criação repousa em suas mãos — e cada escolha pode reacender a luz ou mergulhar tudo na escuridão eterna.</p>
+                  <p>Enfrente guardiões poderosos, tome decisões difíceis e desvende mistérios que podem mudar o destino de todo o mundo de Umbra. Cada passo em Tupãry traz consigo consequências - escolha sabiamente.</p>
                 </div>
             </div>
             
             <div class="chapter">
-                <h3 class="chapter-title">Tupãry – Reino do Gelo</h3>
-                <p class="chapter-subtitle">"Tupãry, a muralha do mundo. Isolados pelo frio e pelo medo, eles guardam o segredo que todos os outros reinos desconhecem: o caos não foi destruído… ele foi selado. Mas o gelo racha, e a escuridão aguarda o menor sopro de fraqueza para escapar."</p>
+                <h3 class="chapter-title">Tupãry – O Reino Congelado</h3>
+                <p class="chapter-subtitle">"Onde o gelo não apenas preserva, mas também esconde verdades antigas que poderiam abalar os alicerces da realidade."</p>
                 
                 <div class="missions-container">
                     <div class="mission">
                         <div class="mission-header">
-                            <h4 class="mission-title">Missão 1: As Muralhas da Aurora</h4>
+                            <h4 class="mission-title">As Muralhas da Aurora</h4>
                             <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
                         </div>
                         <div class="mission-content">
                             <div class="mission-objective">
-                                <strong>Objetivo:</strong> Infiltrar Tupãry, enfrentando sentinelas e armadilhas de gelo.
+                                <strong>Objetivo:</strong> Atravessar as imponentes muralhas de gelo que protegem Tupãry.
                             </div>
                             <div class="mission-boss">
-                                <strong>Mini-boss:</strong> Tarek de Tupãry
+                                <strong>Desafio:</strong> Sentinelas Congeladas e Armadilhas Ancestrais
                             </div>
                             <div class="mission-dialogue">
-                                "Ninguém passa pelas muralhas. Nem vivos, nem mortos."
+                                "Auroras dançam no céu, mas não se deixe enganar pela beleza - a morte espreita em cada sombra."
                             </div>
-                            <p>Ao derrotá-lo, Tarek reconhece a força do Escolhido e decide acompanhá-lo.</p>
+                            <img src="https://i.imgur.com/6xJQq0z.gif" alt="Muralhas da Aurora" class="mission-gif">
                         </div>
                     </div>
                     
                     <div class="mission">
                         <div class="mission-header">
-                            <h4 class="mission-title">Missão 2: O Eco das Flechas</h4>
+                            <h4 class="mission-title">O Templo de Cristal</h4>
                             <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
                         </div>
                         <div class="mission-content">
                             <div class="mission-objective">
-                                <strong>Objetivo:</strong> Chegar ao Templo de Cristal.
+                                <strong>Objetivo:</strong> Encontrar o lendário Templo de Cristal escondido nas profundezas geladas.
                             </div>
                             <div class="mission-boss">
-                                <strong>Mini-boss:</strong> Aislin - Guardiã Arqueira
+                                <strong>Desafio:</strong> Quebra-gelos Espirituais e Guardiões do Gelo
                             </div>
                             <div class="mission-dialogue">
-                                "Minhas flechas não erram. Mas se sobreviver, talvez seja mesmo o portador do equilíbrio."
+                                "O cristal não reflete apenas luz, mas também a verdade - esteja preparado para enfrentar ambas."
                             </div>
-                            <p>Ao ser derrotada, revela a primeira visão do Coração de Gelo — o selo de Anhangá.</p>
+                            <img src="https://i.imgur.com/7xJQq0z.gif" alt="Templo de Cristal" class="mission-gif">
                         </div>
                     </div>
                     
                     <div class="mission">
                         <div class="mission-header">
-                            <h4 class="mission-title">Missão 3: A Fera na Névoa</h4>
+                            <h4 class="mission-title">O Abismo Congelado</h4>
                             <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
                         </div>
                         <div class="mission-content">
                             <div class="mission-objective">
-                                <strong>Objetivo:</strong> Cruzar o Abismo Congelado.
+                                <strong>Objetivo:</strong> Atravessar o perigoso abismo onde ventos cortantes e criaturas das neves habitam.
                             </div>
                             <div class="mission-boss">
-                                <strong>Mini-boss:</strong> Fenrath - A Besta Alquímica
+                                <strong>Desafio:</strong> Tempestades Cortantes e Bestas das Neves
                             </div>
-                            <p>Surge como inimigo, caçando o Escolhido. Durante a batalha, um evento interativo: o jogador pode tentar matá-lo ou convencê-lo a se juntar.</p>
                             <div class="mission-dialogue">
-                                Escolha muda a história: Se morto → você ganha "Essência da Besta". Se poupado → Fenrath se torna aliado em cutscenes futuras.
+                                "No abismo, mais do que o frio pode congelar um coração - o medo é tão mortal quanto o gelo."
                             </div>
+                            <img src="https://i.imgur.com/8xJQq0z.gif" alt="Abismo Congelado" class="mission-gif">
                         </div>
                     </div>
                     
                     <div class="mission">
                         <div class="mission-header">
-                            <h4 class="mission-title">Missão 4: O Rugido do Norte</h4>
+                            <h4 class="mission-title">O Coração de Gelo</h4>
                             <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
                         </div>
                         <div class="mission-content">
                             <div class="mission-objective">
-                                <strong>Objetivo:</strong> Descer até a caverna do Coração de Gelo.
+                                <strong>Objetivo:</strong> Enfrentar o mistério final no epicentro do poder congelante de Tupãry.
                             </div>
                             <div class="mission-boss">
-                                <strong>Boss:</strong> Anorak, Espírito do Norte
+                                <strong>Desafio:</strong> O Guardião Final e Segredos Revelados
                             </div>
-                            <p>Protege o selo com fúria ancestral. Arena: Abismo circular, onde cada golpe do urso quebra partes da arena, limitando o espaço.</p>
-                            <p>Após derrota, surge a visão completa: Anhangá aprisionado no gelo.</p>
+                            <div class="mission-dialogue">
+                                "Algumas verdades são mantidas congeladas por uma razão - você tem coragem de derretê-las?"
+                            </div>
+                            <img src="https://i.imgur.com/9xJQq0z.gif" alt="Coração de Gelo" class="mission-gif">
                         </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="choice-section">
-                <h3 class="choice-title">Reviravolta – O Selo de Anhangá</h3>
-                <p>Shaco aparece nas sombras (turma das sombras).</p>
-                <div class="mission-dialogue">
-                    "Vocês realmente acreditaram que Tupãry guardava poder? Não… guardam medo. E eu quero vê-lo dançar."
-                </div>
-                <p>Shaco tenta quebrar o selo.</p>
-                
-                <h3 class="choice-title" style="margin-top: 2rem;">Escolha Final do Capítulo</h3>
-                <div class="choices-container">
-                    <div class="choice">
-                        <h4 class="choice-title">Proteger o Selo</h4>
-                        <p class="choice-desc">Luta contra Shaco. Mantém Anhangá preso, mas o gelo começa a se rachar — prenúncio do colapso.</p>
-                    </div>
-                    <div class="choice">
-                        <h4 class="choice-title">Deixar Shaco Quebrar o Selo</h4>
-                        <p class="choice-desc">Anhangá desperta parcialmente. Nova boss fight (incompleta), onde o Escolhido enfrenta apenas uma fração da fera, mas o mundo é condenado à guerra total.</p>
                     </div>
                 </div>
             </div>
             
             <div class="story-text">
                 <div class="mission-dialogue">
-                    "O gelo não guarda apenas segredos. Guarda o próprio destino. Agora, quebrado ou não, o selo de Tupãry não resistirá para sempre. E quando o rugido de Anhangá ecoar pelo mundo, não haverá muralha capaz de silenciá-lo."
+                    "Tupãry não é apenas um reino - é um teste. Aqueles que sobrevivem às suas geadas emergem transformados, mas muitos se perdem para sempre em seu abraço gelado."
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Play Section -->
-    <section id="play" class="section">
-        <div class="play-section">
-            <h2 class="play-title">Comece Sua Jornada</h2>
-            <p class="play-desc">Embarque nesta aventura épica e decida o destino de Tupãry. Suas escolhas moldarão não apenas este reino, mas todo o mundo de Umbra.</p>
-            
-            <div class="cta-buttons">
-                <a href="#" class="cta-button">
-                    <i class="fas fa-play-circle"></i> Jogar Agora
-                </a>
-            </div>
+    <section class="play-section">
+        <h2 class="play-title">Prepare-se para a Jornada</h2>
+        <p class="play-desc">Adentre o reino congelado de Tupãry e descubra segredos há muito enterrados sob o gelo eterno. Sua coragem será testada a cada passo.</p>
+        
+        <div class="cta-buttons">
+            <a href="modo-historia/game-historia.html" class="cta-button pulse">
+                <i class="fas fa-play-circle"></i> Iniciar Aventura
+            </a>
         </div>
     </section>
 
@@ -1077,6 +1257,17 @@
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
+            });
+        });
+
+        // Efeito de hover nas regiões ativas
+        document.querySelectorAll('.region.active').forEach(region => {
+            region.addEventListener('mouseenter', function() {
+                this.style.transform = 'rotate(0deg) skew(45deg) scale(1.05)';
+            });
+            
+            region.addEventListener('mouseleave', function() {
+                this.style.transform = 'rotate(0deg) skew(45deg)';
             });
         });
 
