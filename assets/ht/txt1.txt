@@ -1,0 +1,113 @@
+Perfeito! Agora temos todos os elementos para estruturar **Tupãry – O Reino Congelado** de forma coerente, cinematográfica e motivadora, conectando com o fluxo da história que você detalhou. Vou montar **uma campanha completa** para Tupãry, com narrativa, objetivos, bosses e escolhas do jogador, pronta para servir como base de dados ou roteiro de jogo.
+
+---
+
+# 🎮 Campanha – Tupãry: O Reino Congelado
+
+---
+
+## 🌌 **Contexto Geral**
+
+* **Cenário:** Tupãry, o reino gelado e isolado, guarda o **Coração de Gelo**, artefato que contém a metade maligna de Anhangá.
+* **Motivação do Escolhido:** o Reino do Fogo busca guerra e sabe que Tupãry guarda poder; o Escolhido é enviado por Umbra para recuperar o artefato **antes que eles cheguem**.
+* **Conflito:** o povo do gelo não acredita no Escolhido e o vê como invasor ou oportunista, então ele precisa **provar sua força** e conquistar aliados internos.
+* **Conexão com a narrativa maior:** após o Coração de Gelo ser quebrado por Shaco, a parte maligna de Anhangá inicia sua jornada em direção à Areia, enquanto o Fogo muda sua rota para tentar capturar o espírito.
+
+---
+
+## 🎬 **Abertura Cinemática**
+
+> “O mundo treme sob o peso do desequilíbrio. Ignys, o Reino do Fogo, deseja guerra e já move suas tropas em direção aos reinos vizinhos.
+> Em Tupãry, o **Coração de Gelo** guarda a metade maligna de Anhangá, o espírito que traz caos.
+> Umbra convoca o Escolhido: recuperar o Coração de Gelo e impedir que Ignys obtenha poder suficiente para dominar todos os reinos.
+> Cada passo, cada luta, cada escolha será decisiva para a sobrevivência de todos.”
+
+*Cena: visão do mundo dividido em quatro regiões, Tupãry coberto de gelo e neve, luz púrpura emanando do Coração de Gelo.*
+
+---
+
+## ❄️ **Missão 1 – As Muralhas da Aurora (Tarek, o Guerreiro)**
+
+* **Objetivo:** atravessar Tupãry e provar valor.
+* **Desafio:** o povo do gelo não acredita no Escolhido; Tarek é enviado para barrar a passagem.
+* **Narrativa:**
+
+> “Estrangeiro! Aqui não entram curiosos nem aventureiros. Prove seu valor ou volte!”
+
+* **Resultado:** derrota de Tarek garante acesso às terras internas, mas o povo continua desconfiado.
+
+---
+
+## 🌟 **Missão 2 – Lumen, a Maga da Luz**
+
+* **Local:** Torre de Cristal de Tupãry.
+* **Função:** alertar o Escolhido sobre o perigo do Coração de Gelo.
+* **Narrativa:**
+
+> “O que está selado aqui destruiu meu povo antes. Não tente tocar sem compreender o preço. Mas se a guerra chegar, será nossa responsabilidade conter seu poder.”
+
+* **Objetivo:** reforçar urgência e moralidade da missão. O jogador entende que **não se trata de poder próprio**, mas de impedir uma catástrofe iminente.
+
+---
+
+## 🏹 **Missão 3 – Aislin, a Arqueira Sagrada**
+
+* **Local:** Floresta de Estalagmites de Gelo.
+* **Função:** testar a dignidade do Escolhido.
+* **Narrativa:**
+
+> “Minhas flechas não erram. Sobreviver será seu primeiro passo para carregar o fardo que os deuses temem.”
+
+* **Resultado:** acesso à próxima fase e informações cruciais sobre o Coração de Gelo.
+
+---
+
+## 🐺 **Missão 4 – Fenrath, o Lobo Guardião**
+
+* **Local:** Floresta Profunda.
+* **Função:** proteger o caminho até Anorak e o artefato.
+* **Momento-chave:** pacto opcional durante a luta:
+
+> “Jure lealdade a Tupãry e ao equilíbrio. Não tome este poder para si. Se fizer, eu mostrarei onde Anorak guarda o Coração de Gelo.”
+
+* **Resultado:** desbloqueia o acesso à caverna de Anorak e mantém a narrativa fluida.
+
+---
+
+## 🐻 **Missão 5 – Anorak, o Urso Ancião**
+
+* **Local:** Caverna do Coração de Gelo.
+* **Função:** boss final, guardião do artefato.
+* **Arena:** cristais pulsantes, avalanches de gelo e plataformas instáveis.
+* **Objetivo:** derrotar Anorak para obter o **Coração de Gelo**.
+
+---
+
+## 🎭 **Reviravolta Cinemática – Shaco e a Libertação de Anhangá**
+
+* **Momento:** ao transportar o Coração de Gelo, Shaco aparece.
+* **Ação:** arrebenta o cristal, quebrando o selo.
+* **Consequência:** a metade maligna de Anhangá se liberta e parte em direção ao corpo da parte benevolente, localizado na Areia.
+* **Mudança de rota de Ignys:** inicialmente marchando para Tupãry, eles agora viram para Sarythe, buscando capturar a parte boa e obter o controle total do espírito.
+
+---
+
+## ✅ **Resultado da Campanha – Tupãry**
+
+1. O Escolhido supera desafios e conquista aliados: Tarek, Lumen, Aislin e Fenrath.
+2. Obtém o Coração de Gelo, mas Shaco quebra o artefato, libertando Anhangá.
+3. O mundo muda: Ignys se aproxima da Areia, e a corrida contra o tempo agora se concentra em impedir que as duas metades do espírito se recomponham.
+4. Motivação clara para o jogador: impedir a fusão de Anhangá, proteger a parte benevolente e decidir sobre o destino da Floresta Viva.
+
+---
+
+Se você quiser, posso **montar o Capítulo 2 – Sarythe / Floresta Viva**, incluindo:
+
+* Corrida contra Ignys para impedir a captura da parte benevolente;
+* Interação com o povo da Areia e decisões sobre a fusão do espírito;
+* Consequências para o equilíbrio dos reinos e a Floresta Viva;
+* Preparação para o próximo arco da campanha.
+
+Quer que eu faça isso agora?
+
+
