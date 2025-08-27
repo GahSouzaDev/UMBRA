@@ -11,7 +11,7 @@ Perfeito! Agora temos todos os elementos para estruturar **Tupãry – O Reino C
 * **Cenário:** Tupãry, o reino gelado e isolado, guarda o **Coração de Gelo**, artefato que contém a metade maligna de Anhangá.
 * **Motivação do Escolhido:** o Reino do Fogo busca guerra e sabe que Tupãry guarda poder; o Escolhido é enviado por Umbra para recuperar o artefato **antes que eles cheguem**.
 * **Conflito:** o povo do gelo não acredita no Escolhido e o vê como invasor ou oportunista, então ele precisa **provar sua força** e conquistar aliados internos.
-* **Conexão com a narrativa maior:** após o Coração de Gelo ser quebrado por Shaco, a parte maligna de Anhangá inicia sua jornada em direção à Areia, enquanto o Fogo muda sua rota para tentar capturar o espírito.
+* **Conexão com a narrativa maior:** após o Coração de Gelo ser quebrado por Triko, a parte maligna de Anhangá inicia sua jornada em direção à Areia, enquanto o Fogo muda sua rota para tentar capturar o espírito.
 
 ---
 
@@ -83,9 +83,9 @@ Perfeito! Agora temos todos os elementos para estruturar **Tupãry – O Reino C
 
 ---
 
-## 🎭 **Reviravolta Cinemática – Shaco e a Libertação de Anhangá**
+## 🎭 **Reviravolta Cinemática – Triko e a Libertação de Anhangá**
 
-* **Momento:** ao transportar o Coração de Gelo, Shaco aparece.
+* **Momento:** ao transportar o Coração de Gelo, Triko aparece.
 * **Ação:** arrebenta o cristal, quebrando o selo.
 * **Consequência:** a metade maligna de Anhangá se liberta e parte em direção ao corpo da parte benevolente, localizado na Areia.
 * **Mudança de rota de Ignys:** inicialmente marchando para Tupãry, eles agora viram para Sarythe, buscando capturar a parte boa e obter o controle total do espírito.
@@ -95,7 +95,7 @@ Perfeito! Agora temos todos os elementos para estruturar **Tupãry – O Reino C
 ## ✅ **Resultado da Campanha – Tupãry**
 
 1. O Escolhido supera desafios e conquista aliados: Tarek, Lumen, Aislin e Fenrath.
-2. Obtém o Coração de Gelo, mas Shaco quebra o artefato, libertando Anhangá.
+2. Obtém o Coração de Gelo, mas Triko quebra o artefato, libertando Anhangá.
 3. O mundo muda: Ignys se aproxima da Areia, e a corrida contra o tempo agora se concentra em impedir que as duas metades do espírito se recomponham.
 4. Motivação clara para o jogador: impedir a fusão de Anhangá, proteger a parte benevolente e decidir sobre o destino da Floresta Viva.
 
