@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modo História - Umbra: A Guerra dos Espíritos</title>
+    <style>
+        :root {
+            --primary-dark: #000000;
+            --primary-medium: #0a0a0a;
+            --primary-light: #1a1a1a;
+            --accent-gold: #d4af37;
+            --accent-gold-light: #f5d76e;
+            --accent-blue: #3a86ff;
+            --accent-ice: #90e0ef;
+            --accent-fire: #ff6b6b;
+            --accent-nature: #52b788;
+            --text-light: #f0f0f0;
+            --text-gray: #aaaaaa;
+        }
+
+        /* Estilos base (mantidos do seu código) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(42, 15, 85, 0.1) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(20, 30, 100, 0.1) 0%, transparent 25%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--accent-gold);
+            margin: 1rem auto;
+            border-radius: 2px;
+        }
+
+        /* Tela de seleção de personagem */
+        .character-selection {
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .character-card {
+            background: linear-gradient(145deg, var(--primary-light), var(--primary-medium));
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+            border-color: var(--accent-gold);
+        }
+
+        .character-card.selected {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
+        }
+
+        .character-image {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--accent-gold);
+            background: var(--primary-dark);
+        }
+
+        .character-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .character-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .character-desc {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .character-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: var(--accent-gold);
+        }
+
+        .stat-name {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        /* Área do jogo */
+        .game-container {
+            display: none;
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            margin: 0 auto;
+            border: 3px solid var(--accent-gold);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #1a1a2e, #16213e);
+        }
+
+        .game-ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .health-bar, .mana-bar {
+            width: 200px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(to right, #ff6b6b, #ff9e6b);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .mana-fill {
+            height: 100%;
+            background: linear-gradient(to right, #3a86ff, #90e0ef);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .movement-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
+            gap: 5px;
+        }
+
+        .action-controls {
+            display: grid;
+            grid-template-columns: repeat(2, 60px);
+            grid-template-rows: repeat(2, 60px);
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(212, 175, 55, 0.3);
+            border: 2px solid var(--accent-gold);
+            border-radius: 50%;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:active {
+            background: rgba(212, 175, 55, 0.7);
+            transform: scale(0.95);
+        }
+
+        .btn-up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .btn-left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .btn-right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .btn-down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .btn-attack-u {
+            grid-column: 1;
+            grid-row: 1;
+            background: rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-attack-i {
+            grid-column: 2;
+            grid-row: 1;
+            background: rgba(58, 134, 255, 0.3);
+        }
+
+        .btn-attack-o {
+            grid-column: 1;
+            grid-row: 2;
+            background: rgba(82, 183, 136, 0.3);
+        }
+
+        .btn-attack-p {
+            grid-column: 2;
+            grid-row: 2;
+            background: rgba(212, 175, 55, 0.5);
+        }
+
+        /* Tela de diálogo */
+        .dialog-box {
+            display: none;
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--accent-gold);
+            border-radius: 10px;
+            padding: 15px;
+            color: var(--text-light);
+            z-index: 100;
+        }
+
+        .dialog-text {
+            margin-bottom: 15px;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .dialog-next {
+            text-align: right;
+            color: var(--accent-gold);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Botões de ação */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 1.8rem;
+            background: linear-gradient(145deg, var(--accent-gold), #b8941f);
+            color: var(--primary-dark);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+            min-height: 50px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.6);
+        }
+
+        .action-button.secondary {
+            background: transparent;
+            color: var(--accent-gold);
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .action-button.secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .character-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-container {
+                height: 350px;
+            }
+            
+            .health-bar, .mana-bar {
+                width: 150px;
+            }
+            
+            .control-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 0.9rem;
+            }
+            
+            .movement-controls {
+                grid-template-columns: repeat(3, 45px);
+                grid-template-rows: repeat(3, 45px);
+            }
+            
+            .action-controls {
+                grid-template-columns: repeat(2, 50px);
+                grid-template-rows: repeat(2, 50px);
+            }
+        }
+
+        /* Orientação para mobile */
+        .orientation-message {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-dark);
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .orientation-message i {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+        }
+
+        .orientation-message p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+            .orientation-message {
+                display: flex;
+            }
+            
+            body {
+                overflow: hidden;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="orientation-message">
+        <i class="fas fa-sync-alt"></i>
+        <p>Por favor, gire seu dispositivo para o modo paisagem</p>
+        <p>para uma melhor experiência de jogo.</p>
+    </div>
+
+    <div class="container">
+        <!-- Tela de seleção de personagem -->
+        <section class="character-selection" id="characterSelection">
+            <h2 class="section-title">Escolha Seu Personagem</h2>
+            <p>Selecione um personagem para iniciar sua jornada em Umbralia</p>
+            
+            <div class="character-grid">
+                <div class="character-card" data-character="warrior">
+                    <div class="character-image">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIyMCIgeT0iMTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI4MCIgZmlsbD0iI2Q0YWYzNyIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iMzUiIHI9IjE1IiBmaWxsPSIjZmZkNzY5Ii8+PC9zdmc+" alt="Guerreiro">
+                    </div>
+                    <h3 class="character-name">Guerreiro</h3>
+                    <p class="character-desc">Um combatente corpo a corpo com alta resistência e força.</p>
+                    <div class="character-stats">
+                        <div class="stat">
+                            <div class="stat-value">90</div>
+                            <div class="stat-name">FORÇA</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">70</div>
+                            <div class="stat-name">DEFESA</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">40</div>
+                            <div class="stat-name">MAGIA</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="character-card" data-character="archer">
+                    <div class="character-image">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIyMCIgeT0iMTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI4MCIgZmlsbD0iIzUyYjc4OCIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iMzUiIHI9IjE1IiBmaWxsPSIjZmZkNzY5Ii8+PC9zdmc+" alt="Arqueiro">
+                    </div>
+                    <h3 class="character-name">Arqueiro</h3>
+                    <p class="character-desc">Especialista em ataques à distância com alta precisão.</p>
+                    <div class="character-stats">
+                        <div class="stat">
+                            <div class="stat-value">60</div>
+                            <div class="stat-name">FORÇA</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">50</div>
+                            <div class="stat-name">DEFESA</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">70</div>
+                            <div class="stat-name">AGILIDADE</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="character-card" data-character="mage">
+                    <div class="character-image">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIyMCIgeT0iMTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI4MCIgZmlsbD0iIzNhODZmZiIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iMzUiIHI9IjE1IiBmaWxsPSIjZmZkNzY5Ii8+PC9zdmc+" alt="Mago">
+                    </div>
+                    <h3 class="character-name">Mago</h3>
+                    <p class="character-desc">Um poderoso usuário de magia com habilidades elementais.</p>
+                    <div class="character-stats">
+                        <div class="stat">
+                            <div class="stat-value">40</div>
+                            <div class="stat-name">FORÇA</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">50</div>
+                            <div class="stat-name">DEFESA</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">90</div>
+                            <div class="stat-name">MAGIA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-button" id="startGameBtn" disabled>
+                    <i class="fas fa-play-circle"></i> Iniciar Jornada
+                </button>
+                <button class="action-button secondary" id="backToMenuBtn">
+                    <i class="fas fa-arrow-left"></i> Voltar ao Menu
+                </button>
+            </div>
+        </section>
+        
+        <!-- Área do jogo -->
+        <section class="game-container" id="gameContainer">
+            <canvas id="gameCanvas"></canvas>
+            
+            <div class="game-ui">
+                <div class="health-bar">
+                    <div class="health-fill" id="healthBar"></div>
+                </div>
+                <div class="mana-bar">
+                    <div class="mana-fill" id="manaBar"></div>
+                </div>
+            </div>
+            
+            <div class="dialog-box" id="dialogBox">
+                <div class="dialog-text" id="dialogText">
+                    Bem-vindo a Umbralia, guerreiro. O destino deste mundo está em suas mãos.
+                </div>
+                <div class="dialog-next" id="dialogNext">Próximo ></div>
+            </div>
+            
+            <div class="controls">
+                <div class="movement-controls">
+                    <div class="control-btn btn-up" id="btnUp">↑</div>
+                    <div class="control-btn btn-left" id="btnLeft">←</div>
+                    <div class="control-btn btn-right" id="btnRight">→</div>
+                    <div class="control-btn btn-down" id="btnDown">↓</div>
+                </div>
+                
+                <div class="action-controls">
+                    <div class="control-btn btn-attack-u" id="btnAttackU">U</div>
+                    <div class="control-btn btn-attack-i" id="btnAttackI">I</div>
+                    <div class="control-btn btn-attack-o" id="btnAttackO">O</div>
+                    <div class="control-btn btn-attack-p" id="btnAttackP">P</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let selectedCharacter = null;
+        let gameRunning = false;
+        let player = {
+            x: 400,
+            y: 300,
+            width: 50,
+            height: 70,
+            speed: 5,
+            health: 100,
+            mana: 100,
+            facing: 'right'
+        };
+        
+        let enemies = [];
+        let platforms = [
+            {x: 0, y: 380, width: 800, height: 20},
+            {x: 200, y: 300, width: 100, height: 20},
+            {x: 500, y: 250, width: 100, height: 20}
+        ];
+        
+        let keys = {};
+        let dialogIndex = 0;
+        const dialogs = [
+            "Bem-vindo a Umbralia, guerreiro. O destino deste mundo está em suas mãos.",
+            "O equilíbrio entre os reinos foi quebrado, e apenas você pode restaurá-lo.",
+            "Atravesse os quatro reinos, derrote os guardiões corrompidos e restaure a paz.",
+            "Use suas habilidades com sabedoria. O caminho à frente é perigoso."
+        ];
+
+        // Elementos DOM
+        const characterSelection = document.getElementById('characterSelection');
+        const gameContainer = document.getElementById('gameContainer');
+        const gameCanvas = document.getElementById('gameCanvas');
+        const ctx = gameCanvas.getContext('2d');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const backToMenuBtn = document.getElementById('backToMenuBtn');
+        const healthBar = document.getElementById('healthBar');
+        const manaBar = document.getElementById('manaBar');
+        const dialogBox = document.getElementById('dialogBox');
+        const dialogText = document.getElementById('dialogText');
+        const dialogNext = document.getElementById('dialogNext');
+        
+        // Configurar canvas
+        gameCanvas.width = gameContainer.offsetWidth;
+        gameCanvas.height = gameContainer.offsetHeight;
+        
+        // Event Listeners
+        document.querySelectorAll('.character-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedCharacter = card.getAttribute('data-character');
+                startGameBtn.disabled = false;
+            });
+        });
+        
+        startGameBtn.addEventListener('click', startGame);
+        backToMenuBtn.addEventListener('click', () => {
+            window.location.href = '../index.html';
+        });
+        
+        dialogNext.addEventListener('click', nextDialog);
+        
+        // Controles de teclado
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            // Atalhos para testes
+            if (e.key === 'Escape') {
+                togglePause();
+            }
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+        
+        // Controles touch
+        document.getElementById('btnUp').addEventListener('touchstart', () => keys['ArrowUp'] = true);
+        document.getElementById('btnUp').addEventListener('touchend', () => keys['ArrowUp'] = false);
+        
+        document.getElementById('btnLeft').addEventListener('touchstart', () => keys['ArrowLeft'] = true);
+        document.getElementById('btnLeft').addEventListener('touchend', () => keys['ArrowLeft'] = false);
+        
+        document.getElementById('btnRight').addEventListener('touchstart', () => keys['ArrowRight'] = true);
+        document.getElementById('btnRight').addEventListener('touchend', () => keys['ArrowRight'] = false);
+        
+        document.getElementById('btnDown').addEventListener('touchstart', () => keys['ArrowDown'] = true);
+        document.getElementById('btnDown').addEventListener('touchend', () => keys['ArrowDown'] = false);
+        
+        document.getElementById('btnAttackU').addEventListener('touchstart', () => performAttack('U'));
+        document.getElementById('btnAttackI').addEventListener('touchstart', () => performAttack('I'));
+        document.getElementById('btnAttackO').addEventListener('touchstart', () => performAttack('O'));
+        document.getElementById('btnAttackP').addEventListener('touchstart', () => performAttack('P'));
+        
+        // Funções do jogo
+        function startGame() {
+            characterSelection.style.display = 'none';
+            gameContainer.style.display = 'block';
+            dialogBox.style.display = 'block';
+            
+            // Inicializar jogador baseado no personagem selecionado
+            initPlayer();
+            
+            gameRunning = true;
+            gameLoop();
+        }
+        
+        function initPlayer() {
+            // Configurações específicas por personagem
+            switch(selectedCharacter) {
+                case 'warrior':
+                    player.health = 120;
+                    player.speed = 4;
+                    break;
+                case 'archer':
+                    player.health = 90;
+                    player.speed = 6;
+                    break;
+                case 'mage':
+                    player.health = 80;
+                    player.speed = 5;
+                    player.mana = 150;
+                    break;
+            }
+            
+            updateBars();
+        }
+        
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            update();
+            render();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function update() {
+            // Movimento do jogador
+            if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+                player.y -= player.speed;
+                // Verificar colisão com plataformas
+                if (checkCollisionWithPlatforms()) {
+                    player.y += player.speed;
+                }
+            }
+            
+            if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+                player.y += player.speed;
+                if (checkCollisionWithPlatforms()) {
+                    player.y -= player.speed;
+                }
+            }
+            
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+                player.x -= player.speed;
+                player.facing = 'left';
+                if (checkCollisionWithPlatforms()) {
+                    player.x += player.speed;
+                }
+            }
+            
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+                player.x += player.speed;
+                player.facing = 'right';
+                if (checkCollisionWithPlatforms()) {
+                    player.x -= player.speed;
+                }
+            }
+            
+            // Manter jogador dentro dos limites da tela
+            if (player.x < 0) player.x = 0;
+            if (player.x > gameCanvas.width - player.width) player.x = gameCanvas.width - player.width;
+            if (player.y < 0) player.y = 0;
+            if (player.y > gameCanvas.height - player.height) player.y = gameCanvas.height - player.height;
+            
+            // Regeneração de mana
+            if (player.mana < 100) {
+                player.mana += 0.1;
+                updateBars();
+            }
+        }
+        
+        function checkCollisionWithPlatforms() {
+            for (let platform of platforms) {
+                if (player.x < platform.x + platform.width &&
+                    player.x + player.width > platform.x &&
+                    player.y < platform.y + platform.height &&
+                    player.y + player.height > platform.y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        function performAttack(type) {
+            if (!gameRunning) return;
+            
+            // Verificar se há mana suficiente
+            let manaCost = 0;
+            switch(type) {
+                case 'U': manaCost = 0; break; // Ataque básico
+                case 'I': manaCost = 10; break;
+                case 'O': manaCost = 25; break;
+                case 'P': manaCost = 50; break;
+            }
+            
+            if (player.mana >= manaCost) {
+                player.mana -= manaCost;
+                updateBars();
+                
+                // Efeito visual de ataque
+                drawAttackEffect(type);
+                
+                // Aqui você implementaria a lógica de dano aos inimigos
+            }
+        }
+        
+        function drawAttackEffect(type) {
+            // Esta função seria expandida para desenhar efeitos visuais de ataque
+            ctx.fillStyle = getAttackColor(type);
+            ctx.globalAlpha = 0.7;
+            
+            if (type === 'U') {
+                // Ataque básico
+                if (player.facing === 'right') {
+                    ctx.fillRect(player.x + player.width, player.y + 20, 40, 30);
+                } else {
+                    ctx.fillRect(player.x - 40, player.y + 20, 40, 30);
+                }
+            } else {
+                // Ataques especiais
+                ctx.beginPath();
+                ctx.arc(player.x + player.width/2, player.y + player.height/2, 50, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            ctx.globalAlpha = 1.0;
+            
+            // Temporariamente mostrar o efeito
+            setTimeout(() => {
+                render();
+            }, 100);
+        }
+        
+        function getAttackColor(type) {
+            switch(type) {
+                case 'U': return '#ffffff';
+                case 'I': return '#3a86ff';
+                case 'O': return '#52b788';
+                case 'P': return '#d4af37';
+                default: return '#ff6b6b';
+            }
+        }
+        
+        function render() {
+            // Limpar canvas
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            
+            // Desenhar fundo (parallax básico)
+            drawBackground();
+            
+            // Desenhar plataformas
+            ctx.fillStyle = '#8b4513';
+            platforms.forEach(platform => {
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+            });
+            
+            // Desenhar jogador
+            drawPlayer();
+            
+            // Desenhar inimigos (seria implementado posteriormente)
+            // drawEnemies();
+        }
+        
+        function drawBackground() {
+            // Gradiente para o céu
+            const gradient = ctx.createLinearGradient(0, 0, 0, gameCanvas.height);
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(1, '#16213e');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+            
+            // Estrelas
+            ctx.fillStyle = '#ffffff';
+            for (let i = 0; i < 50; i++) {
+                const x = Math.random() * gameCanvas.width;
+                const y = Math.random() * gameCanvas.height / 2;
+                const size = Math.random() * 2;
+                ctx.fillRect(x, y, size, size);
+            }
+            
+            // Montanhas no fundo
+            ctx.fillStyle = '#2d4059';
+            drawMountain(100, 300, 200, 150);
+            drawMountain(400, 320, 250, 170);
+            drawMountain(650, 310, 180, 140);
+        }
+        
+        function drawMountain(x, y, width, height) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + width/2, y - height);
+            ctx.lineTo(x + width, y);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        function drawPlayer() {
+            // Cor baseada no personagem selecionado
+            let color;
+            switch(selectedCharacter) {
+                case 'warrior': color = '#d4af37'; break;
+                case 'archer': color = '#52b788'; break;
+                case 'mage': color = '#3a86ff'; break;
+                default: color = '#ffffff';
+            }
+            
+            // Corpo
+            ctx.fillStyle = color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Cabeça
+            ctx.fillStyle = '#ffd769';
+            ctx.beginPath();
+            ctx.arc(player.x + player.width/2, player.y - 10, 15, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Direção que está olhando
+            ctx.fillStyle = '#000000';
+            if (player.facing === 'right') {
+                ctx.fillRect(player.x + player.width - 5, player.y + 20, 5, 5);
+            } else {
+                ctx.fillRect(player.x, player.y + 20, 5, 5);
+            }
+        }
+        
+        function updateBars() {
+            healthBar.style.width = `${player.health}%`;
+            manaBar.style.width = `${player.mana}%`;
+        }
+        
+        function nextDialog() {
+            dialogIndex++;
+            
+            if (dialogIndex < dialogs.length) {
+                dialogText.textContent = dialogs[dialogIndex];
+            } else {
+                dialogBox.style.display = 'none';
+            }
+        }
+        
+        function togglePause() {
+            gameRunning = !gameRunning;
+            
+            if (gameRunning) {
+                gameLoop();
+            }
+        }
+        
+        // Detectar dispositivo móvel e adicionar controles touch
+        function isMobileDevice() {
+            return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+        }
+        
+        // Inicialização
+        if (isMobileDevice()) {
+            document.querySelector('.controls').style.display = 'flex';
+        }
+        
+        // Redimensionar canvas quando a janela for redimensionada
+        window.addEventListener('resize', () => {
+            gameCanvas.width = gameContainer.offsetWidth;
+            gameCanvas.height = gameContainer.offsetHeight;
+            render();
+        });
+    </script>
+
+    <!-- Font Awesome para ícones -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>
