@@ -499,6 +499,7 @@
 
         .region-content.active {
             display: block;
+            animation: fadeInUp 0.5s ease-out;
         }
 
         .region-header {
@@ -715,6 +716,7 @@
         .play-section > * {
             position: relative;
             z-index: 2;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
         }
 
         .play-title {
@@ -722,7 +724,6 @@
             font-size: 2rem;
             color: var(--accent-gold);
             margin-bottom: 1rem;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
         }
 
         .play-desc {
@@ -1056,10 +1057,7 @@
     <section id="intro" class="intro-section">
         <h2 class="section-title">A Saga de Umbralia</h2>
         <p class="intro-text">
-            Em um mundo dividido entre quatro reinos elementais, uma força sombria ameaça o equilíbrio de Umbralia. 
-            Como o Escolhido de Umbra, você deve embarcar em uma jornada épica através dos quatro reinos, cada um com 
-            seus próprios desafios, personagens e histórias únicas. Suas ações determinarão o destino deste mundo e 
-            revelarão segredos ancestral há muito esquecidos.
+            Umbralia é um mundo criado por Umbra, dividido em quatro reinos. Cada um guarda segredos ancestrais e enfrenta uma ameaça: a corrupção de Anhangá, um espírito dividido entre o bem e o mal. Como o Escolhido de Umbra, você deve restaurar o equilíbrio, enfrentando desafios únicos em cada reino.
         </p>
         <div class="cta-buttons">
             <a href="#regions" class="cta-button">
@@ -1078,23 +1076,21 @@
             </div>
             
             <div class="region-tabs">
-                <button class="region-tab active" data-region="tupary">Tupãry<br><small>Reino do Gelo</small></button>
-                <button class="region-tab " data-region="ignys">Ignys<br><small>Reino do Fogo</small></button>
-                <button class="region-tab locked" data-region="veridia">Veridia<br><small>Reino da Natureza</small></button>
-                <button class="region-tab locked" data-region="desert">Desert<br><small>Reino da Água</small></button>
+                <button class="region-tab active" data-region="tupary">Tupãry<br><small>Terras Congeladas</small></button>
+                <button class="region-tab " data-region="ybyra">Ybyrá<br><small>Floresta Viva</small></button>
+                <button class="region-tab locked" data-region="nharo">Nharõ<br><small>Areias do Deserto</small></button>
+                <button class="region-tab locked" data-region="ignis">Ignis<br><small>Montanhas de Fogo</small></button>
             </div>
             
             <!-- Conteúdo de Tupãry -->
             <div class="region-content active" id="tupary-content">
                 <div class="region-header">
-                    <h3 class="region-title">Tupãry – O Reino Congelado</h3>
-                    <p class="region-subtitle">"Onde o gelo não apenas preserva, mas também esconde verdades antigas."</p>
+                    <h3 class="region-title">Tupãry – As Terras Congeladas</h3>
+                    <p class="region-subtitle">"O frio não é ausência de vida, mas a sua forma mais silenciosa."</p>
                 </div>
                 
                 <p class="region-desc">
-                    A primeira região disponível para explorar em Umbralia. Um reino gelado onde o eterno inverno 
-                    domina as paisagens. Aqui, você enfrentará criaturas do gelo, descobrirá segredos ancestrais 
-                    e desvendará mistérios que podem mudar o destino de todo o mundo.
+                    Tupãry é um reino congelado, coberto por neve eterna. No coração de suas cavernas de cristal, Umbra selou a metade maligna de Anhangá dentro do Coração de Gelo. Com o selo quebrado, a essência maligna escapou, tornando Tupãry o palco da primeira grande batalha do desequilíbrio. Agora, Ignis marcha para tomar o que restou do artefato, e o povo de Tupãry luta para proteger sua terra e restaurar o equilíbrio.
                 </p>
                 
                 <div class="region-media">
@@ -1105,107 +1101,106 @@
                     <h3 class="chapter-title">A Jornada em Tupãry</h3>
                     
                     <div class="missions-container">
-    <!-- Missão 1 -->
-    <div class="mission">
-        <div class="mission-header">
-            <h4 class="mission-title">As Muralhas da Aurora</h4>
-            <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
-        </div>
-        <div class="mission-content">
-            <div class="mission-objective">
-                <strong>Objetivo:</strong> Enfrentar Tarek e atravessar as muralhas geladas que guardam Tupãry.
-            </div>
-            <div class="mission-boss">
-                <strong>Desafio:</strong> A força de um guerreiro que não permite invasores.
-            </div>
-            <div class="mission-dialogue">
-                "Estrangeiro... prove seu valor, ou pereça sob o peso do gelo eterno."
-            </div>
-            <img src="assets/gifs/teste.gif" alt="Muralhas da Aurora" class="mission-gif">
-        </div>
-    </div>
+                        <!-- Missão 1 -->
+                        <div class="mission">
+                            <div class="mission-header">
+                                <h4 class="mission-title">As Muralhas da Aurora</h4>
+                                <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
+                            </div>
+                            <div class="mission-content">
+                                <div class="mission-objective">
+                                    <strong>Objetivo:</strong> Enfrentar Tarek e atravessar as muralhas geladas que guardam Tupãry.
+                                </div>
+                                <div class="mission-boss">
+                                    <strong>Desafio:</strong> A força de um guerreiro que não permite invasores.
+                                </div>
+                                <div class="mission-dialogue">
+                                    "Estrangeiro... prove seu valor, ou pereça sob o peso do gelo eterno."
+                                </div>
+                                <img src="assets/gifs/teste.gif" alt="Muralhas da Aurora" class="mission-gif">
+                            </div>
+                        </div>
 
-    <!-- Missão 2 -->
-    <div class="mission">
-        <div class="mission-header">
-            <h4 class="mission-title">A Torre de Cristal</h4>
-            <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
-        </div>
-        <div class="mission-content">
-            <div class="mission-objective">
-                <strong>Objetivo:</strong> Ouvir as advertências de Lumen e desvendar os segredos da luz dentro do gelo.
-            </div>
-            <div class="mission-boss">
-                <strong>Desafio:</strong> Guardiões cristalinos e enigmas ancestrais.
-            </div>
-            <div class="mission-dialogue">
-                "O que está selado aqui destruiu meu povo antes... ousa desafiar o destino?"
-            </div>
-            <img src="assets/gifs/teste.gif" alt="Torre de Cristal" class="mission-gif">
-        </div>
-    </div>
+                        <!-- Missão 2 -->
+                        <div class="mission">
+                            <div class="mission-header">
+                                <h4 class="mission-title">A Torre de Cristal</h4>
+                                <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
+                            </div>
+                            <div class="mission-content">
+                                <div class="mission-objective">
+                                    <strong>Objetivo:</strong> Ouvir as advertências de Lumen e desvendar os segredos da luz dentro do gelo.
+                                </div>
+                                <div class="mission-boss">
+                                    <strong>Desafio:</strong> Guardiões cristalinos e enigmas ancestrais.
+                                </div>
+                                <div class="mission-dialogue">
+                                    "O que está selado aqui destruiu meu povo antes... ousa desafiar o destino?"
+                                </div>
+                                <img src="assets/gifs/teste.gif" alt="Torre de Cristal" class="mission-gif">
+                            </div>
+                        </div>
 
-    <!-- Missão 3 -->
-    <div class="mission">
-        <div class="mission-header">
-            <h4 class="mission-title">A Floresta de Estalagmites</h4>
-            <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
-        </div>
-        <div class="mission-content">
-            <div class="mission-objective">
-                <strong>Objetivo:</strong> Sobreviver às provas de Aislin e mostrar-se digno de carregar um fardo temido até pelos deuses.
-            </div>
-            <div class="mission-boss">
-                <strong>Desafio:</strong> A precisão mortal da Arqueira Sagrada.
-            </div>
-            <div class="mission-dialogue">
-                "Minhas flechas não erram. Mostre-me se o destino realmente está ao seu lado."
-            </div>
-            <img src="assets/gifs/teste.gif" alt="Floresta de Estalagmites" class="mission-gif">
-        </div>
-    </div>
+                        <!-- Missão 3 -->
+                        <div class="mission">
+                            <div class="mission-header">
+                                <h4 class="mission-title">A Floresta de Estalagmites</h4>
+                                <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
+                            </div>
+                            <div class="mission-content">
+                                <div class="mission-objective">
+                                    <strong>Objetivo:</strong> Sobreviver às provas de Aislin e mostrar-se digno de carregar um fardo temido até pelos deuses.
+                                </div>
+                                <div class="mission-boss">
+                                    <strong>Desafio:</strong> A precisão mortal da Arqueira Sagrada.
+                                </div>
+                                <div class="mission-dialogue">
+                                    "Minhas flechas não erram. Mostre-me se o destino realmente está ao seu lado."
+                                </div>
+                                <img src="assets/gifs/teste.gif" alt="Floresta de Estalagmites" class="mission-gif">
+                            </div>
+                        </div>
 
-    <!-- Missão 4 -->
-    <div class="mission">
-        <div class="mission-header">
-            <h4 class="mission-title">A Floresta Profunda</h4>
-            <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
-        </div>
-        <div class="mission-content">
-            <div class="mission-objective">
-                <strong>Objetivo:</strong> Enfrentar Fenrath, o Lobo Guardião, e decidir se fará um pacto em nome do equilíbrio.
-            </div>
-            <div class="mission-boss">
-                <strong>Desafio:</strong> O poder selvagem de uma fera que guarda segredos antigos.
-            </div>
-            <div class="mission-dialogue">
-                "Jure lealdade a Tupãry... ou lute contra a fúria da própria neve."
-            </div>
-            <img src="assets/gifs/teste.gif" alt="Lobo Guardião Fenrath" class="mission-gif">
-        </div>
-    </div>
+                        <!-- Missão 4 -->
+                        <div class="mission">
+                            <div class="mission-header">
+                                <h4 class="mission-title">A Floresta Profunda</h4>
+                                <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
+                            </div>
+                            <div class="mission-content">
+                                <div class="mission-objective">
+                                    <strong>Objetivo:</strong> Enfrentar Fenrath, o Lobo Guardião, e decidir se fará um pacto em nome do equilíbrio.
+                                </div>
+                                <div class="mission-boss">
+                                    <strong>Desafio:</strong> O poder selvagem de uma fera que guarda segredos antigos.
+                                </div>
+                                <div class="mission-dialogue">
+                                    "Jure lealdade a Tupãry... ou lute contra a fúria da própria neve."
+                                </div>
+                                <img src="assets/gifs/teste.gif" alt="Lobo Guardião Fenrath" class="mission-gif">
+                            </div>
+                        </div>
 
-    <!-- Missão 5 -->
-    <div class="mission">
-        <div class="mission-header">
-            <h4 class="mission-title">A Caverna do Coração de Gelo</h4>
-            <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
-        </div>
-        <div class="mission-content">
-            <div class="mission-objective">
-                <strong>Objetivo:</strong> Enfrentar Anorak, o Urso Ancião, no coração de um templo gelado.
-            </div>
-            <div class="mission-boss">
-                <strong>Desafio:</strong> Cristais pulsantes, avalanches traiçoeiras e a fúria do último guardião.
-            </div>
-            <div class="mission-dialogue">
-                "O gelo guarda verdades que jamais deveriam ser libertas... você ousa tocá-las?"
-            </div>
-            <img src="assets/gifs/teste.gif" alt="Caverna do Coração de Gelo" class="mission-gif">
-        </div>
-    </div>
-</div>
-
+                        <!-- Missão 5 -->
+                        <div class="mission">
+                            <div class="mission-header">
+                                <h4 class="mission-title">A Caverna do Coração de Gelo</h4>
+                                <button class="mission-toggle"><i class="fas fa-chevron-down"></i></button>
+                            </div>
+                            <div class="mission-content">
+                                <div class="mission-objective">
+                                    <strong>Objetivo:</strong> Enfrentar Anorak, o Urso Ancião, no coração de um templo gelado.
+                                </div>
+                                <div class="mission-boss">
+                                    <strong>Desafio:</strong> Cristais pulsantes, avalanches traiçoeiras e a fúria do último guardião.
+                                </div>
+                                <div class="mission-dialogue">
+                                    "O gelo guarda verdades que jamais deveriam ser libertas... você ousa tocá-las?"
+                                </div>
+                                <img src="assets/gifs/teste.gif" alt="Caverna do Coração de Gelo" class="mission-gif">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Botão de Jogar específico para Tupary -->
@@ -1221,41 +1216,15 @@
                 </div>
             </div>
             
-            <!-- Conteúdo de Ignys -->
-            <div class="region-content" id="ignys-content">
+            <!-- Conteúdo de Ybyrá -->
+            <div class="region-content" id="ybyra-content">
                 <div class="region-header">
-                    <h3 class="region-title">Ignys – O Reino Vulcânico</h3>
-                    <p class="region-subtitle">"Onde a paixão e a destruição dançam na beira do abismo."</p>
+                    <h3 class="region-title">Ybyrá – A Floresta Viva</h3>
+                    <p class="region-subtitle">"O coração verde pulsa, e cada raiz guarda um segredo ancestral."</p>
                 </div>
                 
                 <p class="region-desc">
-                    Em breve! Uma terra de fogo e lava, onde poderosas criaturas vulcânicas guardam segredos ancestrais. 
-                    Ignys é um reino de extremos, onde a beleza da criação e o poder da destruição coexistem em um equilíbrio precário.
-                </p>
-                
-                <div class="region-media">
-                    <div style="background: linear-gradient(to right, #8B0000, #FF4500, #FF8C00); height: 200px; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.5rem;">
-                        Conteúdo em Breve
-                    </div>
-                </div>
-
-                <!-- Seção de play para Ignys (vazia por enquanto) -->
-                <div class="play-section">
-                    <h2 class="play-title">Ignys em Breve</h2>
-                    <p class="play-desc">O reino vulcânico de Ignys estará disponível em uma atualização futura. Prepare-se para enfrentar o calor intenso e as criaturas de fogo!</p>
-                </div>
-            </div>
-            
-            <!-- Conteúdo de Veridia -->
-            <div class="region-content" id="veridia-content">
-                <div class="region-header">
-                    <h3 class="region-title">Veridia – A Floresta Ancestral</h3>
-                    <p class="region-subtitle">"Onde cada folha sussurra segredos antigos e cada raiz guarda memórias."</p>
-                </div>
-                
-                <p class="region-desc">
-                    Em breve! Uma floresta exuberante e misteriosa, habitada por espíritos da natureza e criaturas encantadas. 
-                    Veridia é o coração pulsante de Umbralia, onde a vida brota em formas surpreendentes e perigos ocultos.
+                    Ybyrá é a primeira criação de Umbra, uma floresta que respira e sente como um ser vivo. Suas árvores milenares possuem consciência, comunicando-se em sussurros com aqueles que sabem ouvir. Diz-se que os espíritos benevolentes habitam suas raízes profundas, mantendo o equilíbrio do mundo. A corrupção de Anhangá ameaça infectar a floresta. Raízes negras começam a se espalhar, e criaturas pacíficas tornam-se selvagens. O povo de Ybyrá teme que, se a floresta perecer, todo o mundo perecerá com ela.
                 </p>
                 
                 <div class="region-media">
@@ -1264,34 +1233,58 @@
                     </div>
                 </div>
 
-                <!-- Seção de play para Veridia (vazia por enquanto) -->
+                <!-- Seção de play para Ybyrá (vazia por enquanto) -->
                 <div class="play-section">
-                    <h2 class="play-title">Veridia em Breve</h2>
-                    <p class="play-desc">A floresta ancestral de Veridia estará disponível em uma atualização futura. Prepare-se para explorar densas florestas e encontrar espíritos da natureza!</p>
+                    <h2 class="play-title">Ybyrá em Breve</h2>
+                    <p class="play-desc">A floresta viva de Ybyrá estará disponível em uma atualização futura. Prepare-se para explorar uma floresta consciente e descobrir segredos ancestrais!</p>
                 </div>
             </div>
             
-            <!-- Conteúdo de desert -->
-            <div class="region-content" id="desert-content">
+            <!-- Conteúdo de Nharõ -->
+            <div class="region-content" id="nharo-content">
                 <div class="region-header">
-                    <h3 class="region-title">Desert – O Reino da areia</h3>
-                    <p class="region-subtitle">"Areia"</p>
+                    <h3 class="region-title">Nharõ – As Areias do Deserto</h3>
+                    <p class="region-subtitle">"Entre dunas que mudam de lugar, o tempo esconde mais do que revela."</p>
                 </div>
                 
                 <p class="region-desc">
-                    Em breve! Muita areia
+                    Nharõ é um mar de areia infinita, repleto de ruínas, tumbas e segredos soterrados. Diz-se que o vento do deserto carrega as vozes de reis esquecidos e que, nas profundezas de suas pirâmides, repousa a metade benevolente de Anhangá, protegida por enigmas e armadilhas. O deserto guarda a parte benevolente de Anhangá, tornando-se alvo de Ignis, o Reino do Fogo, que deseja unir as duas metades do espírito e conquistar o mundo.
                 </p>
                 
                 <div class="region-media">
-                    <div style="background: linear-gradient(to right, #00008B, #0000CD, #1E90FF); height: 200px; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.5rem;">
+                    <div style="background: linear-gradient(to right, #8B4513, #D2691E, #F4A460); height: 200px; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.5rem;">
                         Conteúdo em Breve
                     </div>
                 </div>
 
-                <!-- Seção de play para Aquaria (vazia por enquanto) -->
+                <!-- Seção de play para Nharõ (vazia por enquanto) -->
                 <div class="play-section">
-                    <h2 class="play-title">Aquaria em Breve</h2>
-                    <p class="play-desc">O reino subaquático de Aquaria estará disponível em uma atualização futura. Prepare-se para mergulhar nas profundezas e descobrir segredos abissais!</p>
+                    <h2 class="play-title">Nharõ em Breve</h2>
+                    <p class="play-desc">O deserto de Nharõ estará disponível em uma atualização futura. Prepare-se para explorar ruínas ancestrais e enfrentar enigmas antigos!</p>
+                </div>
+            </div>
+            
+            <!-- Conteúdo de Ignis -->
+            <div class="region-content" id="ignis-content">
+                <div class="region-header">
+                    <h3 class="region-title">Ignis – As Montanhas de Fogo</h3>
+                    <p class="region-subtitle">"Onde a terra rasga o céu e o magma corre como sangue, nasce a ambição que consome mundos."</p>
+                </div>
+                
+                <p class="region-desc">
+                    Ignis, também chamado de Karú pelas tribos mais antigas, ergue-se como uma muralha de montanhas vulcânicas. Nelas, a terra e o fogo se fundem, criando rios de lava conhecidos como veias do mundo. Segundo lendas, os primeiros guerreiros dos deuses nasceram aqui, moldados pela pedra e pelo fogo. Ignis é movido pela fome de poder. Seus exércitos marcham em busca das duas metades de Anhangá, acreditando que, ao dominar sua essência, se tornarão deuses vivos. São a maior ameaça ao equilíbrio dos reinos.
+                </p>
+                
+                <div class="region-media">
+                    <div style="background: linear-gradient(to right, #8B0000, #FF4500, #FF8C00); height: 200px; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.5rem;">
+                        Conteúdo em Breve
+                    </div>
+                </div>
+
+                <!-- Seção de play para Ignis (vazia por enquanto) -->
+                <div class="play-section">
+                    <h2 class="play-title">Ignis em Breve</h2>
+                    <p class="play-desc">O reino vulcânico de Ignis estará disponível em uma atualização futura. Prepare-se para enfrentar o calor intenso e as criaturas de fogo!</p>
                 </div>
             </div>
         </div>
@@ -1419,7 +1412,7 @@
                 document.getElementById(`${region}-content`).classList.add('active');
                 
                 // Scroll para a seção de regiões se não estiver visível
-                const regionsSection = document.getElementById('regions');
+                const regionsSection = document.getElementById('');
                 const regionsRect = regionsSection.getBoundingClientRect();
                 
                 if (regionsRect.top < 0 || regionsRect.bottom > window.innerHeight) {

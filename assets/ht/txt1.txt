@@ -38,7 +38,7 @@ Perfeito! Agora temos todos os elementos para estruturar **Tupãry – O Reino C
 
 ---
 
-## 🌟 **Missão 2 – Lumen, a Maga da Luz**
+## 🌟 **Missão 2 – Solenne, a Maga da Luz**
 
 * **Local:** Torre de Cristal de Tupãry.
 * **Função:** alertar o Escolhido sobre o perigo do Coração de Gelo.
@@ -94,7 +94,7 @@ Perfeito! Agora temos todos os elementos para estruturar **Tupãry – O Reino C
 
 ## ✅ **Resultado da Campanha – Tupãry**
 
-1. O Escolhido supera desafios e conquista aliados: Tarek, Lumen, Aislin e Fenrath.
+1. O Escolhido supera desafios e conquista aliados: Tarek, Solenne, Aislin e Fenrath.
 2. Obtém o Coração de Gelo, mas Triko quebra o artefato, libertando Anhangá.
 3. O mundo muda: Ignys se aproxima da Areia, e a corrida contra o tempo agora se concentra em impedir que as duas metades do espírito se recomponham.
 4. Motivação clara para o jogador: impedir a fusão de Anhangá, proteger a parte benevolente e decidir sobre o destino da Floresta Viva.

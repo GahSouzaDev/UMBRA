@@ -98,7 +98,7 @@
 
 ## ✅ Resultado da Campanha – Tupãry
 
-1. O Escolhido supera desafios e conquista aliados: Tarek, Lumen, Aislin e Fenrath.
+1. O Escolhido supera desafios e conquista aliados: Tarek, Solenne, Aislin e Fenrath.
 2. Obtém o Coração de Gelo, mas Triko quebra o artefato, libertando Anhangá.
 3. O mundo muda: Ignys se aproxima da Areia, e a corrida contra o tempo concentra-se em impedir a fusão das duas metades do espírito.
 4. Motivação clara para o jogador: proteger a parte benevolente de Anhangá e decidir sobre o destino da Floresta Viva.
