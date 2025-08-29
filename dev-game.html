@@ -2,405 +2,258 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modo História - Umbra: A Guerra dos Espíritos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tupãry: O Reino Congelado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-dark: #000000;
-            --primary-medium: #0a0a0a;
-            --primary-light: #1a1a1a;
-            --accent-gold: #d4af37;
-            --accent-gold-light: #f5d76e;
-            --accent-blue: #3a86ff;
-            --accent-ice: #90e0ef;
-            --accent-fire: #ff6b6b;
-            --accent-nature: #52b788;
+            --accent-gold: #ffb300;
+            --accent-ice: #88d8f7;
+            --accent-fire: #ff5a00;
+            --accent-dark: #000000;
             --text-light: #f0f0f0;
-            --text-gray: #aaaaaa;
+            --health-color: #ff3333;
+            --mana-color: #3366ff;
         }
 
-        /* Estilos base (mantidos do seu código) */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: 'Raleway', sans-serif;
-            background-color: var(--primary-dark);
+            background-color: var(--accent-dark);
             color: var(--text-light);
-            overflow-x: hidden;
-            line-height: 1.6;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(42, 15, 85, 0.1) 0%, transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(20, 30, 100, 0.1) 0%, transparent 25%);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .section-title {
-            font-family: 'Cinzel', serif;
-            font-size: 2.2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            color: var(--text-light);
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 80px;
-            height: 4px;
-            background: var(--accent-gold);
-            margin: 1rem auto;
-            border-radius: 2px;
-        }
-
-        /* Tela de seleção de personagem */
-        .character-selection {
-            padding: 2rem 1rem;
-            text-align: center;
-        }
-
-        .character-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .character-card {
-            background: linear-gradient(145deg, var(--primary-light), var(--primary-medium));
-            border-radius: 10px;
-            padding: 1.5rem;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            position: relative;
             overflow: hidden;
-        }
-
-        .character-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
-            border-color: var(--accent-gold);
-        }
-
-        .character-card.selected {
-            border-color: var(--accent-gold);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
-        }
-
-        .character-image {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 1rem;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid var(--accent-gold);
-            background: var(--primary-dark);
-        }
-
-        .character-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .character-name {
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            color: var(--accent-gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .character-desc {
-            color: var(--text-gray);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .character-stats {
+            height: 100vh;
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 1rem;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
-        .stat {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-weight: bold;
-            color: var(--accent-gold);
-        }
-
-        .stat-name {
-            font-size: 0.8rem;
-            color: var(--text-gray);
-        }
-
-        /* Área do jogo */
-        .game-container {
-            display: none;
+        #game-container {
             position: relative;
-            width: 100%;
-            max-width: 800px;
+            width: 800px;
             height: 450px;
-            margin: 0 auto;
+            overflow: hidden;
             border: 3px solid var(--accent-gold);
             border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 20px rgba(255, 179, 0, 0.3);
         }
 
-        #gameCanvas {
+        #game-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, #1a1a2e, #16213e);
+            z-index: 1;
         }
 
-        .game-ui {
+        .ui-layer {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            display: flex;
-            justify-content: space-between;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
         }
 
         .health-bar, .mana-bar {
-            width: 200px;
-            height: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
+            position: absolute;
+            top: 15px;
+            height: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
             overflow: hidden;
-            border: 2px solid var(--accent-gold);
+        }
+
+        .health-bar {
+            left: 15px;
+            width: 200px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .mana-bar {
+            left: 230px;
+            width: 150px;
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
         .health-fill {
             height: 100%;
-            background: linear-gradient(to right, #ff6b6b, #ff9e6b);
             width: 100%;
+            background-color: var(--health-color);
             transition: width 0.3s ease;
         }
 
         .mana-fill {
             height: 100%;
-            background: linear-gradient(to right, #3a86ff, #90e0ef);
             width: 100%;
+            background-color: var(--mana-color);
             transition: width 0.3s ease;
+        }
+
+        .abilities {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .ability-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            cursor: pointer;
+            pointer-events: auto;
+            position: relative;
+        }
+
+        .ability-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: var(--accent-gold);
+            border-radius: 0 0 5px 5px;
+            transform: scaleX(1);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .ability-btn.cooldown::after {
+            transform: scaleX(0);
+            transition: transform linear;
         }
 
         .controls {
             position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 20px;
-        }
-
-        .movement-controls {
-            display: grid;
-            grid-template-columns: repeat(3, 50px);
-            grid-template-rows: repeat(3, 50px);
-            gap: 5px;
-        }
-
-        .action-controls {
-            display: grid;
-            grid-template-columns: repeat(2, 60px);
-            grid-template-rows: repeat(2, 60px);
-            gap: 10px;
-        }
-
-        .control-btn {
-            background: rgba(212, 175, 55, 0.3);
-            border: 2px solid var(--accent-gold);
-            border-radius: 50%;
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s ease;
-        }
-
-        .control-btn:active {
-            background: rgba(212, 175, 55, 0.7);
-            transform: scale(0.95);
-        }
-
-        .btn-up {
-            grid-column: 2;
-            grid-row: 1;
-        }
-
-        .btn-left {
-            grid-column: 1;
-            grid-row: 2;
-        }
-
-        .btn-right {
-            grid-column: 3;
-            grid-row: 2;
-        }
-
-        .btn-down {
-            grid-column: 2;
-            grid-row: 3;
-        }
-
-        .btn-attack-u {
-            grid-column: 1;
-            grid-row: 1;
-            background: rgba(255, 107, 107, 0.3);
-        }
-
-        .btn-attack-i {
-            grid-column: 2;
-            grid-row: 1;
-            background: rgba(58, 134, 255, 0.3);
-        }
-
-        .btn-attack-o {
-            grid-column: 1;
-            grid-row: 2;
-            background: rgba(82, 183, 136, 0.3);
-        }
-
-        .btn-attack-p {
-            grid-column: 2;
-            grid-row: 2;
-            background: rgba(212, 175, 55, 0.5);
-        }
-
-        /* Tela de diálogo */
-        .dialog-box {
+            bottom: 15px;
+            left: 15px;
             display: none;
+            pointer-events: auto;
+        }
+
+        .virtual-joystick {
+            width: 120px;
+            height: 120px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            position: relative;
+            touch-action: none;
+        }
+
+        .joystick-head {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
             position: absolute;
-            bottom: 100px;
+            top: 35px;
+            left: 35px;
+        }
+
+        .dialog-container {
+            position: absolute;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             width: 90%;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid var(--accent-gold);
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--accent-ice);
             border-radius: 10px;
             padding: 15px;
-            color: var(--text-light);
-            z-index: 100;
+            display: none;
+            pointer-events: auto;
         }
 
         .dialog-text {
             margin-bottom: 15px;
-            font-size: 1rem;
+            min-height: 60px;
+            font-size: 16px;
             line-height: 1.4;
-        }
-
-        .dialog-next {
-            text-align: right;
-            color: var(--accent-gold);
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* Botões de ação */
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .action-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem 1.8rem;
-            background: linear-gradient(145deg, var(--accent-gold), #b8941f);
-            color: var(--primary-dark);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1rem;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
-            position: relative;
+            white-space: nowrap;
             overflow: hidden;
-            border: none;
+            animation: typing 3s steps(40);
+        }
+
+        .dialog-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dialog-option {
+            background-color: rgba(255, 179, 0, 0.2);
+            border: 1px solid var(--accent-gold);
+            border-radius: 5px;
+            padding: 8px 12px;
             cursor: pointer;
-            min-height: 50px;
+            transition: background-color 0.2s;
         }
 
-        .action-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.6);
+        .dialog-option:hover {
+            background-color: rgba(255, 179, 0, 0.4);
         }
 
-        .action-button.secondary {
-            background: transparent;
-            color: var(--accent-gold);
-            border: 2px solid var(--accent-gold);
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+        .cinematic-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
         }
 
-        .action-button.secondary:hover {
-            background: rgba(212, 175, 55, 0.1);
+        .cinematic-image {
+            max-width: 80%;
+            max-height: 50%;
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: opacity 1s ease;
         }
 
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .character-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .game-container {
-                height: 350px;
-            }
-            
-            .health-bar, .mana-bar {
-                width: 150px;
-            }
-            
-            .control-btn {
-                width: 45px;
-                height: 45px;
-                font-size: 0.9rem;
-            }
-            
-            .movement-controls {
-                grid-template-columns: repeat(3, 45px);
-                grid-template-rows: repeat(3, 45px);
-            }
-            
-            .action-controls {
-                grid-template-columns: repeat(2, 50px);
-                grid-template-rows: repeat(2, 50px);
-            }
+        .cinematic-text {
+            font-size: 24px;
+            text-align: center;
+            max-width: 80%;
+            margin-bottom: 20px;
+            color: var(--text-light);
+            opacity: 0;
         }
 
-        /* Orientação para mobile */
         .orientation-message {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--primary-dark);
-            z-index: 1000;
+            width: 100%;
+            height: 100%;
+            background-color: var(--accent-dark);
+            z-index: 100;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -409,538 +262,1609 @@
         }
 
         .orientation-message i {
-            font-size: 3rem;
-            color: var(--accent-gold);
+            font-size: 48px;
             margin-bottom: 20px;
+            color: var(--accent-gold);
         }
 
-        .orientation-message p {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 3;
         }
 
-        @media (max-width: 768px) and (orientation: portrait) {
+        .snow-particle {
+            width: 3px;
+            height: 3px;
+            background-color: white;
+            border-radius: 50%;
+            animation: fall 5s linear infinite;
+        }
+
+        .ice-particle {
+            width: 5px;
+            height: 5px;
+            background-color: var(--accent-ice);
+            border-radius: 20%;
+        }
+
+        .pause-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 20;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .pause-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 5;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .menu-option {
+            background-color: var(--accent-gold);
+            color: var(--accent-dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .menu-option:hover {
+            transform: scale(1.05);
+        }
+
+        /* Animações */
+        @keyframes fall {
+            from { transform: translateY(-10px); }
+            to { transform: translateY(450px); }
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* Responsividade */
+        @media (max-width: 800px), (max-height: 450px) {
+            #game-container {
+                width: 100vw;
+                height: 100vh;
+                border: none;
+                border-radius: 0;
+            }
+
+            .controls {
+                display: block;
+            }
+
             .orientation-message {
                 display: flex;
             }
-            
-            body {
-                overflow: hidden;
+        }
+
+        @media (orientation: landscape) {
+            .orientation-message {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="orientation-message">
-        <i class="fas fa-sync-alt"></i>
-        <p>Por favor, gire seu dispositivo para o modo paisagem</p>
-        <p>para uma melhor experiência de jogo.</p>
-    </div>
-
-    <div class="container">
-        <!-- Tela de seleção de personagem -->
-        <section class="character-selection" id="characterSelection">
-            <h2 class="section-title">Escolha Seu Personagem</h2>
-            <p>Selecione um personagem para iniciar sua jornada em Umbralia</p>
-            
-            <div class="character-grid">
-                <div class="character-card" data-character="warrior">
-                    <div class="character-image">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIyMCIgeT0iMTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI4MCIgZmlsbD0iI2Q0YWYzNyIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iMzUiIHI9IjE1IiBmaWxsPSIjZmZkNzY5Ii8+PC9zdmc+" alt="Guerreiro">
-                    </div>
-                    <h3 class="character-name">Guerreiro</h3>
-                    <p class="character-desc">Um combatente corpo a corpo com alta resistência e força.</p>
-                    <div class="character-stats">
-                        <div class="stat">
-                            <div class="stat-value">90</div>
-                            <div class="stat-name">FORÇA</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">70</div>
-                            <div class="stat-name">DEFESA</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">40</div>
-                            <div class="stat-name">MAGIA</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="character-card" data-character="archer">
-                    <div class="character-image">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIyMCIgeT0iMTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI4MCIgZmlsbD0iIzUyYjc4OCIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iMzUiIHI9IjE1IiBmaWxsPSIjZmZkNzY5Ii8+PC9zdmc+" alt="Arqueiro">
-                    </div>
-                    <h3 class="character-name">Arqueiro</h3>
-                    <p class="character-desc">Especialista em ataques à distância com alta precisão.</p>
-                    <div class="character-stats">
-                        <div class="stat">
-                            <div class="stat-value">60</div>
-                            <div class="stat-name">FORÇA</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">50</div>
-                            <div class="stat-name">DEFESA</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">70</div>
-                            <div class="stat-name">AGILIDADE</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="character-card" data-character="mage">
-                    <div class="character-image">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIyMCIgeT0iMTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI4MCIgZmlsbD0iIzNhODZmZiIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iMzUiIHI9IjE1IiBmaWxsPSIjZmZkNzY5Ii8+PC9zdmc+" alt="Mago">
-                    </div>
-                    <h3 class="character-name">Mago</h3>
-                    <p class="character-desc">Um poderoso usuário de magia com habilidades elementais.</p>
-                    <div class="character-stats">
-                        <div class="stat">
-                            <div class="stat-value">40</div>
-                            <div class="stat-name">FORÇA</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">50</div>
-                            <div class="stat-name">DEFESA</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">90</div>
-                            <div class="stat-name">MAGIA</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="action-buttons">
-                <button class="action-button" id="startGameBtn" disabled>
-                    <i class="fas fa-play-circle"></i> Iniciar Jornada
-                </button>
-                <button class="action-button secondary" id="backToMenuBtn">
-                    <i class="fas fa-arrow-left"></i> Voltar ao Menu
-                </button>
-            </div>
-        </section>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
         
-        <!-- Área do jogo -->
-        <section class="game-container" id="gameContainer">
-            <canvas id="gameCanvas"></canvas>
+        <div class="ui-layer">
+            <div class="health-bar"><div class="health-fill" id="health-fill"></div></div>
+            <div class="mana-bar"><div class="mana-fill" id="mana-fill"></div></div>
             
-            <div class="game-ui">
-                <div class="health-bar">
-                    <div class="health-fill" id="healthBar"></div>
-                </div>
-                <div class="mana-bar">
-                    <div class="mana-fill" id="manaBar"></div>
-                </div>
-            </div>
-            
-            <div class="dialog-box" id="dialogBox">
-                <div class="dialog-text" id="dialogText">
-                    Bem-vindo a Umbralia, guerreiro. O destino deste mundo está em suas mãos.
-                </div>
-                <div class="dialog-next" id="dialogNext">Próximo ></div>
+            <div class="abilities">
+                <div class="ability-btn" id="ability-u">U</div>
+                <div class="ability-btn" id="ability-i">I</div>
+                <div class="ability-btn" id="ability-o">O</div>
+                <div class="ability-btn" id="ability-p">P</div>
             </div>
             
             <div class="controls">
-                <div class="movement-controls">
-                    <div class="control-btn btn-up" id="btnUp">↑</div>
-                    <div class="control-btn btn-left" id="btnLeft">←</div>
-                    <div class="control-btn btn-right" id="btnRight">→</div>
-                    <div class="control-btn btn-down" id="btnDown">↓</div>
-                </div>
-                
-                <div class="action-controls">
-                    <div class="control-btn btn-attack-u" id="btnAttackU">U</div>
-                    <div class="control-btn btn-attack-i" id="btnAttackI">I</div>
-                    <div class="control-btn btn-attack-o" id="btnAttackO">O</div>
-                    <div class="control-btn btn-attack-p" id="btnAttackP">P</div>
+                <div class="virtual-joystick" id="joystick">
+                    <div class="joystick-head"></div>
                 </div>
             </div>
-        </section>
+            
+            <div class="dialog-container" id="dialog-container">
+                <div class="dialog-text" id="dialog-text"></div>
+                <div class="dialog-options" id="dialog-options"></div>
+            </div>
+            
+            <div class="cinematic-overlay" id="cinematic-overlay">
+                <!-- Conteúdo será adicionado via JS -->
+            </div>
+            
+            <div class="pause-btn" id="pause-btn">
+                <i class="fas fa-pause"></i>
+            </div>
+        </div>
+        
+        <div class="pause-menu" id="pause-menu">
+            <h2>JOGO PAUSADO</h2>
+            <button class="menu-option" id="resume-btn">Continuar</button>
+            <button class="menu-option" id="restart-btn">Reiniciar Fase</button>
+            <button class="menu-option" id="exit-btn">Sair</button>
+        </div>
+    </div>
+    
+    <div class="orientation-message">
+        <i class="fas fa-rotate"></i>
+        <h2>Gire seu dispositivo</h2>
+        <p>Para uma melhor experiência, jogue no modo paisagem</p>
     </div>
 
-    <script>
-        // Variáveis globais
-        let selectedCharacter = null;
-        let gameRunning = false;
-        let player = {
-            x: 400,
-            y: 300,
-            width: 50,
-            height: 70,
-            speed: 5,
-            health: 100,
-            mana: 100,
-            facing: 'right'
-        };
-        
-        let enemies = [];
-        let platforms = [
-            {x: 0, y: 380, width: 800, height: 20},
-            {x: 200, y: 300, width: 100, height: 20},
-            {x: 500, y: 250, width: 100, height: 20}
-        ];
-        
-        let keys = {};
-        let dialogIndex = 0;
-        const dialogs = [
-            "Bem-vindo a Umbralia, guerreiro. O destino deste mundo está em suas mãos.",
-            "O equilíbrio entre os reinos foi quebrado, e apenas você pode restaurá-lo.",
-            "Atravesse os quatro reinos, derrote os guardiões corrompidos e restaure a paz.",
-            "Use suas habilidades com sabedoria. O caminho à frente é perigoso."
-        ];
+    <!-- Áudios -->
+    <audio id="bgMusic" loop>
+        <source src="/assets/sons/musica-tupary.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx"></audio>
+    <audio id="narration"></audio>
 
-        // Elementos DOM
-        const characterSelection = document.getElementById('characterSelection');
-        const gameContainer = document.getElementById('gameContainer');
-        const gameCanvas = document.getElementById('gameCanvas');
-        const ctx = gameCanvas.getContext('2d');
-        const startGameBtn = document.getElementById('startGameBtn');
-        const backToMenuBtn = document.getElementById('backToMenuBtn');
-        const healthBar = document.getElementById('healthBar');
-        const manaBar = document.getElementById('manaBar');
-        const dialogBox = document.getElementById('dialogBox');
-        const dialogText = document.getElementById('dialogText');
-        const dialogNext = document.getElementById('dialogNext');
-        
-        // Configurar canvas
-        gameCanvas.width = gameContainer.offsetWidth;
-        gameCanvas.height = gameContainer.offsetHeight;
-        
-        // Event Listeners
-        document.querySelectorAll('.character-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-                selectedCharacter = card.getAttribute('data-character');
-                startGameBtn.disabled = false;
+    <script type="module">
+        // ===== CONFIGURAÇÕES GLOBAIS =====
+        const CONFIG = {
+            GRAVITY: 0.5,
+            PLAYER_SPEED: 3,
+            JUMP_FORCE: 12,
+            MOBILE_BREAKPOINT: 800,
+            TYPING_SPEED: 50, // ms por caractere
+            WORLD_WIDTH: 3000,
+            CAMERA_SMOOTHING: 0.1
+        };
+
+        // ===== VARIÁVEIS GLOBAIS =====
+        let canvas, ctx;
+        let gameState = {
+            currentPhase: 0,
+            playerHealth: 100,
+            playerMaxHealth: 100,
+            playerMana: 100,
+            playerMaxMana: 100,
+            moralChoices: {
+                lealdade: false,
+                traidor: false
+            },
+            playerPosition: { x: 100, y: 300 },
+            playerVelocity: { x: 0, y: 0 },
+            isGrounded: false,
+            facing: 'right',
+            currentAnimation: 'idle',
+            abilitiesCooldown: { U: 0, I: 0, O: 0, P: 0 },
+            abilitiesMaxCooldown: { U: 0, I: 0, O: 0, P: 0 },
+            gamePaused: false,
+            inDialog: false,
+            inCutscene: false,
+            cameraOffset: { x: 0, y: 0 },
+            targetCameraOffset: { x: 0, y: 0 },
+            collectedCrystals: 0
+        };
+
+        let platforms = [];
+        let particles = [];
+        let backgroundLayers = [];
+        let currentChampion = null;
+        let enemies = [];
+        let abilityEffects = [];
+        let interactiveObjects = [];
+        let lastTime = 0;
+        let keys = {};
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let joystickActive = false;
+        let joystickVector = { x: 0, y: 0 };
+        let animationFrameId = null;
+        let loadedImages = {};
+        let loadedSounds = {};
+
+        // ===== INICIALIZAÇÃO =====
+        function init() {
+            canvas = document.getElementById('game-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // Ajustar tamanho do canvas
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Inicializar campeões e fases
+            initChampions();
+            initPhases();
+            
+            // Configurar controles
+            setupEventListeners();
+            
+            // Iniciar a fase de introdução
+            showIntroCutscene();
+            
+            // Iniciar loop do jogo
+            gameLoop(0);
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function setupEventListeners() {
+            // Teclado
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+                
+                // Pausar com ESC
+                if (e.key === 'Escape') {
+                    togglePause();
+                }
+                
+                // Habilidades (U, I, O, P)
+                if (['u', 'U', 'i', 'I', 'o', 'O', 'p', 'P'].includes(e.key) && !gameState.gamePaused && !gameState.inDialog && !gameState.inCutscene) {
+                    useAbility(e.key.toUpperCase());
+                }
             });
-        });
-        
-        startGameBtn.addEventListener('click', startGame);
-        backToMenuBtn.addEventListener('click', () => {
-            window.location.href = '../index.html';
-        });
-        
-        dialogNext.addEventListener('click', nextDialog);
-        
-        // Controles de teclado
-        window.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
             
-            // Atalhos para testes
-            if (e.key === 'Escape') {
-                togglePause();
+            window.addEventListener('keyup', (e) => {
+                keys[e.key] = false;
+            });
+            
+            // Controles touch
+            const joystick = document.getElementById('joystick');
+            if (joystick) {
+                joystick.addEventListener('touchstart', handleTouchStart);
+                joystick.addEventListener('touchmove', handleTouchMove);
+                joystick.addEventListener('touchend', handleTouchEnd);
             }
-        });
-        
-        window.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
-        
-        // Controles touch
-        document.getElementById('btnUp').addEventListener('touchstart', () => keys['ArrowUp'] = true);
-        document.getElementById('btnUp').addEventListener('touchend', () => keys['ArrowUp'] = false);
-        
-        document.getElementById('btnLeft').addEventListener('touchstart', () => keys['ArrowLeft'] = true);
-        document.getElementById('btnLeft').addEventListener('touchend', () => keys['ArrowLeft'] = false);
-        
-        document.getElementById('btnRight').addEventListener('touchstart', () => keys['ArrowRight'] = true);
-        document.getElementById('btnRight').addEventListener('touchend', () => keys['ArrowRight'] = false);
-        
-        document.getElementById('btnDown').addEventListener('touchstart', () => keys['ArrowDown'] = true);
-        document.getElementById('btnDown').addEventListener('touchend', () => keys['ArrowDown'] = false);
-        
-        document.getElementById('btnAttackU').addEventListener('touchstart', () => performAttack('U'));
-        document.getElementById('btnAttackI').addEventListener('touchstart', () => performAttack('I'));
-        document.getElementById('btnAttackO').addEventListener('touchstart', () => performAttack('O'));
-        document.getElementById('btnAttackP').addEventListener('touchstart', () => performAttack('P'));
-        
-        // Funções do jogo
-        function startGame() {
-            characterSelection.style.display = 'none';
-            gameContainer.style.display = 'block';
-            dialogBox.style.display = 'block';
             
-            // Inicializar jogador baseado no personagem selecionado
-            initPlayer();
+            // Botões de habilidade touch
+            document.querySelectorAll('.ability-btn').forEach(btn => {
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    if (!gameState.gamePaused && !gameState.inDialog && !gameState.inCutscene) {
+                        useAbility(btn.textContent);
+                    }
+                });
+            });
             
-            gameRunning = true;
-            gameLoop();
+            // Botão de pausa
+            document.getElementById('pause-btn').addEventListener('click', togglePause);
+            document.getElementById('resume-btn').addEventListener('click', togglePause);
+            document.getElementById('restart-btn').addEventListener('click', restartPhase);
+            document.getElementById('exit-btn').addEventListener('click', exitGame);
         }
-        
-        function initPlayer() {
-            // Configurações específicas por personagem
-            switch(selectedCharacter) {
-                case 'warrior':
-                    player.health = 120;
-                    player.speed = 4;
+
+        function handleTouchStart(e) {
+            const touch = e.touches[0];
+            const rect = e.currentTarget.getBoundingClientRect();
+            
+            touchStartX = touch.clientX - rect.left;
+            touchStartY = touch.clientY - rect.top;
+            
+            joystickActive = true;
+        }
+
+        function handleTouchMove(e) {
+            if (!joystickActive) return;
+            
+            const touch = e.touches[0];
+            const rect = e.currentTarget.getBoundingClientRect();
+            
+            const touchX = touch.clientX - rect.left;
+            const touchY = touch.clientY - rect.top;
+            
+            // Calcular direção do joystick
+            const deltaX = touchX - touchStartX;
+            const deltaY = touchY - touchStartY;
+            
+            // Normalizar e limitar a magnitude
+            const magnitude = Math.min(60, Math.sqrt(deltaX * deltaX + deltaY * deltaY));
+            const angle = Math.atan2(deltaY, deltaX);
+            
+            joystickVector.x = Math.cos(angle) * (magnitude / 60);
+            joystickVector.y = Math.sin(angle) * (magnitude / 60);
+            
+            // Mover a "cabeça" do joystick visualmente
+            const head = document.querySelector('.joystick-head');
+            if (head) {
+                head.style.transform = `translate(${deltaX * 0.4}px, ${deltaY * 0.4}px)`;
+            }
+        }
+
+        function handleTouchEnd() {
+            joystickActive = false;
+            joystickVector = { x: 0, y: 0 };
+            
+            // Resetar a "cabeça" do joystick visualmente
+            const head = document.querySelector('.joystick-head');
+            if (head) {
+                head.style.transform = 'translate(0, 0)';
+            }
+        }
+
+        // ===== PERSONAGENS MODULARES =====
+        function initChampions() {
+            // Esta função será expandida no arquivo personagens.js
+            // Aqui é apenas um exemplo básico do Escolhido
+            currentChampion = {
+                id: 'escolhido',
+                name: 'O Escolhido',
+                type: 'melee',
+                health: 200,
+                mana: 150,
+                speed: 3,
+                abilities: [
+                    { 
+                        key: 'U', 
+                        name: 'Ataque Básico', 
+                        damage: 15, 
+                        manaCost: 0, 
+                        cooldown: 0.5,
+                        execute: () => {
+                            playSound('/assets/sons/ataque-basico.mp3');
+                            // Criar efeito visual de ataque
+                            addAbilityEffect({
+                                type: 'attack',
+                                x: gameState.playerPosition.x + (gameState.facing === 'right' ? 50 : -20),
+                                y: gameState.playerPosition.y + 25,
+                                width: 30,
+                                height: 10,
+                                duration: 300,
+                                damage: 15,
+                                onHit: (enemy) => {
+                                    enemy.health -= 15;
+                                    createParticles(enemy.position.x + 25, enemy.position.y + 25, 5, 'ice');
+                                }
+                            });
+                        }
+                    },
+                    { 
+                        key: 'I', 
+                        name: 'Investida Gélida', 
+                        damage: 30, 
+                        manaCost: 20, 
+                        cooldown: 5,
+                        execute: () => {
+                            if (gameState.playerMana >= 20) {
+                                gameState.playerMana -= 20;
+                                playSound('/assets/sons/investida.mp3');
+                                
+                                // Impulso para frente
+                                gameState.playerVelocity.x = (gameState.facing === 'right' ? 10 : -10);
+                                
+                                // Efeito visual
+                                addAbilityEffect({
+                                    type: 'dash',
+                                    x: gameState.playerPosition.x,
+                                    y: gameState.playerPosition.y,
+                                    width: 50,
+                                    height: 50,
+                                    duration: 300,
+                                    damage: 30,
+                                    onUpdate: (effect, deltaTime) => {
+                                        effect.x = gameState.playerPosition.x;
+                                        effect.y = gameState.playerPosition.y;
+                                    },
+                                    onHit: (enemy) => {
+                                        enemy.health -= 30;
+                                        createParticles(enemy.position.x + 25, enemy.position.y + 25, 10, 'ice');
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    { 
+                        key: 'O', 
+                        name: 'Escudo Protetor', 
+                        damage: 0, 
+                        manaCost: 30, 
+                        cooldown: 8,
+                        execute: () => {
+                            if (gameState.playerMana >= 30) {
+                                gameState.playerMana -= 30;
+                                playSound('/assets/sons/escudo.mp3');
+                                
+                                // Adicionar escudo temporário
+                                addAbilityEffect({
+                                    type: 'shield',
+                                    x: gameState.playerPosition.x - 10,
+                                    y: gameState.playerPosition.y - 10,
+                                    width: 70,
+                                    height: 70,
+                                    duration: 3000,
+                                    onUpdate: (effect, deltaTime) => {
+                                        effect.x = gameState.playerPosition.x - 10;
+                                        effect.y = gameState.playerPosition.y - 10;
+                                    },
+                                    onDamageReceived: (damage) => {
+                                        return damage * 0.5; // Reduz dano pela metade
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    { 
+                        key: 'P', 
+                        name: 'Explosão de Gelo', 
+                        damage: 50, 
+                        manaCost: 40, 
+                        cooldown: 12,
+                        execute: () => {
+                            if (gameState.playerMana >= 40) {
+                                gameState.playerMana -= 40;
+                                playSound('/assets/sons/explosao-gelo.mp3');
+                                
+                                // Criar explosão de gelo
+                                addAbilityEffect({
+                                    type: 'explosion',
+                                    x: gameState.playerPosition.x,
+                                    y: gameState.playerPosition.y,
+                                    radius: 0,
+                                    maxRadius: 100,
+                                    duration: 1000,
+                                    damage: 50,
+                                    onUpdate: (effect, deltaTime) => {
+                                        effect.radius = effect.maxRadius * (1 - effect.timer / effect.duration);
+                                    },
+                                    onHit: (enemy) => {
+                                        enemy.health -= 50;
+                                        // Aplicar slow no inimigo
+                                        enemy.speed *= 0.5;
+                                        setTimeout(() => {
+                                            enemy.speed *= 2;
+                                        }, 3000);
+                                        createParticles(enemy.position.x + 25, enemy.position.y + 25, 15, 'ice');
+                                    }
+                                });
+                            }
+                        }
+                    }
+                ],
+                sprites: {
+                    idle: { src: '/sprites/escolhido/idle.gif', frames: 10, frameDelay: 100 },
+                    walk: { src: '/sprites/escolhido/walk.gif', frames: 8, frameDelay: 100 },
+                    jump: { src: '/sprites/escolhido/jump.gif', frames: 3, frameDelay: 100 },
+                    attackU: { src: '/sprites/escolhido/attackU.gif', frames: 6, frameDelay: 80 },
+                    attackI: { src: '/sprites/escolhido/attackI.gif', frames: 8, frameDelay: 80 },
+                    attackO: { src: '/sprites/escolhido/attackO.gif', frames: 5, frameDelay: 100 },
+                    attackP: { src: '/sprites/escolhido/attackP.gif', frames: 12, frameDelay: 80 }
+                }
+            };
+        }
+
+        // ===== SISTEMA DE FASES =====
+        function initPhases() {
+            // Inicializar fases
+            // A implementação completa estaria em fases.js
+        }
+
+        function loadPhase(phaseNumber) {
+            gameState.currentPhase = phaseNumber;
+            
+            // Reiniciar estado do jogador
+            gameState.playerHealth = gameState.playerMaxHealth;
+            gameState.playerMana = gameState.playerMaxMana;
+            gameState.playerPosition = { x: 100, y: 300 };
+            gameState.playerVelocity = { x: 0, y: 0 };
+            gameState.collectedCrystals = 0;
+            
+            // Configurar a fase baseada no número
+            switch(phaseNumber) {
+                case 1:
+                    setupPhase1();
                     break;
-                case 'archer':
-                    player.health = 90;
-                    player.speed = 6;
+                case 2:
+                    setupPhase2();
                     break;
-                case 'mage':
-                    player.health = 80;
-                    player.speed = 5;
-                    player.mana = 150;
+                case 3:
+                    setupPhase3();
+                    break;
+                case 4:
+                    setupPhase4();
+                    break;
+                case 5:
+                    setupPhase5();
                     break;
             }
             
-            updateBars();
+            // Mostrar introdução da fase
+            showPhaseIntro(phaseNumber);
         }
-        
-        function gameLoop() {
-            if (!gameRunning) return;
+
+        function setupPhase1() {
+            // Muralhas da Aurora - Fase 1
+            platforms = [
+                { x: 0, y: 400, width: 3000, height: 50, type: 'ground' },
+                { x: 200, y: 350, width: 80, height: 20, slippery: true },
+                { x: 350, y: 300, width: 80, height: 20, slippery: true },
+                { x: 500, y: 250, width: 80, height: 20 },
+                { x: 650, y: 300, width: 80, height: 20, slippery: true },
+                { x: 1000, y: 350, width: 100, height: 20 },
+                { x: 1200, y: 300, width: 100, height: 20 },
+                { x: 1400, y: 250, width: 100, height: 20 },
+                { x: 1600, y: 300, width: 100, height: 20 },
+                { x: 1800, y: 350, width: 100, height: 20 },
+                { x: 2200, y: 300, width: 150, height: 20 },
+                { x: 2500, y: 250, width: 150, height: 20 },
+                { x: 2800, y: 200, width: 150, height: 20 }
+            ];
             
-            update();
-            render();
+            // Adicionar cristais colecionáveis
+            interactiveObjects = [
+                { type: 'crystal', x: 300, y: 250, width: 20, height: 30, collected: false },
+                { type: 'crystal', x: 800, y: 200, width: 20, height: 30, collected: false },
+                { type: 'crystal', x: 1300, y: 150, width: 20, height: 30, collected: false },
+                { type: 'crystal', x: 1900, y: 200, width: 20, height: 30, collected: false },
+                { type: 'crystal', x: 2600, y: 100, width: 20, height: 30, collected: false }
+            ];
             
-            requestAnimationFrame(gameLoop);
+            // Adicionar inimigos
+            enemies = [
+                {
+                    type: 'guerreiro',
+                    name: 'Tarek',
+                    position: { x: 2900, y: 350 },
+                    health: 100,
+                    maxHealth: 100,
+                    damage: 20,
+                    speed: 2,
+                    pattern: 'patrol',
+                    patrolStartX: 2850,
+                    patrolRange: 100,
+                    abilities: [
+                        {
+                            execute: () => {
+                                // Tarek lança estocada de gelo
+                                playSound('/assets/sons/estocada-gelo.mp3');
+                                addAbilityEffect({
+                                    type: 'iceSpear',
+                                    x: this.position.x,
+                                    y: this.position.y + 25,
+                                    direction: this.direction || 1,
+                                    speed: 5,
+                                    damage: 25,
+                                    width: 40,
+                                    height: 10,
+                                    duration: 2000,
+                                    onUpdate: (effect, deltaTime) => {
+                                        effect.x += effect.speed * effect.direction;
+                                    },
+                                    onHit: (player) => {
+                                        gameState.playerHealth -= effect.damage;
+                                        createParticles(player.position.x + 25, player.position.y + 25, 8, 'ice');
+                                    }
+                                });
+                            },
+                            cooldown: 3000,
+                            lastUsed: 0
+                        }
+                    ]
+                }
+            ];
+            
+            // Configurar parallax para fase gelada
+            backgroundLayers = [
+                { image: '/assets/fundos/tupary/fase1-camada1.png', speed: 0.1, x: 0 },
+                { image: '/assets/fundos/tupary/fase1-camada2.png', speed: 0.3, x: 0 },
+                { image: '/assets/fundos/tupary/fase1-camada3.png', speed: 0.6, x: 0 }
+            ];
+            
+            // Iniciar música da fase
+            playMusic('/assets/sons/musica-fase1.mp3');
         }
-        
-        function update() {
-            // Movimento do jogador
-            if (keys['ArrowUp'] || keys['w'] || keys['W']) {
-                player.y -= player.speed;
-                // Verificar colisão com plataformas
-                if (checkCollisionWithPlatforms()) {
-                    player.y += player.speed;
-                }
-            }
+
+        function setupPhase2() {
+            // Torre de Cristal - Fase 2 (implementação simplificada)
+            platforms = [
+                { x: 0, y: 400, width: 2500, height: 50, type: 'ground' },
+                // Plataformas adicionais para subir na torre
+                { x: 300, y: 350, width: 80, height: 20 },
+                { x: 450, y: 300, width: 80, height: 20 },
+                { x: 600, y: 250, width: 80, height: 20 },
+                { x: 750, y: 200, width: 80, height: 20 },
+                { x: 900, y: 150, width: 80, height: 20 },
+                { x: 1050, y: 100, width: 80, height: 20 }
+            ];
             
-            if (keys['ArrowDown'] || keys['s'] || keys['S']) {
-                player.y += player.speed;
-                if (checkCollisionWithPlatforms()) {
-                    player.y -= player.speed;
-                }
-            }
+            // Inimigos e objetos interativos seriam adicionados aqui
             
-            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
-                player.x -= player.speed;
-                player.facing = 'left';
-                if (checkCollisionWithPlatforms()) {
-                    player.x += player.speed;
-                }
-            }
-            
-            if (keys['ArrowRight'] || keys['d'] || keys['D']) {
-                player.x += player.speed;
-                player.facing = 'right';
-                if (checkCollisionWithPlatforms()) {
-                    player.x -= player.speed;
-                }
-            }
-            
-            // Manter jogador dentro dos limites da tela
-            if (player.x < 0) player.x = 0;
-            if (player.x > gameCanvas.width - player.width) player.x = gameCanvas.width - player.width;
-            if (player.y < 0) player.y = 0;
-            if (player.y > gameCanvas.height - player.height) player.y = gameCanvas.height - player.height;
-            
-            // Regeneração de mana
-            if (player.mana < 100) {
-                player.mana += 0.1;
-                updateBars();
-            }
+            playMusic('/assets/sons/musica-fase2.mp3');
         }
-        
-        function checkCollisionWithPlatforms() {
-            for (let platform of platforms) {
-                if (player.x < platform.x + platform.width &&
-                    player.x + player.width > platform.x &&
-                    player.y < platform.y + platform.height &&
-                    player.y + player.height > platform.y) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        function performAttack(type) {
-            if (!gameRunning) return;
-            
-            // Verificar se há mana suficiente
-            let manaCost = 0;
-            switch(type) {
-                case 'U': manaCost = 0; break; // Ataque básico
-                case 'I': manaCost = 10; break;
-                case 'O': manaCost = 25; break;
-                case 'P': manaCost = 50; break;
+
+        // As outras funções setupPhase seriam implementadas similarmente
+
+        // ===== LOOP PRINCIPAL DO JOGO =====
+        function gameLoop(timestamp) {
+            if (!animationFrameId) {
+                animationFrameId = requestAnimationFrame(gameLoop);
+                return;
             }
             
-            if (player.mana >= manaCost) {
-                player.mana -= manaCost;
-                updateBars();
+            // Calcular delta time
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            if (!gameState.gamePaused) {
+                // Atualizar lógica do jogo
+                update(deltaTime);
                 
-                // Efeito visual de ataque
-                drawAttackEffect(type);
+                // Renderizar cena
+                render();
+            }
+            
+            // Continuar o loop
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function update(deltaTime) {
+            // Atualizar jogador
+            updatePlayer(deltaTime);
+            
+            // Atualizar inimigos
+            updateEnemies(deltaTime);
+            
+            // Atualizar efeitos
+            updateAbilityEffects(deltaTime);
+            
+            // Atualizar partículas
+            updateParticles(deltaTime);
+            
+            // Atualizar cooldowns
+            updateCooldowns(deltaTime);
+            
+            // Atualizar regeneração de mana
+            if (gameState.playerMana < gameState.playerMaxMana) {
+                gameState.playerMana += 0.1 * (deltaTime / 1000);
+                gameState.playerMana = Math.min(gameState.playerMana, gameState.playerMaxMana);
+                updateManaBar();
+            }
+            
+            // Atualizar câmera
+            updateCamera(deltaTime);
+            
+            // Verificar vitória
+            checkPhaseCompletion();
+        }
+
+        function updatePlayer(deltaTime) {
+            // Movimento horizontal
+            let moveX = 0;
+            
+            if (!gameState.inDialog && !gameState.inCutscene) {
+                // Controle por teclado
+                if (keys['a'] || keys['A'] || keys['ArrowLeft']) moveX = -1;
+                if (keys['d'] || keys['D'] || keys['ArrowRight']) moveX = 1;
                 
-                // Aqui você implementaria a lógica de dano aos inimigos
+                // Controle por joystick virtual (mobile)
+                if (joystickActive) {
+                    moveX = joystickVector.x;
+                }
+                
+                // Aplicar velocidade
+                gameState.playerVelocity.x = moveX * currentChampion.speed;
+                
+                // Pular
+                if ((keys['w'] || keys['W'] || keys['ArrowUp'] || keys[' ']) && gameState.isGrounded) {
+                    gameState.playerVelocity.y = -CONFIG.JUMP_FORCE;
+                    gameState.isGrounded = false;
+                    playSound('/assets/sons/pulo.mp3');
+                }
+            }
+            
+            // Aplicar gravidade
+            gameState.playerVelocity.y += CONFIG.GRAVITY;
+            
+            // Limitar velocidade vertical
+            if (gameState.playerVelocity.y > 10) {
+                gameState.playerVelocity.y = 10;
+            }
+            
+            // Atualizar posição
+            gameState.playerPosition.x += gameState.playerVelocity.x;
+            gameState.playerPosition.y += gameState.playerVelocity.y;
+            
+            // Verificar colisões com plataformas
+            checkPlatformCollisions();
+            
+            // Verificar colisões com objetos interativos
+            checkInteractiveObjects();
+            
+            // Verificar colisões com inimigos
+            checkEnemyCollisions();
+            
+            // Verificar colisões com efeitos
+            checkEffectCollisions();
+            
+            // Atualizar animação
+            updatePlayerAnimation();
+            
+            // Atualizar direção do personagem
+            if (moveX > 0) gameState.facing = 'right';
+            if (moveX < 0) gameState.facing = 'left';
+            
+            // Limitar jogador dentro do mundo
+            if (gameState.playerPosition.x < 0) gameState.playerPosition.x = 0;
+            if (gameState.playerPosition.x > CONFIG.WORLD_WIDTH - 50) {
+                gameState.playerPosition.x = CONFIG.WORLD_WIDTH - 50;
+            }
+            
+            if (gameState.playerPosition.y > canvas.height) {
+                // Jogador caiu fora da tela
+                gameState.playerHealth = 0;
+                gameOver();
+            }
+            
+            // Atualizar barras de UI
+            updateHealthBar();
+            updateManaBar();
+        }
+
+        function checkPlatformCollisions() {
+            gameState.isGrounded = false;
+            
+            for (const platform of platforms) {
+                // Verificar colisão simples AABB
+                if (gameState.playerPosition.x < platform.x + platform.width &&
+                    gameState.playerPosition.x + 50 > platform.x &&
+                    gameState.playerPosition.y < platform.y + platform.height &&
+                    gameState.playerPosition.y + 50 > platform.y) {
+                    
+                    // Colisão a partir de cima (aterrissando na plataforma)
+                    if (gameState.playerVelocity.y > 0 && 
+                        gameState.playerPosition.y + 50 - gameState.playerVelocity.y <= platform.y) {
+                        gameState.playerPosition.y = platform.y - 50;
+                        gameState.playerVelocity.y = 0;
+                        gameState.isGrounded = true;
+                        
+                        // Plataforma escorregadia (fase 1)
+                        if (platform.slippery) {
+                            gameState.playerVelocity.x *= 0.7;
+                        }
+                    } 
+                    // Colisão a partir de baixo
+                    else if (gameState.playerVelocity.y < 0) {
+                        gameState.playerPosition.y = platform.y + platform.height;
+                        gameState.playerVelocity.y = 0;
+                    }
+                    // Colisão lateral
+                    else if (gameState.playerVelocity.x !== 0) {
+                        if (gameState.playerPosition.x < platform.x) {
+                            gameState.playerPosition.x = platform.x - 50;
+                        } else {
+                            gameState.playerPosition.x = platform.x + platform.width;
+                        }
+                        gameState.playerVelocity.x = 0;
+                    }
+                }
             }
         }
-        
-        function drawAttackEffect(type) {
-            // Esta função seria expandida para desenhar efeitos visuais de ataque
-            ctx.fillStyle = getAttackColor(type);
-            ctx.globalAlpha = 0.7;
-            
-            if (type === 'U') {
-                // Ataque básico
-                if (player.facing === 'right') {
-                    ctx.fillRect(player.x + player.width, player.y + 20, 40, 30);
-                } else {
-                    ctx.fillRect(player.x - 40, player.y + 20, 40, 30);
+
+        function checkInteractiveObjects() {
+            for (let i = interactiveObjects.length - 1; i >= 0; i--) {
+                const obj = interactiveObjects[i];
+                
+                if (obj.collected) continue;
+                
+                // Verificar colisão com jogador
+                if (gameState.playerPosition.x < obj.x + obj.width &&
+                    gameState.playerPosition.x + 50 > obj.x &&
+                    gameState.playerPosition.y < obj.y + obj.height &&
+                    gameState.playerPosition.y + 50 > obj.y) {
+                    
+                    if (obj.type === 'crystal') {
+                        // Coletar cristal
+                        obj.collected = true;
+                        gameState.collectedCrystals++;
+                        playSound('/assets/sons/coletar-cristal.mp3');
+                        createParticles(obj.x + obj.width/2, obj.y + obj.height/2, 10, 'ice');
+                        
+                        // Remover objeto da lista
+                        interactiveObjects.splice(i, 1);
+                        
+                        // Atualizar stats do jogador baseado em cristais coletados
+                        gameState.playerMaxHealth = 100 + (gameState.collectedCrystals * 10);
+                        gameState.playerMaxMana = 100 + (gameState.collectedCrystals * 10);
+                        gameState.playerHealth = gameState.playerMaxHealth;
+                        gameState.playerMana = gameState.playerMaxMana;
+                        updateHealthBar();
+                        updateManaBar();
+                    }
+                }
+            }
+        }
+
+        function checkEnemyCollisions() {
+            for (const enemy of enemies) {
+                // Verificar colisão com jogador
+                const dx = gameState.playerPosition.x - enemy.position.x;
+                const dy = gameState.playerPosition.y - enemy.position.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 40) {
+                    // Dano ao jogador
+                    gameState.playerHealth -= enemy.damage * 0.016; // Dano por frame
+                    updateHealthBar();
+                    
+                    if (gameState.playerHealth <= 0) {
+                        gameOver();
+                    }
+                }
+            }
+        }
+
+        function checkEffectCollisions() {
+            for (const effect of abilityEffects) {
+                if (effect.damage && effect.onHit) {
+                    // Verificar colisão com jogador (efeitos inimigos)
+                    if (effect.origin !== 'player') {
+                        const dx = gameState.playerPosition.x + 25 - effect.x;
+                        const dy = gameState.playerPosition.y + 25 - effect.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 30) {
+                            effect.onHit(gameState);
+                        }
+                    }
+                    
+                    // Verificar colisão com inimigos (efeitos do jogador)
+                    if (effect.origin === 'player') {
+                        for (const enemy of enemies) {
+                            const dx = enemy.position.x + 25 - effect.x;
+                            const dy = enemy.position.y + 25 - effect.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance < 30) {
+                                effect.onHit(enemy);
+                                if (enemy.health <= 0) {
+                                    // Inimigo derrotado
+                                    createParticles(enemy.position.x + 25, enemy.position.y + 25, 20, 'ice');
+                                    enemies.splice(enemies.indexOf(enemy), 1);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function updatePlayerAnimation() {
+            if (!gameState.isGrounded) {
+                gameState.currentAnimation = 'jump';
+            } else if (Math.abs(gameState.playerVelocity.x) > 0.1) {
+                gameState.currentAnimation = 'walk';
+                
+                // Tocar som de passos periodicamente
+                if (Math.floor(Date.now() / 300) % 4 === 0) {
+                    playSound('/assets/sons/passos-neve.mp3', 0.3);
                 }
             } else {
-                // Ataques especiais
-                ctx.beginPath();
-                ctx.arc(player.x + player.width/2, player.y + player.height/2, 50, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            
-            ctx.globalAlpha = 1.0;
-            
-            // Temporariamente mostrar o efeito
-            setTimeout(() => {
-                render();
-            }, 100);
-        }
-        
-        function getAttackColor(type) {
-            switch(type) {
-                case 'U': return '#ffffff';
-                case 'I': return '#3a86ff';
-                case 'O': return '#52b788';
-                case 'P': return '#d4af37';
-                default: return '#ff6b6b';
+                gameState.currentAnimation = 'idle';
             }
         }
-        
+
+        function updateEnemies(deltaTime) {
+            // Lógica de atualização de inimigos
+            for (const enemy of enemies) {
+                // Movimento de patrulha
+                if (enemy.pattern === 'patrol') {
+                    if (enemy.direction === undefined) {
+                        enemy.direction = 1;
+                        enemy.patrolStartX = enemy.position.x;
+                    }
+                    
+                    enemy.position.x += enemy.speed * enemy.direction;
+                    
+                    // Verificar limites de patrulha
+                    if (enemy.position.x > enemy.patrolStartX + enemy.patrolRange) {
+                        enemy.direction = -1;
+                    } else if (enemy.position.x < enemy.patrolStartX - enemy.patrolRange) {
+                        enemy.direction = 1;
+                    }
+                }
+                
+                // Atualizar habilidades do inimigo
+                if (enemy.abilities) {
+                    for (const ability of enemy.abilities) {
+                        ability.lastUsed += deltaTime;
+                        if (ability.lastUsed >= ability.cooldown) {
+                            // Usar habilidade
+                            ability.execute.call(enemy);
+                            ability.lastUsed = 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        function updateAbilityEffects(deltaTime) {
+            // Atualizar efeitos de habilidades
+            for (let i = abilityEffects.length - 1; i >= 0; i--) {
+                const effect = abilityEffects[i];
+                effect.timer -= deltaTime;
+                
+                // Atualizar posição/estado do efeito
+                if (effect.onUpdate) {
+                    effect.onUpdate(effect, deltaTime);
+                }
+                
+                if (effect.timer <= 0) {
+                    // Executar ação final se houver
+                    if (effect.onEnd) effect.onEnd();
+                    abilityEffects.splice(i, 1);
+                }
+            }
+        }
+
+        function updateParticles(deltaTime) {
+            // Atualizar partículas
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                particle.y += particle.speed * (deltaTime / 16);
+                particle.x += particle.vx * (deltaTime / 16);
+                particle.life -= deltaTime;
+                
+                if (particle.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+            
+            // Adicionar novas partículas de neve aleatoriamente
+            if (Math.random() < 0.1) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: -10,
+                    speed: 1 + Math.random() * 3,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    size: 2 + Math.random() * 3,
+                    life: 10000,
+                    type: 'snow'
+                });
+            }
+        }
+
+        function updateCooldowns(deltaTime) {
+            // Atualizar cooldowns das habilidades
+            for (const key in gameState.abilitiesCooldown) {
+                if (gameState.abilitiesCooldown[key] > 0) {
+                    gameState.abilitiesCooldown[key] -= deltaTime / 1000;
+                    
+                    // Atualizar visualização de cooldown
+                    const btn = document.getElementById(`ability-${key.toLowerCase()}`);
+                    if (btn) {
+                        if (gameState.abilitiesCooldown[key] > 0) {
+                            btn.classList.add('cooldown');
+                            const scale = 1 - (gameState.abilitiesCooldown[key] / gameState.abilitiesMaxCooldown[key]);
+                            btn.style.setProperty('--cooldown-progress', `${scale}`);
+                        } else {
+                            btn.classList.remove('cooldown');
+                        }
+                    }
+                }
+            }
+        }
+
+        function updateCamera(deltaTime) {
+            // Calcular posição alvo da câmera (centrada no jogador)
+            gameState.targetCameraOffset.x = gameState.playerPosition.x - canvas.width / 2;
+            gameState.targetCameraOffset.y = gameState.playerPosition.y - canvas.height / 2;
+            
+            // Limitar câmera aos limites do mundo
+            gameState.targetCameraOffset.x = Math.max(0, Math.min(gameState.targetCameraOffset.x, CONFIG.WORLD_WIDTH - canvas.width));
+            gameState.targetCameraOffset.y = Math.max(0, Math.min(gameState.targetCameraOffset.y, canvas.height));
+            
+            // Suavizar movimento da câmera
+            gameState.cameraOffset.x += (gameState.targetCameraOffset.x - gameState.cameraOffset.x) * CONFIG.CAMERA_SMOOTHING;
+            gameState.cameraOffset.y += (gameState.targetCameraOffset.y - gameState.cameraOffset.y) * CONFIG.CAMERA_SMOOTHING;
+        }
+
+        function checkPhaseCompletion() {
+            // Verificar se o jogador chegou ao final da fase
+            if (gameState.playerPosition.x > CONFIG.WORLD_WIDTH - 100) {
+                // Verificar se derrotou todos os inimigos
+                if (enemies.length === 0) {
+                    completePhase();
+                }
+            }
+            
+            // Verificar se derrotou o chefe da fase 1 (Tarek)
+            if (gameState.currentPhase === 1) {
+                const tarek = enemies.find(e => e.name === 'Tarek');
+                if (!tarek) {
+                    // Mostrar cutscene de diálogo com Tarek
+                    showDialog(
+                        "Tarek",
+                        "Você provou seu valor, estrangeiro. Pode passar, mas saiba que nossa desconfiança permanece.",
+                        [
+                            {
+                                text: "Obrigado, seguirei em frente.",
+                                action: () => {
+                                    completePhase();
+                                }
+                            }
+                        ]
+                    );
+                }
+            }
+        }
+
         function render() {
             // Limpar canvas
-            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Desenhar fundo (parallax básico)
-            drawBackground();
+            // Renderizar fundo com parallax
+            renderBackground();
             
-            // Desenhar plataformas
-            ctx.fillStyle = '#8b4513';
-            platforms.forEach(platform => {
-                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-            });
+            // Renderizar plataformas
+            renderPlatforms();
             
-            // Desenhar jogador
-            drawPlayer();
+            // Renderizar objetos interativos
+            renderInteractiveObjects();
             
-            // Desenhar inimigos (seria implementado posteriormente)
-            // drawEnemies();
+            // Renderizar jogador
+            renderPlayer();
+            
+            // Renderizar inimigos
+            renderEnemies();
+            
+            // Renderizar efeitos
+            renderAbilityEffects();
+            
+            // Renderizar partículas
+            renderParticles();
         }
-        
-        function drawBackground() {
-            // Gradiente para o céu
-            const gradient = ctx.createLinearGradient(0, 0, 0, gameCanvas.height);
-            gradient.addColorStop(0, '#1a1a2e');
-            gradient.addColorStop(1, '#16213e');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-            
-            // Estrelas
-            ctx.fillStyle = '#ffffff';
-            for (let i = 0; i < 50; i++) {
-                const x = Math.random() * gameCanvas.width;
-                const y = Math.random() * gameCanvas.height / 2;
-                const size = Math.random() * 2;
-                ctx.fillRect(x, y, size, size);
-            }
-            
-            // Montanhas no fundo
-            ctx.fillStyle = '#2d4059';
-            drawMountain(100, 300, 200, 150);
-            drawMountain(400, 320, 250, 170);
-            drawMountain(650, 310, 180, 140);
-        }
-        
-        function drawMountain(x, y, width, height) {
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + width/2, y - height);
-            ctx.lineTo(x + width, y);
-            ctx.closePath();
-            ctx.fill();
-        }
-        
-        function drawPlayer() {
-            // Cor baseada no personagem selecionado
-            let color;
-            switch(selectedCharacter) {
-                case 'warrior': color = '#d4af37'; break;
-                case 'archer': color = '#52b788'; break;
-                case 'mage': color = '#3a86ff'; break;
-                default: color = '#ffffff';
-            }
-            
-            // Corpo
-            ctx.fillStyle = color;
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-            
-            // Cabeça
-            ctx.fillStyle = '#ffd769';
-            ctx.beginPath();
-            ctx.arc(player.x + player.width/2, player.y - 10, 15, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Direção que está olhando
-            ctx.fillStyle = '#000000';
-            if (player.facing === 'right') {
-                ctx.fillRect(player.x + player.width - 5, player.y + 20, 5, 5);
-            } else {
-                ctx.fillRect(player.x, player.y + 20, 5, 5);
-            }
-        }
-        
-        function updateBars() {
-            healthBar.style.width = `${player.health}%`;
-            manaBar.style.width = `${player.mana}%`;
-        }
-        
-        function nextDialog() {
-            dialogIndex++;
-            
-            if (dialogIndex < dialogs.length) {
-                dialogText.textContent = dialogs[dialogIndex];
-            } else {
-                dialogBox.style.display = 'none';
-            }
-        }
-        
-        function togglePause() {
-            gameRunning = !gameRunning;
-            
-            if (gameRunning) {
-                gameLoop();
-            }
-        }
-        
-        // Detectar dispositivo móvel e adicionar controles touch
-        function isMobileDevice() {
-            return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
-        }
-        
-        // Inicialização
-        if (isMobileDevice()) {
-            document.querySelector('.controls').style.display = 'flex';
-        }
-        
-        // Redimensionar canvas quando a janela for redimensionada
-        window.addEventListener('resize', () => {
-            gameCanvas.width = gameContainer.offsetWidth;
-            gameCanvas.height = gameContainer.offsetHeight;
-            render();
-        });
-    </script>
 
-    <!-- Font Awesome para ícones -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+        function renderBackground() {
+            for (const layer of backgroundLayers) {
+                // Calcular posição com base no parallax
+                const x = -gameState.cameraOffset.x * layer.speed;
+                
+                // Desenhar fundo (usando cor sólida como placeholder)
+                ctx.fillStyle = layer.color || '#5d8aa8';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Se tivermos imagem (implementação real):
+                // if (layer.image) {
+                //     const img = getImage(layer.image);
+                //     if (img) {
+                //         ctx.drawImage(img, x, 0, canvas.width, canvas.height);
+                //         // Desenhar imagem repetida para preencher o mundo
+                //         ctx.drawImage(img, x + canvas.width, 0, canvas.width, canvas.height);
+                //     }
+                // }
+            }
+        }
+
+        function renderPlatforms() {
+            for (const platform of platforms) {
+                // Calcular posição relativa à câmera
+                const x = platform.x - gameState.cameraOffset.x;
+                const y = platform.y - gameState.cameraOffset.y;
+                
+                // Não renderizar se estiver fora da tela
+                if (x + platform.width < 0 || x > canvas.width || 
+                    y + platform.height < 0 || y > canvas.height) {
+                    continue;
+                }
+                
+                ctx.fillStyle = platform.slippery ? '#a8d0e6' : '#8d6e63';
+                ctx.fillRect(x, y, platform.width, platform.height);
+                
+                // Adicionar detalhes visuais para plataformas escorregadias
+                if (platform.slippery) {
+                    ctx.fillStyle = 'rgba(200, 230, 255, 0.3)';
+                    ctx.fillRect(x, y, platform.width, platform.height);
+                    
+                    // Adicionar brilho de gelo
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                    for (let i = 0; i < platform.width; i += 20) {
+                        ctx.fillRect(x + i, y, 5, platform.height);
+                    }
+                }
+            }
+        }
+
+        function renderInteractiveObjects() {
+            for (const obj of interactiveObjects) {
+                if (obj.collected) continue;
+                
+                const x = obj.x - gameState.cameraOffset.x;
+                const y = obj.y - gameState.cameraOffset.y;
+                
+                // Não renderizar se estiver fora da tela
+                if (x + obj.width < 0 || x > canvas.width || 
+                    y + obj.height < 0 || y > canvas.height) {
+                    continue;
+                }
+                
+                if (obj.type === 'crystal') {
+                    ctx.fillStyle = '#00b4d8';
+                    ctx.beginPath();
+                    ctx.moveTo(x + obj.width/2, y);
+                    ctx.lineTo(x + obj.width, y + obj.height/2);
+                    ctx.lineTo(x + obj.width/2, y + obj.height);
+                    ctx.lineTo(x, y + obj.height/2);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Brilho do cristal
+                    ctx.fillStyle = 'rgba(173, 216, 230, 0.5)';
+                    ctx.beginPath();
+                    ctx.arc(x + obj.width/2, y + obj.height/2, obj.width/2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        function renderPlayer() {
+            const x = gameState.playerPosition.x - gameState.cameraOffset.x;
+            const y = gameState.playerPosition.y - gameState.cameraOffset.y;
+            
+            // Não renderizar se estiver fora da tela
+            if (x + 50 < 0 || x > canvas.width || y + 50 < 0 || y > canvas.height) {
+                return;
+            }
+            
+            // Desenhar placeholder retangular para o jogador
+            ctx.fillStyle = '#3366ff';
+            ctx.fillRect(x, y, 50, 50);
+            
+            // Indicador de direção
+            ctx.fillStyle = '#000';
+            if (gameState.facing === 'right') {
+                ctx.fillRect(x + 40, y + 25, 5, 5);
+            } else {
+                ctx.fillRect(x + 5, y + 25, 5, 5);
+            }
+            
+            // Quando os sprites estiverem disponíveis:
+            // const animation = currentChampion.sprites[gameState.currentAnimation + (gameState.facing === 'right' ? 'Right' : 'Left')];
+            // const img = getImage(animation.src);
+            // if (img) {
+            //     // Calcular frame atual baseado no tempo
+            //     const frameIndex = Math.floor(Date.now() / animation.frameDelay) % animation.frames;
+            //     const frameWidth = img.width / animation.frames;
+            //     ctx.drawImage(
+            //         img, 
+            //         frameIndex * frameWidth, 0, frameWidth, img.height,
+            //         x, y, 50, 50
+            //     );
+            // }
+        }
+
+        function renderEnemies() {
+            for (const enemy of enemies) {
+                const x = enemy.position.x - gameState.cameraOffset.x;
+                const y = enemy.position.y - gameState.cameraOffset.y;
+                
+                // Não renderizar se estiver fora da tela
+                if (x + 50 < 0 || x > canvas.width || y + 50 < 0 || y > canvas.height) {
+                    continue;
+                }
+                
+                ctx.fillStyle = '#ff3333';
+                ctx.fillRect(x, y, 50, 50);
+                
+                // Barra de vida do inimigo
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(x, y - 10, 50, 5);
+                ctx.fillStyle = '#33ff33';
+                ctx.fillRect(x, y - 10, 50 * (enemy.health / enemy.maxHealth), 5);
+                
+                // Nome do inimigo
+                if (enemy.name) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '10px Arial';
+                    ctx.fillText(enemy.name, x, y - 15);
+                }
+            }
+        }
+
+        function renderAbilityEffects() {
+            for (const effect of abilityEffects) {
+                const x = effect.x - gameState.cameraOffset.x;
+                const y = effect.y - gameState.cameraOffset.y;
+                
+                // Não renderizar se estiver fora da tela
+                if (x + effect.width < 0 || x > canvas.width || 
+                    y + effect.height < 0 || y > canvas.height) {
+                    continue;
+                }
+                
+                if (effect.type === 'attack') {
+                    ctx.fillStyle = 'rgba(100, 200, 255, 0.7)';
+                    ctx.fillRect(x, y, effect.width, effect.height);
+                } else if (effect.type === 'shield') {
+                    ctx.strokeStyle = 'rgba(0, 200, 255, 0.5)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(x + effect.width/2, y + effect.height/2, effect.width/2, 0, Math.PI * 2);
+                    ctx.stroke();
+                } else if (effect.type === 'explosion') {
+                    const radius = effect.radius;
+                    const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+                    gradient.addColorStop(0, 'rgba(173, 216, 230, 0.8)');
+                    gradient.addColorStop(1, 'rgba(173, 216, 230, 0)');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        function renderParticles() {
+            for (const particle of particles) {
+                const x = particle.x - gameState.cameraOffset.x;
+                const y = particle.y - gameState.cameraOffset.y;
+                
+                // Não renderizar se estiver fora da tela
+                if (x + particle.size < 0 || x > canvas.width || 
+                    y + particle.size < 0 || y > canvas.height) {
+                    continue;
+                }
+                
+                if (particle.type === 'snow') {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(x, y, particle.size, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (particle.type === 'ice') {
+                    ctx.fillStyle = 'rgba(100, 200, 255, 0.7)';
+                    ctx.fillRect(x, y, particle.size, particle.size);
+                }
+            }
+        }
+
+        // ===== SISTEMA DE HABILIDADES =====
+        function useAbility(key) {
+            // Verificar se a habilidade está em cooldown
+            if (gameState.abilitiesCooldown[key] > 0) return;
+            
+            // Encontrar a habilidade no campeão atual
+            const ability = currentChampion.abilities.find(a => a.key === key);
+            if (!ability) return;
+            
+            // Verificar mana suficiente
+            if (gameState.playerMana < ability.manaCost) return;
+            
+            // Definir cooldown
+            gameState.abilitiesCooldown[key] = ability.cooldown;
+            gameState.abilitiesMaxCooldown[key] = ability.cooldown;
+            
+            // Executar a habilidade
+            ability.execute();
+            
+            // Atualizar visual de cooldown no botão
+            const btn = document.getElementById(`ability-${key.toLowerCase()}`);
+            if (btn) {
+                btn.classList.add('cooldown');
+            }
+        }
+
+        function addAbilityEffect(effect) {
+            effect.timer = effect.duration || 1000;
+            abilityEffects.push(effect);
+        }
+
+        function createParticles(x, y, count, type) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 5,
+                    speed: (Math.random() - 0.5) * 3,
+                    size: 2 + Math.random() * 4,
+                    life: 1000 + Math.random() * 500,
+                    type: type
+                });
+            }
+        }
+
+        // ===== SISTEMA DE NARRATIVA E CUTSCENES =====
+        function showIntroCutscene() {
+            gameState.inCutscene = true;
+            const overlay = document.getElementById('cinematic-overlay');
+            overlay.style.opacity = 1;
+            overlay.innerHTML = `
+                <img class="cinematic-image" id="cinematic-image-1" src="/assets/cutscenes/intro1.png" alt="Intro 1">
+                <div class="cinematic-text" id="cinematic-text-1"></div>
+                <img class="cinematic-image" id="cinematic-image-2" src="/assets/cutscenes/intro2.png" alt="Intro 2">
+                <div class="cinematic-text" id="cinematic-text-2"></div>
+            `;
+            
+            // Sequência de introdução
+            setTimeout(() => {
+                document.getElementById('cinematic-image-1').style.opacity = 1;
+                typeText(
+                    document.getElementById('cinematic-text-1'),
+                    "O mundo treme sob o peso do desequilíbrio. Ignys, o Reino do Fogo, deseja guerra e já move suas tropas em direção aos reinos vizinhos.",
+                    0
+                );
+            }, 1000);
+            
+            setTimeout(() => {
+                document.getElementById('cinematic-image-2').style.opacity = 1;
+                typeText(
+                    document.getElementById('cinematic-text-2'),
+                    "Em Tupãry, o Coração de Gelo guarda a metade maligna de Anhangá, o espírito que traz caos. Umbra convoca o Escolhido para uma missão crucial...",
+                    5000
+                );
+            }, 6000);
+            
+            // Após a cutscene, iniciar a primeira fase
+            setTimeout(() => {
+                overlay.style.opacity = 0;
+                gameState.inCutscene = false;
+                loadPhase(1);
+            }, 12000);
+        }
+
+        function showPhaseIntro(phaseNumber) {
+            gameState.inCutscene = true;
+            const overlay = document.getElementById('cinematic-overlay');
+            overlay.style.opacity = 1;
+            
+            let phaseTitle = '';
+            let phaseDescription = '';
+            let phaseImage = '';
+            
+            switch(phaseNumber) {
+                case 1:
+                    phaseTitle = "Missão 1 – As Muralhas da Aurora";
+                    phaseDescription = "Tarek, o Guerreiro, bloqueia a passagem. Prove seu valor para atravessar Tupãry!";
+                    phaseImage = "/assets/cutscenes/fase1.png";
+                    break;
+                case 2:
+                    phaseTitle = "Missão 2 – Torre de Cristal";
+                    phaseDescription = "Solenne, a Maga da Luz, alerta sobre os perigos do Coração de Gelo.";
+                    phaseImage = "/assets/cutscenes/fase2.png";
+                    break;
+                case 3:
+                    phaseTitle = "Missão 3 – Floresta de Estalagmites";
+                    phaseDescription = "Aislin, a Arqueira Sagrada, testará sua dignidade e habilidades.";
+                    phaseImage = "/assets/cutscenes/fase3.png";
+                    break;
+                case 4:
+                    phaseTitle = "Missão 4 – Floresta Profunda";
+                    phaseDescription = "Fenrath, o Lobo Guardião, protege o caminho até Anorak e o artefato.";
+                    phaseImage = "/assets/cutscenes/fase4.png";
+                    break;
+                case 5:
+                    phaseTitle = "Missão 5 – Caverna do Coração de Gelo";
+                    phaseDescription = "Enfrente Anorak, o Urso Ancião, guardião do Coração de Gelo.";
+                    phaseImage = "/assets/cutscenes/fase5.png";
+                    break;
+            }
+            
+            overlay.innerHTML = `
+                <img class="cinematic-image" src="${phaseImage}" alt="${phaseTitle}">
+                <h2>${phaseTitle}</h2>
+                <div class="cinematic-text" id="phase-text"></div>
+            `;
+            
+            setTimeout(() => {
+                document.querySelector('.cinematic-image').style.opacity = 1;
+                typeText(
+                    document.getElementById('phase-text'),
+                    phaseDescription,
+                    1000
+                );
+            }, 500);
+            
+            setTimeout(() => {
+                overlay.style.opacity = 0;
+                gameState.inCutscene = false;
+            }, 6000);
+        }
+
+        function showDialog(speaker, text, options) {
+            gameState.inDialog = true;
+            const dialogContainer = document.getElementById('dialog-container');
+            const dialogText = document.getElementById('dialog-text');
+            const dialogOptions = document.getElementById('dialog-options');
+            
+            dialogContainer.style.display = 'block';
+            dialogText.innerHTML = `<strong>${speaker}:</strong> `;
+            
+            // Digitar texto gradualmente
+            typeText(dialogText, text, 0, true);
+            
+            // Adicionar opções se fornecidas
+            dialogOptions.innerHTML = '';
+            if (options && options.length > 0) {
+                options.forEach((option, index) => {
+                    const button = document.createElement('div');
+                    button.className = 'dialog-option';
+                    button.textContent = option.text;
+                    button.addEventListener('click', () => {
+                        dialogContainer.style.display = 'none';
+                        gameState.inDialog = false;
+                        if (option.action) option.action();
+                        if (option.moralChoice) {
+                            gameState.moralChoices[option.moralChoice.key] = option.moralChoice.value;
+                        }
+                    });
+                    dialogOptions.appendChild(button);
+                });
+            } else {
+                // Se não houver opções, adicionar botão padrão para continuar
+                const button = document.createElement('div');
+                button.className = 'dialog-option';
+                button.textContent = 'Continuar';
+                button.addEventListener('click', () => {
+                    dialogContainer.style.display = 'none';
+                    gameState.inDialog = false;
+                });
+                dialogOptions.appendChild(button);
+            }
+        }
+
+        function typeText(element, text, delay = 0, append = false) {
+            setTimeout(() => {
+                if (!append) element.innerHTML = '';
+                const characters = text.split('');
+                let i = 0;
+                
+                const typingInterval = setInterval(() => {
+                    if (i < characters.length) {
+                        element.innerHTML += characters[i];
+                        i++;
+                    } else {
+                        clearInterval(typingInterval);
+                    }
+                }, CONFIG.TYPING_SPEED);
+            }, delay);
+        }
+
+        // ===== SISTEMA DE ÁUDIO =====
+        function playSound(src, volume = 1) {
+            // Implementação simplificada
+            // Na implementação real, usaríamos um pool de áudios
+            try {
+                const sfx = document.getElementById('sfx');
+                sfx.src = src;
+                sfx.volume = volume;
+                sfx.play();
+            } catch (e) {
+                console.error("Erro ao reproduzir som:", e);
+            }
+        }
+
+        function playMusic(src) {
+            try {
+                const bgMusic = document.getElementById('bgMusic');
+                bgMusic.src = src;
+                bgMusic.volume = 0.3;
+                bgMusic.play();
+            } catch (e) {
+                console.error("Erro ao reproduzir música:", e);
+            }
+        }
+
+        function stopMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.pause();
+        }
+
+        // ===== UTILITÁRIOS DE UI =====
+        function updateHealthBar() {
+            const healthFill = document.getElementById('health-fill');
+            if (healthFill) {
+                healthFill.style.width = `${(gameState.playerHealth / gameState.playerMaxHealth) * 100}%`;
+            }
+        }
+
+        function updateManaBar() {
+            const manaFill = document.getElementById('mana-fill');
+            if (manaFill) {
+                manaFill.style.width = `${(gameState.playerMana / gameState.playerMaxMana) * 100}%`;
+            }
+        }
+
+        function togglePause() {
+            gameState.gamePaused = !gameState.gamePaused;
+            const pauseMenu = document.getElementById('pause-menu');
+            
+            if (gameState.gamePaused) {
+                pauseMenu.style.display = 'flex';
+                stopMusic();
+            } else {
+                pauseMenu.style.display = 'none';
+                playMusic('/assets/sons/musica-fase' + gameState.currentPhase + '.mp3');
+            }
+        }
+
+        function restartPhase() {
+            togglePause();
+            loadPhase(gameState.currentPhase);
+        }
+
+        function exitGame() {
+            // Voltar ao menu principal
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+            window.location.reload();
+        }
+
+        function gameOver() {
+            if (gameState.playerHealth <= 0) {
+                showDialog("Sistema", "Você foi derrotado! Deseja tentar novamente?", [
+                    { text: "Reiniciar Fase", action: () => loadPhase(gameState.currentPhase) },
+                    { text: "Voltar ao Menu", action: () => exitGame() }
+                ]);
+            }
+        }
+
+        function completePhase() {
+            // Lógica ao completar uma fase
+            if (gameState.currentPhase < 5) {
+                showDialog("Sistema", "Fase concluída com sucesso! Preparando próxima fase...", [
+                    { 
+                        text: "Continuar", 
+                        action: () => {
+                            loadPhase(gameState.currentPhase + 1);
+                        } 
+                    }
+                ]);
+            } else {
+                // Jogo completo - mostrar finais baseados em escolhas morais
+                showEnding();
+            }
+        }
+
+        function showEnding() {
+            // Determinar o final com base nas escolhas morais
+            let endingText = "";
+            
+            if (gameState.moralChoices.lealdade) {
+                endingText = "Você manteve lealdade a Tupãry e ao equilíbrio. O reino agradece seu sacrifício, mas a jornada está longe do fim...";
+            } else if (gameState.moralChoices.traidor) {
+                endingText = "Sua traição terá consequências. O equilíbrio entre os reinos foi abalado, e Ignys agora tem mais poder...";
+            } else {
+                endingText = "Você cumpriu sua missão, mas as escolhas feitas ao longo do caminho moldarão o destino dos reinos...";
+            }
+            
+            showDialog("Narração", endingText, [
+                { text: "Voltar ao Menu", action: () => exitGame() }
+            ]);
+        }
+
+        // ===== CARREGAMENTO DE RECURSOS =====
+        function getImage(src) {
+            if (!loadedImages[src]) {
+                // Carregar imagem (implementação simplificada)
+                loadedImages[src] = new Image();
+                loadedImages[src].src = src;
+            }
+            return loadedImages[src];
+        }
+
+        // ===== INICIAR O JOGO =====
+        window.onload = init;
+    </script>
 </body>
 </html>

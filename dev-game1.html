@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tupãry: O Reino Congelado</title>
+    <style>
+        /* Variáveis de estilo */
+        :root {
+            --accent-gold: #ffb300;
+            --accent-ice: #88d8f7;
+            --accent-fire: #ff5a00;
+            --accent-dark: #1a1a2e;
+            --text-light: #f0f0f0;
+            --health-color: #ff3333;
+            --mana-color: #3366ff;
+            --xp-color: #9c27b0;
+        }
+
+        /* Estilos gerais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #0a0a2a, #1a1a2e, #16213e);
+            color: var(--text-light);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 450px;
+            overflow: hidden;
+            border: 3px solid var(--accent-gold);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255, 179, 0, 0.3);
+        }
+
+        #game-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .health-bar, .mana-bar, .xp-bar {
+            position: absolute;
+            height: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .health-bar {
+            top: 15px;
+            left: 15px;
+            width: 200px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .mana-bar {
+            top: 15px;
+            left: 230px;
+            width: 150px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .xp-bar {
+            top: 35px;
+            left: 15px;
+            width: 200px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .health-fill {
+            height: 100%;
+            width: 100%;
+            background-color: var(--health-color);
+            transition: width 0.3s ease;
+        }
+
+        .mana-fill {
+            height: 100%;
+            width: 100%;
+            background-color: var(--mana-color);
+            transition: width 0.3s ease;
+        }
+        
+        .xp-fill {
+            height: 100%;
+            width: 100%;
+            background-color: var(--xp-color);
+            transition: width 0.3s ease;
+        }
+
+        .player-stats {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            text-align: right;
+            font-size: 14px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .abilities {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .ability-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            cursor: pointer;
+            pointer-events: auto;
+            position: relative;
+        }
+
+        .ability-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: var(--accent-gold);
+            border-radius: 0 0 5px 5px;
+            transform: scaleX(1);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .ability-btn.cooldown::after {
+            transform: scaleX(0);
+            transition: transform linear;
+        }
+        
+        .ability-info {
+            position: absolute;
+            bottom: 70px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            width: max-content;
+            text-align: center;
+        }
+        
+        .ability-btn:hover + .ability-info {
+            opacity: 1;
+        }
+
+        .dialog-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--accent-ice);
+            border-radius: 10px;
+            padding: 15px;
+            display: none;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .dialog-text {
+            margin-bottom: 15px;
+            min-height: 60px;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .dialog-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dialog-option {
+            background-color: rgba(255, 179, 0, 0.2);
+            border: 1px solid var(--accent-gold);
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .dialog-option:hover {
+            background-color: rgba(255, 179, 0, 0.4);
+        }
+
+        .cinematic-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cinematic-text {
+            font-size: 24px;
+            text-align: center;
+            max-width: 80%;
+            margin-bottom: 20px;
+            color: var(--text-light);
+            opacity: 0;
+            animation: fadeInText 3s forwards;
+        }
+
+        .skip-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--accent-gold);
+            color: var(--text-light);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            pointer-events: auto;
+            z-index: 20;
+        }
+
+        .pause-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 5;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .pause-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 20;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-option {
+            background-color: var(--accent-gold);
+            color: var(--accent-dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .menu-option:hover {
+            transform: scale(1.05);
+        }
+        
+        .level-up {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid var(--accent-gold);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            z-index: 25;
+            display: none;
+        }
+        
+        .upgrade-option {
+            margin: 10px;
+            padding: 10px;
+            background: rgba(255, 179, 0, 0.2);
+            border: 1px solid var(--accent-gold);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .upgrade-option:hover {
+            background: rgba(255, 179, 0, 0.4);
+        }
+
+        /* Animações */
+        @keyframes fadeInText {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes levelUp {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        @keyframes iceOrb {
+            0% { transform: scale(0.5); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        
+        @keyframes crystalPrison {
+            0% { height: 0; opacity: 0; }
+            100% { height: 120px; opacity: 1; }
+        }
+
+        /* Responsividade */
+        @media (max-width: 800px) {
+            #game-container {
+                width: 100%;
+                height: 100vh;
+                border: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <div class="ui-layer">
+            <div class="health-bar"><div class="health-fill" id="health-fill"></div></div>
+            <div class="mana-bar"><div class="mana-fill" id="mana-fill"></div></div>
+            <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+            
+            <div class="player-stats" id="player-stats">
+                Nível: 1<br>
+                XP: 0/100
+            </div>
+            
+            <div class="abilities">
+                <div class="ability-btn" id="ability-u">U</div>
+                <div class="ability-info">Ataque Básico</div>
+                
+                <div class="ability-btn" id="ability-i">I</div>
+                <div class="ability-info">Investida Gélida</div>
+                
+                <div class="ability-btn" id="ability-o">O</div>
+                <div class="ability-info">Orbe de Gelo</div>
+                
+                <div class="ability-btn" id="ability-p">P</div>
+                <div class="ability-info">Prisão de Cristal</div>
+            </div>
+            
+            <div class="dialog-container" id="dialog-container">
+                <div class="dialog-text" id="dialog-text"></div>
+                <div class="dialog-options" id="dialog-options"></div>
+            </div>
+            
+            <div class="cinematic-overlay" id="cinematic-overlay">
+                <div class="cinematic-text" id="cinematic-text"></div>
+                <button class="skip-btn" id="skip-btn">Pular</button>
+            </div>
+            
+            <div class="pause-btn" id="pause-btn">
+                ⏸️
+            </div>
+            
+            <div class="level-up" id="level-up">
+                <h2>Nível Aumentado!</h2>
+                <p>Escolha uma melhoria:</p>
+                <div class="upgrade-option" data-upgrade="health">+20 Vida Máxima</div>
+                <div class="upgrade-option" data-upgrade="mana">+30 Mana Máxima</div>
+                <div class="upgrade-option" data-upgrade="damage">+5 Dano</div>
+            </div>
+        </div>
+        
+        <div class="pause-menu" id="pause-menu">
+            <h2>JOGO PAUSADO</h2>
+            <button class="menu-option" id="resume-btn">Continuar</button>
+            <button class="menu-option" id="restart-btn">Reiniciar Fase</button>
+            <button class="menu-option" id="exit-btn">Sair</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURAÇÕES GLOBAIS =====
+        const CONFIG = {
+            GRAVITY: 0.5,
+            PLAYER_SPEED: 3,
+            JUMP_FORCE: 12,
+            WORLD_WIDTH: 3000,
+            CAMERA_SMOOTHING: 0.1
+        };
+
+        // ===== VARIÁVEIS GLOBAIS =====
+        let canvas, ctx;
+        let gameState = {
+            currentPhase: 0,
+            playerHealth: 100,
+            playerMaxHealth: 100,
+            playerMana: 100,
+            playerMaxMana: 100,
+            playerPosition: { x: 100, y: 300 },
+            playerVelocity: { x: 0, y: 0 },
+            playerLevel: 1,
+            playerXP: 0,
+            playerNextLevelXP: 100,
+            playerDamage: 15,
+            isGrounded: false,
+            facing: 'right',
+            currentAnimation: 'idle',
+            abilitiesCooldown: { U: 0, I: 0, O: 0, P: 0 },
+            abilitiesMaxCooldown: { U: 0.5, I: 5, O: 3, P: 8 },
+            gamePaused: false,
+            inDialog: false,
+            inCutscene: true,
+            cameraOffset: { x: 0, y: 0 },
+            targetCameraOffset: { x: 0, y: 0 }
+        };
+
+        let platforms = [];
+        let particles = [];
+        let backgroundLayers = [];
+        let currentChampion = null;
+        let enemies = [];
+        let abilityEffects = [];
+        let interactiveObjects = [];
+        let lastTime = 0;
+        let keys = {};
+        let animationFrameId = null;
+
+        // ===== INICIALIZAÇÃO =====
+        function init() {
+            canvas = document.getElementById('game-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // Ajustar tamanho do canvas
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Inicializar campeões e fases
+            initChampions();
+            initPhases();
+            
+            // Configurar controles
+            setupEventListeners();
+            
+            // Iniciar a fase de introdução
+            showIntroCutscene();
+            
+            // Iniciar loop do jogo
+            gameLoop(0);
+        }
+
+        function resizeCanvas() {
+            const container = document.getElementById('game-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+
+        function setupEventListeners() {
+            // Teclado
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+                
+                // Pausar com ESC
+                if (e.key === 'Escape') {
+                    togglePause();
+                }
+                
+                // Habilidades (U, I, O, P)
+                if (['u', 'U', 'i', 'I', 'o', 'O', 'p', 'P'].includes(e.key) && !gameState.gamePaused && !gameState.inDialog && !gameState.inCutscene) {
+                    useAbility(e.key.toUpperCase());
+                }
+            });
+            
+            window.addEventListener('keyup', (e) => {
+                keys[e.key] = false;
+            });
+            
+            // Botão de pausa
+            document.getElementById('pause-btn').addEventListener('click', togglePause);
+            document.getElementById('resume-btn').addEventListener('click', togglePause);
+            document.getElementById('restart-btn').addEventListener('click', restartPhase);
+            document.getElementById('exit-btn').addEventListener('click', exitGame);
+            
+            // Botão de pular cutscene
+            document.getElementById('skip-btn').addEventListener('click', skipCutscene);
+            
+            // Eventos de level up
+            document.querySelectorAll('.upgrade-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    applyUpgrade(e.target.dataset.upgrade);
+                });
+            });
+        }
+
+        // ===== PERSONAGENS MODULARES =====
+        function initChampions() {
+            // Exemplo básico do Escolhido
+            currentChampion = {
+                id: 'escolhido',
+                name: 'O Escolhido',
+                type: 'melee',
+                health: 200,
+                mana: 150,
+                speed: 3,
+                abilities: [
+                    { 
+                        key: 'U', 
+                        name: 'Ataque Básico', 
+                        damage: () => gameState.playerDamage, 
+                        manaCost: 0, 
+                        cooldown: 0.5,
+                        execute: () => {
+                            // Criar efeito visual de ataque
+                            addAbilityEffect({
+                                type: 'attack',
+                                x: gameState.playerPosition.x + (gameState.facing === 'right' ? 50 : -20),
+                                y: gameState.playerPosition.y + 25,
+                                width: 30,
+                                height: 10,
+                                duration: 300,
+                                damage: gameState.playerDamage,
+                                origin: 'player'
+                            });
+                        }
+                    },
+                    { 
+                        key: 'I', 
+                        name: 'Investida Gélida', 
+                        damage: () => gameState.playerDamage * 2, 
+                        manaCost: 20, 
+                        cooldown: 5,
+                        execute: () => {
+                            if (gameState.playerMana >= 20) {
+                                gameState.playerMana -= 20;
+                                
+                                // Impulso para frente
+                                gameState.playerVelocity.x = (gameState.facing === 'right' ? 10 : -10);
+                                
+                                // Efeito visual
+                                addAbilityEffect({
+                                    type: 'dash',
+                                    x: gameState.playerPosition.x,
+                                    y: gameState.playerPosition.y,
+                                    width: 50,
+                                    height: 50,
+                                    duration: 300,
+                                    damage: gameState.playerDamage * 2,
+                                    origin: 'player'
+                                });
+                                
+                                // Partículas de gelo
+                                for (let i = 0; i < 15; i++) {
+                                    particles.push({
+                                        x: gameState.playerPosition.x,
+                                        y: gameState.playerPosition.y + 25,
+                                        speed: 2 + Math.random() * 3,
+                                        vx: (gameState.facing === 'right' ? 1 : -1) * (Math.random() * 3 + 2),
+                                        vy: (Math.random() - 0.5) * 4,
+                                        size: 3 + Math.random() * 4,
+                                        life: 500 + Math.random() * 500,
+                                        color: '#88d8f7',
+                                        type: 'ice'
+                                    });
+                                }
+                            }
+                        }
+                    },
+                    { 
+                        key: 'O', 
+                        name: 'Orbe de Gelo', 
+                        damage: () => gameState.playerDamage * 1.5, 
+                        manaCost: 30, 
+                        cooldown: 3,
+                        execute: () => {
+                            if (gameState.playerMana >= 30) {
+                                gameState.playerMana -= 30;
+                                
+                                // Criar orbe de gelo
+                                addAbilityEffect({
+                                    type: 'iceOrb',
+                                    x: gameState.playerPosition.x + (gameState.facing === 'right' ? 40 : -40),
+                                    y: gameState.playerPosition.y + 25,
+                                    width: 30,
+                                    height: 30,
+                                    duration: 2000,
+                                    damage: gameState.playerDamage * 1.5,
+                                    direction: gameState.facing === 'right' ? 1 : -1,
+                                    speed: 5,
+                                    origin: 'player'
+                                });
+                            }
+                        }
+                    },
+                    { 
+                        key: 'P', 
+                        name: 'Prisão de Cristal', 
+                        damage: () => gameState.playerDamage * 0.5, 
+                        manaCost: 40, 
+                        cooldown: 8,
+                        execute: () => {
+                            if (gameState.playerMana >= 40) {
+                                gameState.playerMana -= 40;
+                                
+                                // Criar prisão de cristal
+                                addAbilityEffect({
+                                    type: 'crystalPrison',
+                                    x: gameState.playerPosition.x + (gameState.facing === 'right' ? 80 : -80),
+                                    y: gameState.playerPosition.y,
+                                    width: 20,
+                                    height: 120,
+                                    duration: 4000,
+                                    damage: gameState.playerDamage * 0.5,
+                                    origin: 'player',
+                                    active: true
+                                });
+                                
+                                // Partículas de cristal
+                                for (let i = 0; i < 20; i++) {
+                                    particles.push({
+                                        x: gameState.playerPosition.x + (gameState.facing === 'right' ? 80 : -80),
+                                        y: gameState.playerPosition.y,
+                                        speed: 1 + Math.random() * 2,
+                                        vx: (Math.random() - 0.5) * 3,
+                                        vy: -Math.random() * 3,
+                                        size: 2 + Math.random() * 3,
+                                        life: 1000 + Math.random() * 1000,
+                                        color: '#a8d0e6',
+                                        type: 'crystal'
+                                    });
+                                }
+                            }
+                        }
+                    }
+                ]
+            };
+        }
+
+        // ===== SISTEMA DE FASES =====
+        function initPhases() {
+            // Inicializar fases
+        }
+
+        function loadPhase(phaseNumber) {
+            gameState.currentPhase = phaseNumber;
+            
+            // Reiniciar estado do jogador
+            gameState.playerHealth = gameState.playerMaxHealth;
+            gameState.playerMana = gameState.playerMaxMana;
+            gameState.playerPosition = { x: 100, y: 300 };
+            gameState.playerVelocity = { x: 0, y: 0 };
+            
+            // Configurar a fase baseada no número
+            switch(phaseNumber) {
+                case 1:
+                    setupPhase1();
+                    break;
+                case 2:
+                    setupPhase2();
+                    break;
+                // Outras fases...
+            }
+            
+            // Mostrar introdução da fase
+            showPhaseIntro(phaseNumber);
+        }
+
+        function setupPhase1() {
+            // Muralhas da Aurora - Fase 1
+            platforms = [
+                { x: 0, y: 400, width: 3000, height: 50, type: 'ground' },
+                { x: 200, y: 350, width: 80, height: 20, slippery: true },
+                { x: 350, y: 300, width: 80, height: 20, slippery: true },
+                { x: 500, y: 250, width: 80, height: 20 },
+                { x: 650, y: 300, width: 80, height: 20, slippery: true },
+                { x: 1000, y: 350, width: 100, height: 20 }
+            ];
+            
+            // Adicionar inimigos
+            enemies = [
+                {
+                    type: 'guerreiro',
+                    name: 'Tarek',
+                    position: { x: 800, y: 350 },
+                    health: 100,
+                    maxHealth: 100,
+                    damage: 20,
+                    speed: 2,
+                    pattern: 'patrol',
+                    patrolStartX: 750,
+                    patrolRange: 100,
+                    xpValue: 50
+                },
+                {
+                    type: 'lobo',
+                    name: 'Lobo de Gelo',
+                    position: { x: 1200, y: 350 },
+                    health: 60,
+                    maxHealth: 60,
+                    damage: 10,
+                    speed: 3,
+                    pattern: 'patrol',
+                    patrolStartX: 1150,
+                    patrolRange: 150,
+                    xpValue: 30
+                },
+                {
+                    type: 'guerreiro',
+                    name: 'Guarda Tupãry',
+                    position: { x: 2000, y: 350 },
+                    health: 120,
+                    maxHealth: 120,
+                    damage: 25,
+                    speed: 1.5,
+                    pattern: 'patrol',
+                    patrolStartX: 1950,
+                    patrolRange: 80,
+                    xpValue: 60
+                }
+            ];
+            
+            // Configurar parallax para fase gelada
+            backgroundLayers = [
+                { color: '#5d8aa8', speed: 0.1 },
+                { color: '#79b5d1', speed: 0.3 },
+                { color: '#a8d0e6', speed: 0.6 }
+            ];
+        }
+
+        function setupPhase2() {
+            // Torre de Cristal - Fase 2 (implementação simplificada)
+            platforms = [
+                { x: 0, y: 400, width: 2500, height: 50, type: 'ground' },
+                { x: 300, y: 350, width: 80, height: 20 },
+                { x: 450, y: 300, width: 80, height: 20 },
+                { x: 600, y: 250, width: 80, height: 20 },
+                { x: 750, y: 200, width: 80, height: 20 }
+            ];
+            
+            // Configurar parallax para fase de torre
+            backgroundLayers = [
+                { color: '#3a506b', speed: 0.1 },
+                { color: '#1c2541', speed: 0.3 },
+                { color: '#0b132b', speed: 0.6 }
+            ];
+        }
+
+        // ===== LOOP PRINCIPAL DO JOGO =====
+        function gameLoop(timestamp) {
+            if (!animationFrameId) {
+                animationFrameId = requestAnimationFrame(gameLoop);
+                return;
+            }
+            
+            // Calcular delta time
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            if (!gameState.gamePaused) {
+                // Atualizar lógica do jogo
+                update(deltaTime);
+                
+                // Renderizar cena
+                render();
+            }
+            
+            // Continuar o loop
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function update(deltaTime) {
+            // Atualizar jogador
+            updatePlayer(deltaTime);
+            
+            // Atualizar inimigos
+            updateEnemies(deltaTime);
+            
+            // Atualizar efeitos
+            updateAbilityEffects(deltaTime);
+            
+            // Atualizar partículas
+            updateParticles(deltaTime);
+            
+            // Atualizar cooldowns
+            updateCooldowns(deltaTime);
+            
+            // Atualizar regeneração de mana
+            if (gameState.playerMana < gameState.playerMaxMana) {
+                gameState.playerMana += 0.1 * (deltaTime / 1000);
+                gameState.playerMana = Math.min(gameState.playerMana, gameState.playerMaxMana);
+                updateManaBar();
+            }
+            
+            // Atualizar câmera
+            updateCamera(deltaTime);
+            
+            // Verificar vitória
+            checkPhaseCompletion();
+        }
+
+        function updatePlayer(deltaTime) {
+            // Movimento horizontal
+            let moveX = 0;
+            
+            if (!gameState.inDialog && !gameState.inCutscene) {
+                // Controle por teclado
+                if (keys['a'] || keys['A'] || keys['ArrowLeft']) moveX = -1;
+                if (keys['d'] || keys['D'] || keys['ArrowRight']) moveX = 1;
+                
+                // Aplicar velocidade
+                gameState.playerVelocity.x = moveX * currentChampion.speed;
+                
+                // Pular
+                if ((keys['w'] || keys['W'] || keys['ArrowUp'] || keys[' ']) && gameState.isGrounded) {
+                    gameState.playerVelocity.y = -CONFIG.JUMP_FORCE;
+                    gameState.isGrounded = false;
+                    
+                    // Partículas de pulo
+                    for (let i = 0; i < 5; i++) {
+                        particles.push({
+                            x: gameState.playerPosition.x + 25,
+                            y: gameState.playerPosition.y + 50,
+                            speed: 1 + Math.random() * 2,
+                            vx: (Math.random() - 0.5) * 2,
+                            vy: 1 + Math.random() * 2,
+                            size: 2 + Math.random() * 3,
+                            life: 300 + Math.random() * 300,
+                            color: '#ffffff',
+                            type: 'dust'
+                        });
+                    }
+                }
+            }
+            
+            // Aplicar gravidade
+            gameState.playerVelocity.y += CONFIG.GRAVITY;
+            
+            // Limitar velocidade vertical
+            if (gameState.playerVelocity.y > 10) {
+                gameState.playerVelocity.y = 10;
+            }
+            
+            // Atualizar posição
+            gameState.playerPosition.x += gameState.playerVelocity.x;
+            gameState.playerPosition.y += gameState.playerVelocity.y;
+            
+            // Verificar colisões com plataformas
+            checkPlatformCollisions();
+            
+            // Verificar colisões com inimigos
+            checkEnemyCollisions();
+            
+            // Verificar colisões com efeitos
+            checkEffectCollisions();
+            
+            // Atualizar animação
+            updatePlayerAnimation();
+            
+            // Atualizar direção do personagem
+            if (moveX > 0) gameState.facing = 'right';
+            if (moveX < 0) gameState.facing = 'left';
+            
+            // Limitar jogador dentro do mundo
+            if (gameState.playerPosition.x < 0) gameState.playerPosition.x = 0;
+            if (gameState.playerPosition.x > CONFIG.WORLD_WIDTH - 50) {
+                gameState.playerPosition.x = CONFIG.WORLD_WIDTH - 50;
+            }
+            
+            if (gameState.playerPosition.y > canvas.height) {
+                // Jogador caiu fora da tela
+                gameState.playerHealth = 0;
+                gameOver();
+            }
+            
+            // Atualizar barras de UI
+            updateHealthBar();
+            updateManaBar();
+            updateXPBar();
+            updatePlayerStats();
+        }
+
+        function checkPlatformCollisions() {
+            gameState.isGrounded = false;
+            
+            for (const platform of platforms) {
+                // Verificar colisão simples AABB
+                if (gameState.playerPosition.x < platform.x + platform.width &&
+                    gameState.playerPosition.x + 50 > platform.x &&
+                    gameState.playerPosition.y < platform.y + platform.height &&
+                    gameState.playerPosition.y + 50 > platform.y) {
+                    
+                    // Colisão a partir de cima (aterrissando na plataforma)
+                    if (gameState.playerVelocity.y > 0 && 
+                        gameState.playerPosition.y + 50 - gameState.playerVelocity.y <= platform.y) {
+                        gameState.playerPosition.y = platform.y - 50;
+                        gameState.playerVelocity.y = 0;
+                        gameState.isGrounded = true;
+                        
+                        // Partículas de aterrissagem
+                        if (gameState.playerVelocity.y > 5) {
+                            for (let i = 0; i < 8; i++) {
+                                particles.push({
+                                    x: gameState.playerPosition.x + 25,
+                                    y: gameState.playerPosition.y + 50,
+                                    speed: 1 + Math.random() * 2,
+                                    vx: (Math.random() - 0.5) * 3,
+                                    vy: -1 - Math.random() * 2,
+                                    size: 2 + Math.random() * 3,
+                                    life: 300 + Math.random() * 300,
+                                    color: '#ffffff',
+                                    type: 'dust'
+                                });
+                            }
+                        }
+                    } 
+                    // Colisão a partir de baixo
+                    else if (gameState.playerVelocity.y < 0) {
+                        gameState.playerPosition.y = platform.y + platform.height;
+                        gameState.playerVelocity.y = 0;
+                    }
+                    // Colisão lateral
+                    else if (gameState.playerVelocity.x !== 0) {
+                        if (gameState.playerPosition.x < platform.x) {
+                            gameState.playerPosition.x = platform.x - 50;
+                        } else {
+                            gameState.playerPosition.x = platform.x + platform.width;
+                        }
+                        gameState.playerVelocity.x = 0;
+                    }
+                }
+            }
+        }
+
+        function checkEnemyCollisions() {
+            for (const enemy of enemies) {
+                // Verificar colisão com jogador
+                const dx = gameState.playerPosition.x + 25 - (enemy.position.x + 25);
+                const dy = gameState.playerPosition.y + 25 - (enemy.position.y + 25);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 40) {
+                    // Dano ao jogador
+                    gameState.playerHealth -= enemy.damage * 0.016; // Dano por frame
+                    updateHealthBar();
+                    
+                    if (gameState.playerHealth <= 0) {
+                        gameOver();
+                    }
+                }
+            }
+        }
+
+        function checkEffectCollisions() {
+            for (const effect of abilityEffects) {
+                if (effect.damage && effect.origin === 'player') {
+                    // Verificar colisão com inimigos (efeitos do jogador)
+                    for (const enemy of enemies) {
+                        const dx = enemy.position.x + 25 - effect.x;
+                        const dy = enemy.position.y + 25 - effect.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 30 && effect.active !== false) {
+                            enemy.health -= effect.damage;
+                            
+                            // Partículas de dano
+                            for (let i = 0; i < 5; i++) {
+                                particles.push({
+                                    x: enemy.position.x + 25,
+                                    y: enemy.position.y + 25,
+                                    speed: 1 + Math.random() * 2,
+                                    vx: (Math.random() - 0.5) * 3,
+                                    vy: (Math.random() - 0.5) * 3,
+                                    size: 2 + Math.random() * 3,
+                                    life: 300 + Math.random() * 300,
+                                    color: effect.type === 'iceOrb' ? '#88d8f7' : '#ff3333',
+                                    type: 'damage'
+                                });
+                            }
+                            
+                            if (enemy.health <= 0) {
+                                // Inimigo derrotado - ganhar XP
+                                gainXP(enemy.xpValue);
+                                enemies.splice(enemies.indexOf(enemy), 1);
+                            }
+                            
+                            // Desativar efeito após causar dano (para não causar dano múltiplo)
+                            if (effect.type !== 'crystalPrison') {
+                                effect.active = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function updatePlayerAnimation() {
+            if (!gameState.isGrounded) {
+                gameState.currentAnimation = 'jump';
+            } else if (Math.abs(gameState.playerVelocity.x) > 0.1) {
+                gameState.currentAnimation = 'walk';
+            } else {
+                gameState.currentAnimation = 'idle';
+            }
+        }
+
+        function updateEnemies(deltaTime) {
+            // Lógica de atualização de inimigos
+            for (const enemy of enemies) {
+                // Movimento de patrulha
+                if (enemy.pattern === 'patrol') {
+                    if (enemy.direction === undefined) {
+                        enemy.direction = 1;
+                        enemy.patrolStartX = enemy.position.x;
+                    }
+                    
+                    enemy.position.x += enemy.speed * enemy.direction;
+                    
+                    // Verificar limites de patrulha
+                    if (enemy.position.x > enemy.patrolStartX + enemy.patrolRange) {
+                        enemy.direction = -1;
+                    } else if (enemy.position.x < enemy.patrolStartX - enemy.patrolRange) {
+                        enemy.direction = 1;
+                    }
+                }
+            }
+        }
+
+        function updateAbilityEffects(deltaTime) {
+            // Atualizar efeitos de habilidades
+            for (let i = abilityEffects.length - 1; i >= 0; i--) {
+                const effect = abilityEffects[i];
+                effect.timer -= deltaTime;
+                
+                // Mover orbe de gelo
+                if (effect.type === 'iceOrb') {
+                    effect.x += effect.speed * effect.direction;
+                    
+                    // Partículas de rastro
+                    if (Math.random() < 0.3) {
+                        particles.push({
+                            x: effect.x,
+                            y: effect.y,
+                            speed: 0.5 + Math.random() * 1,
+                            vx: (Math.random() - 0.5) * 0.5,
+                            vy: (Math.random() - 0.5) * 0.5,
+                            size: 1 + Math.random() * 2,
+                            life: 500 + Math.random() * 500,
+                            color: '#88d8f7',
+                            type: 'iceTrail'
+                        });
+                    }
+                }
+                
+                if (effect.timer <= 0) {
+                    abilityEffects.splice(i, 1);
+                }
+            }
+        }
+
+        function updateParticles(deltaTime) {
+            // Atualizar partículas
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                particle.y += particle.speed * (deltaTime / 16);
+                particle.x += particle.vx * (deltaTime / 16);
+                particle.life -= deltaTime;
+                
+                if (particle.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+            
+            // Adicionar novas partículas de neve aleatoriamente
+            if (Math.random() < 0.1) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: -10,
+                    speed: 1 + Math.random() * 3,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    size: 2 + Math.random() * 3,
+                    life: 10000,
+                    color: '#ffffff',
+                    type: 'snow'
+                });
+            }
+        }
+
+        function updateCooldowns(deltaTime) {
+            // Atualizar cooldowns das habilidades
+            for (const key in gameState.abilitiesCooldown) {
+                if (gameState.abilitiesCooldown[key] > 0) {
+                    gameState.abilitiesCooldown[key] -= deltaTime / 1000;
+                    
+                    // Atualizar visualização de cooldown
+                    const btn = document.getElementById(`ability-${key.toLowerCase()}`);
+                    if (btn) {
+                        if (gameState.abilitiesCooldown[key] > 0) {
+                            btn.classList.add('cooldown');
+                            const scale = 1 - (gameState.abilitiesCooldown[key] / gameState.abilitiesMaxCooldown[key]);
+                            btn.style.setProperty('--cooldown-progress', `${scale}`);
+                        } else {
+                            btn.classList.remove('cooldown');
+                        }
+                    }
+                }
+            }
+        }
+
+        function updateCamera(deltaTime) {
+            // Calcular posição alvo da câmera (centrada no jogador)
+            gameState.targetCameraOffset.x = gameState.playerPosition.x - canvas.width / 2;
+            gameState.targetCameraOffset.y = gameState.playerPosition.y - canvas.height / 2;
+            
+            // Limitar câmera aos limites do mundo
+            gameState.targetCameraOffset.x = Math.max(0, Math.min(gameState.targetCameraOffset.x, CONFIG.WORLD_WIDTH - canvas.width));
+            gameState.targetCameraOffset.y = Math.max(0, Math.min(gameState.targetCameraOffset.y, canvas.height));
+            
+            // Suavizar movimento da câmera
+            gameState.cameraOffset.x += (gameState.targetCameraOffset.x - gameState.cameraOffset.x) * CONFIG.CAMERA_SMOOTHING;
+            gameState.cameraOffset.y += (gameState.targetCameraOffset.y - gameState.cameraOffset.y) * CONFIG.CAMERA_SMOOTHING;
+        }
+
+        function checkPhaseCompletion() {
+            // Verificar se o jogador chegou ao final da fase
+            if (gameState.playerPosition.x > CONFIG.WORLD_WIDTH - 100) {
+                // Verificar se derrotou todos os inimigos
+                if (enemies.length === 0) {
+                    completePhase();
+                }
+            }
+        }
+
+        function render() {
+            // Limpar canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Renderizar fundo com parallax
+            renderBackground();
+            
+            // Renderizar plataformas
+            renderPlatforms();
+            
+            // Renderizar jogador
+            renderPlayer();
+            
+            // Renderizar inimigos
+            renderEnemies();
+            
+            // Renderizar efeitos
+            renderAbilityEffects();
+            
+            // Renderizar partículas
+            renderParticles();
+        }
+
+        function renderBackground() {
+            for (const layer of backgroundLayers) {
+                // Calcular posição com base no parallax
+                const x = -gameState.cameraOffset.x * layer.speed;
+                
+                // Desenhar fundo (usando cor sólida como placeholder)
+                ctx.fillStyle = layer.color;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function renderPlatforms() {
+            for (const platform of platforms) {
+                // Calcular posição relativa à câmera
+                const x = platform.x - gameState.cameraOffset.x;
+                const y = platform.y - gameState.cameraOffset.y;
+                
+                // Não renderizar se estiver fora da tela
+                if (x + platform.width < 0 || x > canvas.width || 
+                    y + platform.height < 0 || y > canvas.height) {
+                    continue;
+                }
+                
+                ctx.fillStyle = platform.slippery ? '#a8d0e6' : '#8d6e63';
+                ctx.fillRect(x, y, platform.width, platform.height);
+                
+                // Adicionar detalhes visuais para plataformas escorregadias
+                if (platform.slippery) {
+                    ctx.fillStyle = 'rgba(200, 230, 255, 0.3)';
+                    ctx.fillRect(x, y, platform.width, platform.height);
+                    
+                    // Padrão de gelo
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    for (let i = 0; i < platform.width; i += 15) {
+                        ctx.moveTo(x + i, y);
+                        ctx.lineTo(x + i, y + platform.height);
+                    }
+                    for (let i = 0; i < platform.height; i += 15) {
+                        ctx.moveTo(x, y + i);
+                        ctx.lineTo(x + platform.width, y + i);
+                    }
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function renderPlayer() {
+            const x = gameState.playerPosition.x - gameState.cameraOffset.x;
+            const y = gameState.playerPosition.y - gameState.cameraOffset.y;
+            
+            // Não renderizar se estiver fora da tela
+            if (x + 50 < 0 || x > canvas.width || y + 50 < 0 || y > canvas.height) {
+                return;
+            }
+            
+            // Desenhar placeholder retangular para o jogador (será substituído por sprite)
+            ctx.fillStyle = '#3366ff';
+            ctx.fillRect(x, y, 50, 50);
+            
+            // Detalhes do personagem baseado na animação
+            ctx.fillStyle = '#2244cc';
+            if (gameState.currentAnimation === 'idle') {
+                // Braços parados
+                ctx.fillRect(x + 10, y + 10, 10, 25);
+                ctx.fillRect(x + 30, y + 10, 10, 25);
+            } else if (gameState.currentAnimation === 'walk') {
+                // Braços em movimento
+                const armOffset = Math.sin(Date.now() / 120) * 5;
+                ctx.fillRect(x + 10, y + 10 + armOffset, 10, 25);
+                ctx.fillRect(x + 30, y + 10 - armOffset, 10, 25);
+            } else if (gameState.currentAnimation === 'jump') {
+                // Braços para cima
+                ctx.fillRect(x + 10, y, 10, 30);
+                ctx.fillRect(x + 30, y, 10, 30);
+            }
+            
+            // Indicador de direção
+            ctx.fillStyle = '#000';
+            if (gameState.facing === 'right') {
+                ctx.fillRect(x + 40, y + 25, 5, 5);
+            } else {
+                ctx.fillRect(x + 5, y + 25, 5, 5);
+            }
+        }
+
+        function renderEnemies() {
+            for (const enemy of enemies) {
+                const x = enemy.position.x - gameState.cameraOffset.x;
+                const y = enemy.position.y - gameState.cameraOffset.y;
+                
+                // Não renderizar se estiver fora da tela
+                if (x + 50 < 0 || x > canvas.width || y + 50 < 0 || y > canvas.height) {
+                    continue;
+                }
+                
+                // Diferentes aparências baseadas no tipo de inimigo
+                if (enemy.type === 'guerreiro') {
+                    ctx.fillStyle = '#ff3333';
+                    ctx.fillRect(x, y, 50, 50);
+                    
+                    // Detalhes do guerreiro
+                    ctx.fillStyle = '#aa2222';
+                    ctx.fillRect(x + 10, y + 10, 30, 15); // Torso
+                    ctx.fillRect(x + 5, y + 25, 40, 20); // Pernas
+                } else if (enemy.type === 'lobo') {
+                    ctx.fillStyle = '#88d8f7';
+                    ctx.beginPath();
+                    ctx.ellipse(x + 25, y + 25, 25, 15, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Focinho
+                    ctx.fillStyle = '#66b0d0';
+                    ctx.beginPath();
+                    ctx.ellipse(x + 40, y + 25, 10, 8, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Olhos
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.arc(x + 35, y + 20, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Barra de vida do inimigo
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(x, y - 10, 50, 5);
+                ctx.fillStyle = '#33ff33';
+                ctx.fillRect(x, y - 10, 50 * (enemy.health / enemy.maxHealth), 5);
+                
+                // Nome do inimigo
+                if (enemy.name) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '10px Arial';
+                    ctx.fillText(enemy.name, x, y - 15);
+                }
+            }
+        }
+
+        function renderAbilityEffects() {
+            for (const effect of abilityEffects) {
+                const x = effect.x - gameState.cameraOffset.x;
+                const y = effect.y - gameState.cameraOffset.y;
+                
+                // Não renderizar se estiver fora da tela
+                if (x + effect.width < 0 || x > canvas.width || 
+                    y + effect.height < 0 || y > canvas.height) {
+                    continue;
+                }
+                
+                if (effect.type === 'attack') {
+                    ctx.fillStyle = 'rgba(100, 200, 255, 0.7)';
+                    ctx.fillRect(x, y, effect.width, effect.height);
+                } else if (effect.type === 'dash') {
+                    ctx.fillStyle = 'rgba(0, 200, 255, 0.5)';
+                    ctx.fillRect(x, y, effect.width, effect.height);
+                } else if (effect.type === 'iceOrb') {
+                    // Orbe de gelo animado
+                    ctx.fillStyle = 'rgba(136, 216, 247, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(x + effect.width/2, y + effect.height/2, effect.width/2, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x + effect.width/2, y + effect.height/2, effect.width/2, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    // Padrão interno
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.beginPath();
+                    ctx.arc(x + effect.width/2, y + effect.height/2, effect.width/3, 0, Math.PI * 2);
+                    ctx.stroke();
+                } else if (effect.type === 'crystalPrison') {
+                    // Prisão de cristal
+                    ctx.fillStyle = 'rgba(168, 208, 230, 0.6)';
+                    ctx.fillRect(x, y, effect.width, effect.height);
+                    
+                    // Bordas cristalinas
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, effect.width, effect.height);
+                    
+                    // Detalhes internos
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.beginPath();
+                    ctx.moveTo(x, y + effect.height/2);
+                    ctx.lineTo(x + effect.width, y + effect.height/2);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x + effect.width/2, y);
+                    ctx.lineTo(x + effect.width/2, y + effect.height);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function renderParticles() {
+            for (const particle of particles) {
+                const x = particle.x - gameState.cameraOffset.x;
+                const y = particle.y - gameState.cameraOffset.y;
+                
+                // Não renderizar se estiver fora da tela
+                if (x + particle.size < 0 || x > canvas.width || 
+                    y + particle.size < 0 || y > canvas.height) {
+                    continue;
+                }
+                
+                if (particle.type === 'snow') {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(x, y, particle.size, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (particle.type === 'ice' || particle.type === 'iceTrail') {
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, particle.size, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (particle.type === 'crystal') {
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + particle.size, y - particle.size);
+                    ctx.lineTo(x + particle.size * 2, y);
+                    ctx.lineTo(x + particle.size, y + particle.size);
+                    ctx.closePath();
+                    ctx.fill();
+                } else if (particle.type === 'damage') {
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, particle.size, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (particle.type === 'dust') {
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, particle.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        // ===== SISTEMA DE HABILIDADES =====
+        function useAbility(key) {
+            // Verificar se a habilidade está em cooldown
+            if (gameState.abilitiesCooldown[key] > 0) return;
+            
+            // Encontrar a habilidade no campeão atual
+            const ability = currentChampion.abilities.find(a => a.key === key);
+            if (!ability) return;
+            
+            // Verificar mana suficiente
+            if (gameState.playerMana < ability.manaCost) return;
+            
+            // Definir cooldown
+            gameState.abilitiesCooldown[key] = ability.cooldown;
+            
+            // Executar a habilidade
+            ability.execute();
+            
+            // Atualizar visual de cooldown no botão
+            const btn = document.getElementById(`ability-${key.toLowerCase()}`);
+            if (btn) {
+                btn.classList.add('cooldown');
+            }
+        }
+
+        function addAbilityEffect(effect) {
+            effect.timer = effect.duration || 1000;
+            effect.origin = effect.origin || 'player';
+            abilityEffects.push(effect);
+        }
+
+        // ===== SISTEMA DE XP E LEVEL UP =====
+        function gainXP(amount) {
+            gameState.playerXP += amount;
+            
+            // Partículas de XP
+            for (let i = 0; i < 5; i++) {
+                particles.push({
+                    x: gameState.playerPosition.x + 25,
+                    y: gameState.playerPosition.y,
+                    speed: 1 + Math.random() * 2,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: -2 - Math.random() * 2,
+                    size: 2 + Math.random() * 3,
+                    life: 1000 + Math.random() * 500,
+                    color: '#9c27b0',
+                    type: 'xp'
+                });
+            }
+            
+            // Verificar se subiu de nível
+            if (gameState.playerXP >= gameState.playerNextLevelXP) {
+                levelUp();
+            }
+            
+            updateXPBar();
+            updatePlayerStats();
+        }
+
+        function levelUp() {
+            gameState.playerLevel++;
+            gameState.playerXP -= gameState.playerNextLevelXP;
+            gameState.playerNextLevelXP = Math.floor(gameState.playerNextLevelXP * 1.5);
+            
+            // Mostrar menu de level up
+            const levelUpMenu = document.getElementById('level-up');
+            levelUpMenu.style.display = 'block';
+            levelUpMenu.style.animation = 'levelUp 0.5s forwards';
+            
+            // Pausar o jogo
+            gameState.gamePaused = true;
+        }
+
+        function applyUpgrade(upgradeType) {
+            // Aplicar a melhoria escolhida
+            switch(upgradeType) {
+                case 'health':
+                    gameState.playerMaxHealth += 20;
+                    gameState.playerHealth = gameState.playerMaxHealth;
+                    break;
+                case 'mana':
+                    gameState.playerMaxMana += 30;
+                    gameState.playerMana = gameState.playerMaxMana;
+                    break;
+                case 'damage':
+                    gameState.playerDamage += 5;
+                    break;
+            }
+            
+            // Esconder menu de level up
+            const levelUpMenu = document.getElementById('level-up');
+            levelUpMenu.style.display = 'none';
+            
+            // Retomar o jogo
+            gameState.gamePaused = false;
+            
+            // Atualizar UI
+            updateHealthBar();
+            updateManaBar();
+            updatePlayerStats();
+        }
+
+        // ===== SISTEMA DE NARRATIVA E CUTSCENES =====
+        function showIntroCutscene() {
+            gameState.inCutscene = true;
+            const overlay = document.getElementById('cinematic-overlay');
+            const textElement = document.getElementById('cinematic-text');
+            
+            overlay.style.display = 'flex';
+            
+            // Sequência de introdução
+            const introTexts = [
+                "O mundo treme sob o peso do desequilíbrio. Ignys, o Reino do Fogo, deseja guerra e já move suas tropas em direção aos reinos vizinhos.",
+                "Em Tupãry, o Coração de Gelo guarda a metade maligna de Anhangá, o espírito que traz caos.",
+                "Umbra convoca o Escolhido: recuperar o Coração de Gelo e impedir que Ignys obtenha poder suficiente para dominar todos os reinos.",
+                "Cada passo, cada luta, cada escolha será decisiva para a sobrevivência de todos."
+            ];
+            
+            let currentText = 0;
+            
+            function showNextText() {
+                if (currentText < introTexts.length) {
+                    textElement.textContent = introTexts[currentText];
+                    textElement.style.animation = 'none';
+                    void textElement.offsetWidth; // Trigger reflow
+                    textElement.style.animation = 'fadeInText 3s forwards';
+                    currentText++;
+                    setTimeout(showNextText, 4000);
+                } else {
+                    // Após a cutscene, iniciar a primeira fase
+                    overlay.style.display = 'none';
+                    gameState.inCutscene = false;
+                    loadPhase(1);
+                }
+            }
+            
+            showNextText();
+        }
+
+        function showPhaseIntro(phaseNumber) {
+            gameState.inCutscene = true;
+            const overlay = document.getElementById('cinematic-overlay');
+            const textElement = document.getElementById('cinematic-text');
+            
+            overlay.style.display = 'flex';
+            
+            let phaseTitle = '';
+            let phaseDescription = '';
+            
+            switch(phaseNumber) {
+                case 1:
+                    phaseTitle = "Missão 1 – As Muralhas da Aurora";
+                    phaseDescription = "Tarek, o Guerreiro, bloqueia a passagem. Prove seu valor para atravessar Tupãry!";
+                    break;
+                case 2:
+                    phaseTitle = "Missão 2 – Torre de Cristal";
+                    phaseDescription = "Solenne, a Maga da Luz, alerta sobre os perigos do Coração de Gelo.";
+                    break;
+                // Outras fases...
+            }
+            
+            textElement.innerHTML = `<h2>${phaseTitle}</h2><p>${phaseDescription}</p>`;
+            textElement.style.animation = 'none';
+            void textElement.offsetWidth; // Trigger reflow
+            textElement.style.animation = 'fadeInText 3s forwards';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                gameState.inCutscene = false;
+            }, 4000);
+        }
+
+        function showDialog(speaker, text, options) {
+            gameState.inDialog = true;
+            const dialogContainer = document.getElementById('dialog-container');
+            const dialogText = document.getElementById('dialog-text');
+            const dialogOptions = document.getElementById('dialog-options');
+            
+            dialogContainer.style.display = 'block';
+            dialogText.innerHTML = `<strong>${speaker}:</strong> ${text}`;
+            
+            // Adicionar opções se fornecidas
+            dialogOptions.innerHTML = '';
+            if (options && options.length > 0) {
+                options.forEach((option, index) => {
+                    const button = document.createElement('div');
+                    button.className = 'dialog-option';
+                    button.textContent = option.text;
+                    button.addEventListener('click', () => {
+                        dialogContainer.style.display = 'none';
+                        gameState.inDialog = false;
+                        if (option.action) option.action();
+                    });
+                    dialogOptions.appendChild(button);
+                });
+            } else {
+                // Se não houver opções, adicionar botão padrão para continuar
+                const button = document.createElement('div');
+                button.className = 'dialog-option';
+                button.textContent = 'Continuar';
+                button.addEventListener('click', () => {
+                    dialogContainer.style.display = 'none';
+                    gameState.inDialog = false;
+                });
+                dialogOptions.appendChild(button);
+            }
+        }
+
+        function skipCutscene() {
+            const overlay = document.getElementById('cinematic-overlay');
+            overlay.style.display = 'none';
+            gameState.inCutscene = false;
+            
+            // Se estamos na introdução, iniciar a primeira fase
+            if (gameState.currentPhase === 0) {
+                loadPhase(1);
+            }
+        }
+
+        // ===== UTILITÁRIOS DE UI =====
+        function updateHealthBar() {
+            const healthFill = document.getElementById('health-fill');
+            if (healthFill) {
+                healthFill.style.width = `${(gameState.playerHealth / gameState.playerMaxHealth) * 100}%`;
+            }
+        }
+
+        function updateManaBar() {
+            const manaFill = document.getElementById('mana-fill');
+            if (manaFill) {
+                manaFill.style.width = `${(gameState.playerMana / gameState.playerMaxMana) * 100}%`;
+            }
+        }
+        
+        function updateXPBar() {
+            const xpFill = document.getElementById('xp-fill');
+            if (xpFill) {
+                xpFill.style.width = `${(gameState.playerXP / gameState.playerNextLevelXP) * 100}%`;
+            }
+        }
+        
+        function updatePlayerStats() {
+            const statsElement = document.getElementById('player-stats');
+            if (statsElement) {
+                statsElement.innerHTML = `Nível: ${gameState.playerLevel}<br>XP: ${gameState.playerXP}/${gameState.playerNextLevelXP}`;
+            }
+        }
+
+        function togglePause() {
+            gameState.gamePaused = !gameState.gamePaused;
+            const pauseMenu = document.getElementById('pause-menu');
+            
+            if (gameState.gamePaused) {
+                pauseMenu.style.display = 'flex';
+            } else {
+                pauseMenu.style.display = 'none';
+            }
+        }
+
+        function restartPhase() {
+            togglePause();
+            loadPhase(gameState.currentPhase);
+        }
+
+        function exitGame() {
+            // Voltar ao menu principal
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+            alert("Obrigado por jogar Tupãry: O Reino Congelado!");
+        }
+
+        function gameOver() {
+            showDialog("Sistema", "Você foi derrotado! Deseja tentar novamente?", [
+                { text: "Reiniciar Fase", action: () => loadPhase(gameState.currentPhase) },
+                { text: "Voltar ao Menu", action: () => exitGame() }
+            ]);
+        }
+
+        function completePhase() {
+            // Lógica ao completar uma fase
+            if (gameState.currentPhase < 5) {
+                showDialog("Sistema", "Fase concluída com sucesso! Preparando próxima fase...", [
+                    { 
+                        text: "Continuar", 
+                        action: () => {
+                            loadPhase(gameState.currentPhase + 1);
+                        } 
+                    }
+                ]);
+            } else {
+                // Jogo completo
+                showDialog("Narração", "Você recuperou o Coração de Gelo, mas a jornada está longe de terminar...", [
+                    { text: "Voltar ao Menu", action: () => exitGame() }
+                ]);
+            }
+        }
+
+        // ===== INICIAR O JOGO =====
+        window.onload = init;
+    </script>
+</body>
+</html>
