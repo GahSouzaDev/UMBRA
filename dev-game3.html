@@ -1,0 +1,4285 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tupãry: O Reino Congelado</title>
+    <style>
+        /* ===== VARIÁVEIS CSS ===== */
+        :root {
+            --primary-dark: #000000;
+            --primary-medium: #0a0a0a;
+            --primary-light: #1a1a1a;
+            --accent-gold: #d4af37;
+            --accent-gold-light: #f5d76e;
+            --accent-blue: #3a86ff;
+            --accent-ice: #90e0ef;
+            --accent-fire: #ff6b6b;
+            --accent-nature: #52b788;
+            --text-light: #f0f0f0;
+            --text-gray: #aaaaaa;
+            --health-color: var(--accent-fire);
+            --mana-color: var(--accent-blue);
+            --xp-color: var(--accent-gold);
+            --shadow-dark: rgba(0, 0, 0, 0.8);
+            --spike-color: #666666; /* Nova cor para espinhos */
+        }
+
+        /* ===== RESET E BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-medium) 50%, var(--primary-light) 100%);
+            color: var(--text-light);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        /* ===== CONTAINER PRINCIPAL ===== */
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 1600px; /* Mantém um aspecto razoável para desktop */
+            max-height: 700px;
+            overflow: hidden;
+            border: 3px solid var(--accent-gold);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); /* Sombra dourada */
+            background: linear-gradient(to bottom, #0f1419, #1a1a2e);
+        }
+
+        #game-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: transparent;
+        }
+
+        /* ===== ORIENTAÇÃO MOBILE ===== */
+        .orientation-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--primary-dark);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .orientation-warning h2 {
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .orientation-warning p {
+            color: var(--text-light);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .rotate-icon {
+            font-size: 48px;
+            margin: 20px 0;
+            animation: rotatePhone 2s infinite;
+        }
+
+        @keyframes rotatePhone {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+        }
+
+        /* ===== TELA DE INÍCIO/NOME ===== */
+        .start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--accent-gold);
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+        }
+
+        .game-subtitle {
+            font-size: 18px;
+            color: var(--accent-ice);
+            text-align: center;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .name-input-group {
+            margin-bottom: 30px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--accent-gold);
+            border-radius: 10px;
+            padding: 20px 30px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .name-input-group label {
+            display: block;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--accent-blue);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+        .name-input:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 10px var(--accent-gold-light);
+        }
+
+        .start-game-btn {
+            background: linear-gradient(45deg, var(--accent-gold), var(--accent-fire));
+            color: var(--primary-dark);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .start-game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .start-game-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ===== UI LAYER ===== */
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none; /* Permite cliques através da UI para o canvas */
+        }
+
+        /* ===== BARRAS DE STATUS ===== */
+        .status-bars {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .bar-container {
+            width: 200px;
+            height: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--text-light);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .health-fill {
+            background: linear-gradient(90deg, #ff6b6b, #ff3333);
+        }
+
+        .mana-fill {
+            background: linear-gradient(90deg, #4dabf7, #3366ff);
+        }
+
+        .xp-fill {
+            background: linear-gradient(90deg, var(--accent-gold-light), var(--accent-gold));
+        }
+
+        .bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .bar-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+        }
+
+        /* ===== STATS DO JOGADOR ===== */
+        .player-stats {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--accent-gold);
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 14px;
+            text-align: right;
+            min-width: 150px;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .stat-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: var(--accent-ice);
+            font-weight: bold;
+        }
+
+        .stat-value {
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        /* ===== SISTEMA DE HABILIDADES (Desktop) ===== */
+        .abilities-container {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .ability-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(26, 26, 46, 0.8));
+            border: 3px solid var(--accent-gold);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .ability-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .ability-btn:active {
+            transform: scale(0.95);
+        }
+
+        .ability-btn.cooldown {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .ability-btn.cooldown:hover {
+            transform: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .cooldown-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 0, 0, 0.8) 0deg);
+            transition: background 0.1s linear;
+        }
+
+        .ability-tooltip {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            width: 200px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .ability-btn:hover .ability-tooltip {
+            opacity: 1;
+        }
+
+        .tooltip-name {
+            color: var(--accent-gold);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .tooltip-description {
+            color: var(--text-light);
+            font-size: 12px;
+            line-height: 1.3;
+            margin-bottom: 5px;
+        }
+
+        .tooltip-cost {
+            color: var(--mana-color);
+            font-size: 11px;
+            font-style: italic;
+        }
+
+        /* ===== CONTROLES MOBILE (Botões D-pad) ===== */
+        .mobile-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            display: grid; /* Usar grid para posicionar */
+            grid-template-columns: 80px 80px auto 80px 80px; /* Colunas para D-pad e Ações */
+            grid-template-rows: 60px 60px 30px; /* Linhas para D-pad e Ações */
+            gap: 5px;
+            pointer-events: auto;
+            z-index: 5;
+        }
+        .mobile-dpad {
+            grid-area: 1 / 1 / 3 / 3; /* Ocupa as duas primeiras colunas e duas primeiras linhas */
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            width: 120px;
+            height: 120px;
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+        }
+
+        .dpad-btn {
+            background: var(--primary-medium);
+            border: 2px solid var(--accent-blue);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.1s;
+            border-radius: 5px;
+        }
+        .dpad-btn:active {
+            background: var(--accent-blue);
+            transform: scale(0.95);
+        }
+
+        .dpad-up { grid-area: 1 / 2 / 2 / 3; border-top-left-radius: 10px; border-top-right-radius: 10px;}
+        .dpad-left { grid-area: 2 / 1 / 3 / 2; border-top-left-radius: 10px; border-bottom-left-radius: 10px;}
+        .dpad-center { grid-area: 2 / 2 / 3 / 3; opacity: 0.3; pointer-events: none;}
+        .dpad-right { grid-area: 2 / 3 / 3 / 4; border-top-right-radius: 10px; border-bottom-right-radius: 10px;}
+        .dpad-down { grid-area: 3 / 2 / 4 / 3; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;}
+
+        .mobile-action-buttons {
+            grid-area: 1 / 4 / 3 / 6; /* Ocupa as últimas duas colunas e duas primeiras linhas */
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .mobile-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .mobile-btn:active {
+            transform: scale(0.9);
+            background: rgba(212, 175, 55, 0.3);
+        }
+
+        /* ===== SISTEMA DE DIÁLOGO ===== */
+        .dialog-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(10, 10, 10, 0.9));
+            border: 3px solid var(--accent-blue);
+            border-radius: 15px;
+            padding: 20px;
+            display: none;
+            pointer-events: auto;
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .dialog-speaker {
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dialog-text {
+            color: var(--text-light);
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            min-height: 60px;
+        }
+
+        .dialog-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dialog-option {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(255, 107, 107, 0.2));
+            border: 2px solid var(--accent-gold);
+            border-radius: 8px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-light);
+            font-weight: bold;
+        }
+
+        .dialog-option:hover {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(255, 107, 107, 0.4));
+            transform: translateX(5px);
+        }
+
+        .dialog-option:active {
+            transform: translateX(5px) scale(0.98);
+        }
+
+        /* ===== CUTSCENES ===== */
+        .cinematic-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 10, 0.95));
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .cinematic-text {
+            font-size: 20px;
+            text-align: center;
+            max-width: 80%;
+            margin-bottom: 30px;
+            color: var(--text-light);
+            line-height: 1.6;
+            opacity: 0;
+            animation: fadeInText 3s forwards;
+        }
+
+        .cinematic-title {
+            font-size: 32px;
+            color: var(--accent-gold);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .skip-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-light);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .skip-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ===== PAUSE MENU ===== */
+        .pause-btn {
+            position: absolute;
+            top: 15px;
+            right: 180px; /* Ajustado para não colidir com o boss bar na mobile */
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-light);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .pause-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: scale(1.1);
+        }
+
+        .pause-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 40;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .pause-title {
+            font-size: 36px;
+            color: var(--accent-gold);
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .menu-option {
+            background: linear-gradient(45deg, var(--accent-gold), var(--accent-fire));
+            color: var(--primary-dark);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 200px;
+        }
+
+        .menu-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* ===== LEVEL UP (AUTOMÁTICO) ===== */
+        .level-up {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 10, 0.95));
+            border: 3px solid var(--accent-gold);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            z-index: 35;
+            display: none;
+            min-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .level-up-title {
+            font-size: 28px;
+            color: var(--accent-gold);
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .level-up-subtitle {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+
+        /* ===== CHECKPOINT SYSTEM ===== */
+        .checkpoint-notification {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--accent-blue);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            z-index: 25;
+            display: none;
+            animation: checkpointPulse 2s ease-in-out;
+        }
+
+        @keyframes checkpointPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+        }
+
+        .checkpoint-text {
+            color: var(--accent-blue);
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .checkpoint-description {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        /* ===== ANIMAÇÕES ===== */
+        @keyframes fadeInText {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes levelUpAnimation {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        /* ===== EFEITOS ESPECIAIS ===== */
+        .screen-flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 15;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .screen-flash.active {
+            animation: flash 0.3s ease-out;
+        }
+
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .boss-health-bar {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid var(--accent-fire);
+            border-radius: 10px;
+            display: none;
+            overflow: hidden;
+            z-index: 10; /* Para aparecer acima de elementos do jogo */
+        }
+
+        .boss-health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--health-color), var(--accent-fire));
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .boss-health-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+            animation: shimmer 1.5s infinite;
+        }
+
+        .boss-name {
+            position: absolute;
+            top: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent-fire);
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 10;
+        }
+
+        /* ===== PARTÍCULAS E NÚMEROS ===== */
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .damage-number, .xp-number {
+            position: absolute;
+            font-weight: bold;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            z-index: 10;
+            animation: damageNumber 1s ease-out forwards;
+        }
+        .damage-number { color: var(--accent-fire); }
+        .xp-number { color: var(--xp-color); animation: xpNumber 1.5s ease-out forwards; }
+
+        @keyframes damageNumber {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
+        }
+
+        @keyframes xpNumber {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            100% { opacity: 0; transform: translateY(-30px) scale(1.2); }
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 800px) {
+            #game-container {
+                width: 100vw;
+                height: 100vh;
+                max-width: none;
+                max-height: none;
+                border: none;
+                border-radius: 0;
+            }
+
+            .mobile-controls {
+                display: grid; /* Forçar grid em mobile */
+            }
+
+            .abilities-container {
+                display: none; /* Esconder desktop abilities */
+            }
+
+            .status-bars {
+                top: 10px;
+                left: 10px;
+            }
+
+            .bar-container {
+                width: 150px;
+                height: 12px;
+            }
+
+            .player-stats {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 12px;
+                min-width: 120px;
+            }
+
+            .pause-btn {
+                top: 10px;
+                right: 140px;
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+
+            .dialog-container {
+                width: 95%;
+                padding: 15px;
+                bottom: 15px;
+            }
+
+            .dialog-text {
+                font-size: 14px;
+                min-height: 50px;
+            }
+
+            .cinematic-text {
+                font-size: 16px;
+                max-width: 90%;
+            }
+
+            .cinematic-title {
+                font-size: 24px;
+            }
+
+            .skip-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .status-bars {
+                top: 5px;
+                left: 5px;
+            }
+
+            .bar-container {
+                width: 120px;
+                height: 10px;
+            }
+
+            .player-stats {
+                top: 5px;
+                right: 5px;
+                padding: 5px 8px;
+                font-size: 10px;
+                min-width: 100px;
+            }
+
+            .mobile-dpad {
+                bottom: 10px;
+                left: 10px;
+                width: 100px;
+                height: 100px;
+            }
+
+            .mobile-action-buttons {
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .mobile-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Aviso de Orientação Mobile -->
+    <div class="orientation-warning" id="orientation-warning">
+        <div class="rotate-icon">📱</div>
+        <h2>Vire o Dispositivo</h2>
+        <p>Para uma melhor experiência de jogo, por favor vire seu dispositivo para o modo paisagem (horizontal).</p>
+    </div>
+
+    <!-- Container Principal do Jogo -->
+    <div id="game-container">
+        <!-- Tela de Início / Nome do Jogador -->
+        <div class="start-screen" id="start-screen">
+            <h1 class="game-title">TUPÃRY</h1>
+            <p class="game-subtitle">O Reino Congelado</p>
+            
+            <div class="name-input-group">
+                <label for="player-name">Desperte, Escolhido! Diga-me seu nome:</label>
+                <input type="text" id="player-name" class="name-input" placeholder="Seu nome, para que o destino o chame..." maxlength="20">
+            </div>
+            
+            <button class="start-game-btn" id="start-game-btn" disabled>Iniciar Jornada</button>
+        </div>
+
+        <!-- Canvas do Jogo -->
+        <canvas id="game-canvas"></canvas>
+        
+        <!-- Flash de Tela -->
+        <div class="screen-flash" id="screen-flash"></div>
+        
+        <!-- Container de Partículas -->
+        <div class="particle-container" id="particle-container"></div>
+
+        <!-- UI Layer -->
+        <div class="ui-layer">
+            <!-- Barras de Status -->
+            <div class="status-bars">
+                <div class="status-bar">
+                    <div class="status-icon">❤️</div>
+                    <div class="bar-container">
+                        <div class="bar-fill health-fill" id="health-fill"></div>
+                        <div class="bar-text" id="health-text">100/100</div>
+                    </div>
+                </div>
+                
+                <div class="status-bar">
+                    <div class="status-icon">💙</div>
+                    <div class="bar-container">
+                        <div class="bar-fill mana-fill" id="mana-fill"></div>
+                        <div class="bar-text" id="mana-text">100/100</div>
+                    </div>
+                </div>
+                
+                <div class="status-bar">
+                    <div class="status-icon">⭐</div>
+                    <div class="bar-container">
+                        <div class="bar-fill xp-fill" id="xp-fill"></div>
+                        <div class="bar-text" id="xp-text">0/100</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats do Jogador -->
+            <div class="player-stats" id="player-stats">
+                <div class="stat-line">
+                    <span class="stat-label">Nível:</span>
+                    <span class="stat-value" id="player-level">1</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-label">Classe:</span>
+                    <span class="stat-value" id="player-class">Escolhido</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-label">Dano:</span>
+                    <span class="stat-value" id="player-damage">15</span>
+                </div>
+            </div>
+            
+            <!-- Barra de Vida do Boss -->
+            <div class="boss-name" id="boss-name">TAREK, O GUERREIRO</div>
+            <div class="boss-health-bar" id="boss-health-bar">
+                <div class="boss-health-fill" id="boss-health-fill"></div>
+            </div>
+            
+            <!-- Habilidades (Desktop) -->
+            <div class="abilities-container" id="abilities-container">
+                <div class="ability-btn" id="ability-u" data-key="U">
+                    U
+                    <div class="cooldown-overlay"></div>
+                    <div class="ability-tooltip">
+                        <div class="tooltip-name" id="tooltip-u-name">Ataque Rápido</div>
+                        <div class="tooltip-description" id="tooltip-u-desc">Golpe ágil de curta distância.</div>
+                        <div class="tooltip-cost" id="tooltip-u-cost">Custo: 0 Mana</div>
+                    </div>
+                </div>
+                
+                <div class="ability-btn" id="ability-i" data-key="I">
+                    I
+                    <div class="cooldown-overlay"></div>
+                    <div class="ability-tooltip">
+                        <div class="tooltip-name" id="tooltip-i-name">Projétil de Energia</div>
+                        <div class="tooltip-description" id="tooltip-i-desc">Lança um projétil rápido à distância.</div>
+                        <div class="tooltip-cost" id="tooltip-i-cost">Custo: 15 Mana</div>
+                    </div>
+                </div>
+                
+                <div class="ability-btn" id="ability-o" data-key="O">
+                    O
+                    <div class="cooldown-overlay"></div>
+                    <div class="ability-tooltip">
+                        <div class="tooltip-name" id="tooltip-o-name">Explosão Arcana</div>
+                        <div class="tooltip-description" id="tooltip-o-desc">Causa uma explosão de energia que danifica múltiplos inimigos à frente.</div>
+                        <div class="tooltip-cost" id="tooltip-o-cost">Custo: 30 Mana</div>
+                    </div>
+                </div>
+                
+                <div class="ability-btn" id="ability-p" data-key="P">
+                    P
+                    <div class="cooldown-overlay"></div>
+                    <div class="ability-tooltip">
+                        <div class="tooltip-name" id="tooltip-p-name">Fúria de Umbra</div>
+                        <div class="tooltip-description" id="tooltip-p-desc">Canaliza a energia de Umbra para ficar mais rápido, resistente e poderoso no ataque.</div>
+                        <div class="tooltip-cost" id="tooltip-p-cost">Custo: 50 Mana</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Botão de Pausa -->
+            <div class="pause-btn" id="pause-btn">⏸️</div>
+            
+            <!-- Controles Mobile (D-pad e Ações) -->
+            <div class="mobile-controls" id="mobile-controls">
+                <div class="mobile-dpad">
+                    <div class="dpad-btn dpad-up" id="mobile-up">▲</div>
+                    <div class="dpad-btn dpad-left" id="mobile-left">◀</div>
+                    <div class="dpad-btn dpad-center"></div>
+                    <div class="dpad-btn dpad-right" id="mobile-right">▶</div>
+                    <div class="dpad-btn dpad-down" id="mobile-down">▼</div>
+                </div>
+                
+                <div class="mobile-action-buttons">
+                    <div class="mobile-btn" id="mobile-ability-u">U</div>
+                    <div class="mobile-btn" id="mobile-ability-i">I</div>
+                    <div class="mobile-btn" id="mobile-ability-o">O</div>
+                    <div class="mobile-btn" id="mobile-ability-p">P</div>
+                </div>
+            </div>
+            
+            <!-- Sistema de Diálogo -->
+            <div class="dialog-container" id="dialog-container">
+                <div class="dialog-speaker" id="dialog-speaker"></div>
+                <div class="dialog-text" id="dialog-text"></div>
+                <div class="dialog-options" id="dialog-options"></div>
+            </div>
+            
+            <!-- Overlay de Cutscene -->
+            <div class="cinematic-overlay" id="cinematic-overlay">
+                <div class="cinematic-title" id="cinematic-title"></div>
+                <div class="cinematic-text" id="cinematic-text"></div>
+                <button class="skip-btn" id="skip-btn">Pular (Espaço)</button>
+            </div>
+            
+            <!-- Menu de Pausa -->
+            <div class="pause-menu" id="pause-menu">
+                <h2 class="pause-title">JOGO PAUSADO</h2>
+                <button class="menu-option" id="resume-btn">Continuar</button>
+                <button class="menu-option" id="restart-btn">Reiniciar Checkpoint</button>
+                <button class="menu-option" id="save-btn">Salvar Progresso</button>
+                <button class="menu-option" id="exit-btn">Voltar ao Menu</button>
+            </div>
+            
+            <!-- Sistema de Level Up (Automático) -->
+            <div class="level-up" id="level-up">
+                <h2 class="level-up-title">NÍVEL AUMENTADO!</h2>
+                <p class="level-up-subtitle">Seu poder cresce, Escolhido!</p>
+                <button class="menu-option" id="continue-level-up-btn">Continuar</button>
+            </div>
+            
+            <!-- Notificação de Checkpoint -->
+            <div class="checkpoint-notification" id="checkpoint-notification">
+                <div class="checkpoint-text">CHECKPOINT SALVO</div>
+                <div class="checkpoint-description">Seu progresso foi salvo automaticamente</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURAÇÕES GLOBAIS =====
+        const CONFIG = {
+            // Física do jogo
+            GRAVITY: 0.6,
+            PLAYER_SPEED: 4,
+            JUMP_FORCE: 14,
+            CROUCH_HEIGHT: 30,
+            NORMAL_HEIGHT: 50,
+            
+            // Mundo
+            WORLD_WIDTH: 5000,
+            WORLD_HEIGHT: 450,
+            CAMERA_SMOOTHING: 0.08,
+            
+            // Combate
+            DAMAGE_FLASH_DURATION: 200,
+            INVINCIBILITY_DURATION: 1000,
+            
+            // Regeneração
+            MANA_REGEN_RATE: 1.5, // Aumentado significativamente
+            HEALTH_REGEN_RATE: 0.05,
+            
+            // Partículas
+            MAX_PARTICLES: 200,
+            SNOW_SPAWN_RATE: 0.15,
+            
+            // Performance
+            TARGET_FPS: 60,
+            DELTA_TIME_CAP: 32,
+
+            // Habilidades do Escolhido (Poderes de Umbra)
+            UMBRA_FURY_DURATION: 7000, // Duração da Ultimate (7 segundos)
+            UMBRA_FURY_DAMAGE_BOOST: 1.5, // Dano base do ataque U na ultimate
+            UMBRA_FURY_SPEED_BOOST: 1.3, // Aumento de velocidade na ultimate
+            UMBRA_FURY_DAMAGE_REDUCTION: 0.5, // Redução de dano recebido na ultimate
+
+            // CAMINHOS DE RECURSOS (Imagens e Áudios)
+            // IMPORTANTE: Substitua estes caminhos pelos seus próprios arquivos!
+            // Exemplo: 'player_idle.gif', 'sound_impact.mp3'
+            ASSET_PATHS: {
+                // Sprites do Jogador (substitua por caminhos para suas folhas de sprites ou GIFs)
+                player_idle: 'assets/sprites/player/idle.gif', // Placeholder
+                player_walk: 'assets/sprites/player/walk.gif', // Placeholder
+                player_jump: 'assets/sprites/player/jump.gif', // Placeholder
+                player_crouch: 'assets/sprites/player/crouch.gif', // Placeholder
+                player_attack_u: 'assets/sprites/player/attack_u.gif', // Placeholder
+                player_attack_i: 'assets/sprites/player/attack_i.gif', // Placeholder
+                player_attack_o: 'assets/sprites/player/attack_o.gif', // Placeholder
+                player_ultimate: 'assets/sprites/player/ultimate_form.gif', // Placeholder para Fúria de Umbra
+
+                // Sprites de Inimigos e Bosses
+                sentinel_sprite: 'assets/sprites/enemies/sentinel.gif', // Placeholder
+                tarek_sprite: 'assets/sprites/bosses/tarek.gif', // Placeholder
+
+                // Efeitos de Habilidade e Partículas
+                projectile_i: 'assets/sprites/effects/projectile_i.gif', // Placeholder para Projétil de Energia
+                explosion_o: 'assets/sprites/effects/explosion_o.gif', // Placeholder para Explosão Arcana
+                tarek_ice_orb: 'assets/sprites/effects/tarek_ice_orb.gif', // Placeholder para Orbe Congelante de Tarek
+                tarek_prison: 'assets/sprites/effects/tarek_prison.gif', // Placeholder para Prisão de Gelo de Tarek
+                // ... adicione outros efeitos visuais
+
+                // Áudios
+                music_menu: 'assets/audio/music/menu.mp3', // Placeholder
+                music_platforming: 'assets/audio/music/platforming.mp3', // Placeholder para música de plataforma
+                music_boss_tarek: 'assets/audio/music/tarek_boss.mp3', // Placeholder para música de boss
+                sfx_jump: 'assets/audio/sfx/jump.mp3', // Placeholder
+                sfx_attack_u: 'assets/audio/sfx/attack_u.mp3', // Placeholder
+                sfx_ability_i: 'assets/audio/sfx/ability_i.mp3', // Placeholder
+                sfx_ability_o: 'assets/audio/sfx/ability_o.mp3', // Placeholder
+                sfx_ability_p: 'assets/audio/sfx/ability_p.mp3', // Placeholder
+                sfx_damage_player: 'assets/audio/sfx/damage_player.mp3', // Placeholder
+                sfx_damage_enemy: 'assets/audio/sfx/damage_enemy.mp3', // Placeholder
+                sfx_level_up: 'assets/audio/sfx/level_up.mp3', // Placeholder
+                sfx_boss_roar: 'assets/audio/sfx/boss_roar.mp3', // Placeholder para Tarek
+                // ... adicione outros sons
+            }
+        };
+
+        // ===== VARIÁVEIS GLOBAIS =====
+        let canvas, ctx;
+        let isMobile = false;
+        let isLandscape = true;
+        
+        // Estado do jogo
+        let gameState = {
+            // Jogador
+            playerName: '',
+            playerClass: 'Escolhido', // Fixo para o Escolhido
+            playerHealth: 100,
+            playerMaxHealth: 100,
+            playerMana: 100,
+            playerMaxMana: 100,
+            playerPosition: { x: 100, y: 300 },
+            playerVelocity: { x: 0, y: 0 },
+            playerLevel: 1,
+            playerXP: 0,
+            playerNextLevelXP: 100,
+            playerDamage: 15,
+            playerSpeed: CONFIG.PLAYER_SPEED,
+            
+            // Estados do Jogador
+            isGrounded: false,
+            isCrouching: false,
+            isInvincible: false,
+            invincibilityTimer: 0,
+            facing: 'right',
+            currentAnimation: 'idle',
+            isUmbraFurious: false, // Novo estado para Ultimate
+            umbraFuryTimer: 0,
+            
+            // Habilidades
+            abilitiesCooldown: { U: 0, I: 0, O: 0, P: 0 },
+            abilitiesMaxCooldown: { U: 0.5, I: 2, O: 4, P: 20 }, // Cooldowns ajustados
+            
+            // Controle de jogo
+            gamePaused: false,
+            inDialog: false,
+            inCutscene: false,
+            inStartScreen: true, // Novo estado para a tela inicial
+            gameStarted: false,
+            
+            // Câmera
+            cameraOffset: { x: 0, y: 0 },
+            targetCameraOffset: { x: 0, y: 0 },
+            
+            // Fase atual
+            currentPhase: 0, // 0: Start Screen, 1: Intro Cinematic, 2: Tarek Encounter, 3: Tarek Boss Fight, 4: Platforming
+            currentCheckpoint: 'start',
+            
+            // Boss fight
+            inBossFight: false,
+            bossDefeated: false,
+
+            // Tarek Encounter
+            inTarekEncounter: false, // Novo estado para o diálogo fixo
+            tarekDialogStep: 0,
+            tarekDialogCompleted: false,
+
+            // Fixed camera for specific encounters
+            fixedCamera: false,
+            fixedCameraTarget: { x: 0, y: 0 } // Posição para onde a câmera deve ficar fixa
+        };
+
+        // Arrays de entidades
+        let platforms = [];
+        let particles = [];
+        let backgroundLayers = [];
+        let enemies = [];
+        let abilityEffects = [];
+        let damageNumbers = [];
+        let checkpoints = [];
+        
+        // Controles
+        let keys = {};
+        let lastTime = 0;
+        let animationFrameId = null;
+        
+        // Mobile controls
+        let mobileControls = {
+            up: false,
+            down: false,
+            left: false,
+            right: false,
+            abilityU: false,
+            abilityI: false,
+            abilityO: false,
+            abilityP: false
+        };
+
+        // Player Character (Chosen One) definition
+        let currentChampion = null;
+
+        // ===== Sistema de Áudio (Novo) =====
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const audioSources = {}; // Cache para buffers de áudio
+        let currentMusic = null;
+
+        async function loadSound(name, url) {
+            try {
+                const response = await fetch(url);
+                const arrayBuffer = await response.arrayBuffer();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                audioSources[name] = audioBuffer;
+                console.log(`Áudio '${name}' carregado.`);
+            } catch (error) {
+                console.error(`Erro ao carregar o áudio '${name}':`, error);
+            }
+        }
+
+        function playSound(name, volume = 1.0) {
+            if (!audioSources[name]) {
+                console.warn(`Áudio '${name}' não carregado.`);
+                return;
+            }
+            const source = audioContext.createBufferSource();
+            source.buffer = audioSources[name];
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = volume * gameSettings.sfxVolume;
+            source.connect(gainNode).connect(audioContext.destination);
+            source.start(0);
+        }
+
+        function playMusic(name, loop = true, volume = 0.7) {
+            if (currentMusic) {
+                currentMusic.stop();
+            }
+
+            if (!audioSources[name]) {
+                console.warn(`Música '${name}' não carregada.`);
+                return;
+            }
+
+            const source = audioContext.createBufferSource();
+            source.buffer = audioSources[name];
+            source.loop = loop;
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = volume * gameSettings.musicVolume;
+            source.connect(gainNode).connect(audioContext.destination);
+            source.start(0);
+            currentMusic = source;
+            console.log(`Tocando música: '${name}'.`);
+        }
+
+        function stopMusic() {
+            if (currentMusic) {
+                currentMusic.stop();
+                currentMusic = null;
+                console.log('Música parada.');
+            }
+        }
+
+        // ===== DETECÇÃO DE DISPOSITIVO =====
+        function detectDevice() {
+            isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                      window.innerWidth <= 800 || 
+                      'ontouchstart' in window;
+            
+            if (isMobile) {
+                checkOrientation();
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(checkOrientation, 100);
+                });
+                window.addEventListener('resize', checkOrientation);
+            }
+        }
+
+        function checkOrientation() {
+            if (!isMobile) return;
+            
+            isLandscape = window.innerWidth > window.innerHeight;
+            const orientationWarning = document.getElementById('orientation-warning');
+            
+            if (!isLandscape) {
+                orientationWarning.style.display = 'flex';
+                if (gameState.gameStarted && !gameState.gamePaused) { // Pausa o jogo se virar e não estiver pausado
+                    togglePause();
+                }
+            } else {
+                orientationWarning.style.display = 'none';
+                if (gameState.gameStarted && gameState.gamePaused && !gameState.inStartScreen && !gameState.inCutscene) { // Volta do pause se estava pausado por orientação
+                    // Só despausa se não estiver em cutscene ou tela inicial
+                    togglePause();
+                }
+            }
+            updateMobileControlsVisibility();
+        }
+
+        // ===== SISTEMA DE COOKIES =====
+        function setCookie(name, value, days = 30) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function saveProgress() {
+            const saveData = {
+                playerName: gameState.playerName,
+                playerLevel: gameState.playerLevel,
+                playerXP: gameState.playerXP,
+                playerMaxHealth: gameState.playerMaxHealth,
+                playerMaxMana: gameState.playerMaxMana,
+                playerDamage: gameState.playerDamage,
+                playerSpeed: gameState.playerSpeed,
+                currentPhase: gameState.currentPhase,
+                currentCheckpoint: gameState.currentCheckpoint,
+                bossDefeated: gameState.bossDefeated,
+                // Salvar quaisquer outros estados relevantes aqui
+            };
+            
+            setCookie('tupary_save', JSON.stringify(saveData));
+            showCheckpointNotification('Progresso Salvo', 'Seu progresso foi salvo com sucesso!');
+        }
+
+        function loadProgress() {
+            const saveData = getCookie('tupary_save');
+            if (saveData) {
+                try {
+                    const data = JSON.parse(saveData);
+                    return data;
+                } catch (e) {
+                    console.error('Erro ao carregar save:', e);
+                }
+            }
+            return null;
+        }
+
+        // ===== INICIALIZAÇÃO =====
+        async function init() { // Tornar assíncrona para carregamento de áudio
+            detectDevice();
+            
+            canvas = document.getElementById('game-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // Configurar canvas
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Carregar todos os sons e músicas
+            await Promise.all(Object.entries(CONFIG.ASSET_PATHS).map(([key, path]) => loadSound(key, path)));
+            console.log("Todos os assets de áudio carregados.");
+            
+            // Inicializar sistemas
+            initChosenOne(); // Inicializa o personagem "Escolhido"
+            initEventListeners();
+            initMobileControls();
+            
+            // Carregar progresso salvo
+            const savedData = loadProgress();
+            if (savedData) {
+                populateStartScreenWithSavedData(savedData);
+            } else {
+                playMusic('music_menu', true); // Toca a música do menu ao iniciar
+            }
+            
+            // Iniciar loop do jogo
+            gameLoop(0);
+        }
+
+        function resizeCanvas() {
+            const container = document.getElementById('game-container');
+            const rect = container.getBoundingClientRect();
+            
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            // Ajustar controles mobile
+            if (isMobile) {
+                updateMobileControlsVisibility();
+            }
+        }
+
+        function populateStartScreenWithSavedData(data) {
+            document.getElementById('player-name').value = data.playerName || '';
+            // Se houver nome salvo, habilitar o botão de iniciar
+            validateStartInputs();
+
+            // Restaurar estado do jogo a partir do save
+            Object.assign(gameState, data); // Sobrescreve as propriedades de gameState
+            
+            // Carregar a fase salva
+            if (gameState.gameStarted) {
+                document.getElementById('start-screen').style.display = 'none';
+                loadPhase(gameState.currentPhase);
+                setupCharacter(gameState.playerLevel, gameState.playerMaxHealth, gameState.playerMaxMana, gameState.playerDamage, gameState.playerSpeed); // Aplica stats salvos
+                updateAllUI();
+                playMusic('music_platforming', true); // Toca a música da fase salva
+            }
+        }
+
+        // ===== PERSONAGEM "O ESCOLHIDO" =====
+        function initChosenOne() {
+            // Define o personagem único "O Escolhido"
+            currentChampion = {
+                id: 'chosenOne',
+                name: 'O Escolhido',
+                type: 'hybrid', // Híbrido: combate corpo a corpo e à distância
+                baseHealth: 100,
+                baseMana: 120,
+                baseSpeed: 4,
+                baseDamage: 15,
+                abilities: [
+                    {
+                        key: 'U',
+                        name: 'Ataque Rápido',
+                        description: 'Golpe ágil de curta distância. Aumenta muito na Fúria de Umbra.',
+                        damage: (base) => gameState.isUmbraFurious ? base * CONFIG.UMBRA_FURY_DAMAGE_BOOST : base * 1.0,
+                        manaCost: 0,
+                        cooldown: 0.5,
+                        execute: function() {
+                            playSound('sfx_attack_u');
+                            addAbilityEffect({
+                                type: 'meleeAttack',
+                                x: gameState.playerPosition.x + (gameState.facing === 'right' ? 50 : -40),
+                                y: gameState.playerPosition.y + 15,
+                                width: 40,
+                                height: 20,
+                                duration: 200,
+                                damage: this.damage(gameState.playerDamage),
+                                origin: 'player',
+                                // Pode adicionar efeitos visuais específicos para a Fúria de Umbra aqui
+                                umbraBoosted: gameState.isUmbraFurious
+                            });
+                        }
+                    },
+                    {
+                        key: 'I',
+                        name: 'Projétil de Energia',
+                        description: 'Lança um projétil rápido à distância com baixo custo de mana.',
+                        damage: (base) => base * 1.0,
+                        manaCost: 15,
+                        cooldown: 2,
+                        execute: function() {
+                            playSound('sfx_ability_i');
+                            addAbilityEffect({
+                                type: 'energyProjectile', // Novo tipo de efeito
+                                x: gameState.playerPosition.x + (gameState.facing === 'right' ? 55 : -25),
+                                y: gameState.playerPosition.y + 20,
+                                width: 25,
+                                height: 8,
+                                duration: 1500,
+                                damage: this.damage(gameState.playerDamage),
+                                direction: gameState.facing === 'right' ? 1 : -1,
+                                speed: 7,
+                                origin: 'player',
+                                piercing: false
+                            });
+                        }
+                    },
+                    {
+                        key: 'O',
+                        name: 'Explosão Arcana',
+                        description: 'Causa uma explosão de energia que danifica múltiplos inimigos à frente.',
+                        damage: (base) => base * 1.8,
+                        manaCost: 30,
+                        cooldown: 4,
+                        execute: function() {
+                            playSound('sfx_ability_o');
+                            addAbilityEffect({
+                                type: 'arcaneExplosion', // Novo tipo de efeito
+                                x: gameState.playerPosition.x + (gameState.facing === 'right' ? 30 : -30),
+                                y: gameState.playerPosition.y,
+                                width: 80,
+                                height: 80,
+                                duration: 300,
+                                damage: this.damage(gameState.playerDamage),
+                                origin: 'player',
+                                areaEffect: true // Indica que é um efeito de área
+                            });
+                            screenShake(5, 200);
+                        }
+                    },
+                    {
+                        key: 'P',
+                        name: 'Fúria de Umbra',
+                        description: 'Canaliza a energia de Umbra para ficar mais rápido, resistente e poderoso no ataque por tempo limitado.',
+                        damage: (base) => base, // Não causa dano direto, mas modifica outros ataques
+                        manaCost: 50,
+                        cooldown: 20, // Cooldown longo para ultimate
+                        execute: function() {
+                            playSound('sfx_ability_p');
+                            gameState.isUmbraFurious = true;
+                            gameState.umbraFuryTimer = CONFIG.UMBRA_FURY_DURATION;
+                            // Buffs serão aplicados em updatePlayer
+                        }
+                    }
+                ]
+            };
+        }
+
+        // ===== EVENT LISTENERS =====
+        function initEventListeners() {
+            // Start Screen
+            document.getElementById('player-name').addEventListener('input', validateStartInputs);
+            document.getElementById('start-game-btn').addEventListener('click', startNewGame);
+            
+            // Controles de teclado
+            window.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('keyup', handleKeyUp);
+            
+            // Botões da UI
+            document.getElementById('pause-btn').addEventListener('click', togglePause);
+            document.getElementById('resume-btn').addEventListener('click', togglePause);
+            document.getElementById('restart-btn').addEventListener('click', restartFromCheckpoint);
+            document.getElementById('save-btn').addEventListener('click', saveProgress);
+            document.getElementById('exit-btn').addEventListener('click', exitToMenu);
+            document.getElementById('skip-btn').addEventListener('click', skipCutscene);
+            
+            // Habilidades desktop
+            document.querySelectorAll('.ability-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const key = e.currentTarget.dataset.key;
+                    if (key) useAbility(key);
+                });
+            });
+            
+            // Level up (automático)
+            document.getElementById('continue-level-up-btn').addEventListener('click', () => {
+                document.getElementById('level-up').style.display = 'none';
+                gameState.gamePaused = false;
+            });
+        }
+
+        function handleKeyDown(e) {
+            // Prevenir scroll da página para as setas e espaço
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                e.preventDefault();
+            }
+            keys[e.key.toLowerCase()] = true; // Define a tecla pressionada
+
+            // Pausar com ESC
+            if (e.key === 'Escape' && gameState.gameStarted && !gameState.inStartScreen && !gameState.inCutscene) {
+                togglePause();
+            }
+            
+            // Pular cutscene
+            if ((e.key === ' ' || e.key === 'Enter') && gameState.inCutscene) {
+                skipCutscene();
+            }
+            
+            // Habilidades (apenas se o jogo estiver ativo e não em estados de UI)
+            if (['u', 'i', 'o', 'p'].includes(e.key.toLowerCase()) && 
+                !gameState.gamePaused && !gameState.inDialog && !gameState.inCutscene && !gameState.inStartScreen) {
+                useAbility(e.key.toUpperCase());
+            }
+        }
+
+        function handleKeyUp(e) {
+            keys[e.key.toLowerCase()] = false; // Desdefine a tecla solta
+        }
+
+        // ===== CONTROLES MOBILE =====
+        function initMobileControls() {
+            // D-pad
+            document.getElementById('mobile-up').addEventListener('touchstart', (e) => { e.preventDefault(); mobileControls.up = true; });
+            document.getElementById('mobile-up').addEventListener('touchend', () => mobileControls.up = false);
+            document.getElementById('mobile-down').addEventListener('touchstart', (e) => { e.preventDefault(); mobileControls.down = true; });
+            document.getElementById('mobile-down').addEventListener('touchend', () => mobileControls.down = false);
+            document.getElementById('mobile-left').addEventListener('touchstart', (e) => { e.preventDefault(); mobileControls.left = true; });
+            document.getElementById('mobile-left').addEventListener('touchend', () => mobileControls.left = false);
+            document.getElementById('mobile-right').addEventListener('touchstart', (e) => { e.preventDefault(); mobileControls.right = true; });
+            document.getElementById('mobile-right').addEventListener('touchend', () => mobileControls.right = false);
+
+            // Botões de Ação
+            document.getElementById('mobile-ability-u').addEventListener('touchstart', (e) => { e.preventDefault(); useAbility('U'); });
+            document.getElementById('mobile-ability-i').addEventListener('touchstart', (e) => { e.preventDefault(); useAbility('I'); });
+            document.getElementById('mobile-ability-o').addEventListener('touchstart', (e) => { e.preventDefault(); useAbility('O'); });
+            document.getElementById('mobile-ability-p').addEventListener('touchstart', (e) => { e.preventDefault(); useAbility('P'); });
+
+            updateMobileControlsVisibility();
+        }
+
+        function updateMobileControlsVisibility() {
+            const mobileControlsDiv = document.getElementById('mobile-controls');
+            if (isMobile && isLandscape) {
+                mobileControlsDiv.style.display = 'grid';
+            } else {
+                mobileControlsDiv.style.display = 'none';
+            }
+        }
+
+        // ===== TELA DE INÍCIO / NOME =====
+        function validateStartInputs() {
+            const name = document.getElementById('player-name').value.trim();
+            const startBtn = document.getElementById('start-game-btn');
+            
+            if (name.length >= 2) {
+                startBtn.disabled = false;
+            } else {
+                startBtn.disabled = true;
+            }
+        }
+
+        function startNewGame() {
+            const name = document.getElementById('player-name').value.trim();
+            if (name.length < 2) return;
+            
+            gameState.playerName = name;
+            gameState.inStartScreen = false;
+            gameState.gameStarted = true;
+            
+            // Esconder tela de início
+            document.getElementById('start-screen').style.display = 'none';
+            
+            // Configurar personagem com os stats base do Escolhido
+            setupCharacter(currentChampion.baseHealth, currentChampion.baseMana, currentChampion.baseDamage, currentChampion.baseSpeed);
+            
+            // Mostrar controles mobile se necessário
+            if (isMobile) {
+                updateMobileControlsVisibility();
+            }
+            
+            stopMusic(); // Para a música do menu
+            showIntroCutscene(); // Inicia a cinemática de introdução
+        }
+
+        function setupCharacter(health, mana, damage, speed) {
+            gameState.playerMaxHealth = health;
+            gameState.playerHealth = gameState.playerMaxHealth;
+            gameState.playerMaxMana = mana;
+            gameState.playerMana = gameState.playerMaxMana;
+            gameState.playerSpeed = speed;
+            gameState.playerDamage = damage;
+            
+            // Atualizar tooltips das habilidades
+            updateAbilityTooltips();
+            
+            // Atualizar UI
+            updateAllUI();
+        }
+
+        function updateAbilityTooltips() {
+            if (!currentChampion) return;
+            
+            currentChampion.abilities.forEach(ability => {
+                const key = ability.key.toLowerCase();
+                const nameEl = document.getElementById(`tooltip-${key}-name`);
+                const descEl = document.getElementById(`tooltip-${key}-desc`);
+                const costEl = document.getElementById(`tooltip-${key}-cost`);
+                
+                if (nameEl) nameEl.textContent = ability.name;
+                if (descEl) descEl.textContent = ability.description;
+                if (costEl) costEl.textContent = `Custo: ${ability.manaCost} Mana`;
+            });
+        }
+
+        function exitToMenu() {
+            // Salvar progresso antes de sair
+            saveProgress();
+            
+            // Reset do estado do jogo para o menu inicial
+            gameState = {
+                // Reinicia para os valores padrão da tela inicial
+                playerName: '',
+                playerClass: 'Escolhido',
+                playerHealth: 100, playerMaxHealth: 100,
+                playerMana: 100, playerMaxMana: 100,
+                playerPosition: { x: 100, y: 300 },
+                playerVelocity: { x: 0, y: 0 },
+                playerLevel: 1, playerXP: 0, playerNextLevelXP: 100,
+                playerDamage: 15, playerSpeed: CONFIG.PLAYER_SPEED,
+                isGrounded: false, isCrouching: false, isInvincible: false, facing: 'right', currentAnimation: 'idle',
+                isUmbraFurious: false, umbraFuryTimer: 0,
+                abilitiesCooldown: { U: 0, I: 0, O: 0, P: 0 },
+                abilitiesMaxCooldown: { U: 0.5, I: 2, O: 4, P: 20 },
+                gamePaused: false, inDialog: false, inCutscene: false,
+                inStartScreen: true, // Volta para a tela inicial
+                gameStarted: false,
+                cameraOffset: { x: 0, y: 0 }, targetCameraOffset: { x: 0, y: 0 },
+                currentPhase: 0, currentCheckpoint: 'start',
+                inBossFight: false, bossDefeated: false,
+                inTarekEncounter: false, tarekDialogStep: 0, tarekDialogCompleted: false,
+                fixedCamera: false, fixedCameraTarget: { x: 0, y: 0 }
+            };
+
+            // Reset de entidades
+            platforms = []; enemies = []; abilityEffects = []; particles = []; damageNumbers = []; checkpoints = [];
+            
+            // Mostrar tela de início
+            document.getElementById('start-screen').style.display = 'flex';
+            document.getElementById('pause-menu').style.display = 'none';
+            document.getElementById('mobile-controls').style.display = 'none';
+            document.getElementById('abilities-container').style.display = 'flex'; // Volta a exibir em desktop
+            document.getElementById('player-name').value = ''; // Limpa o nome na tela inicial
+            document.getElementById('start-game-btn').disabled = true; // Desabilita o botão
+
+            // Reset UI
+            updateAllUI();
+            
+            // Limpar canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            stopMusic();
+            playMusic('music_menu', true); // Toca a música do menu
+        }
+
+        // ===== SISTEMA DE FASES E NARRATIVA =====
+        function loadPhase(phaseNumber) {
+            gameState.currentPhase = phaseNumber;
+            
+            // Reset posição do jogador
+            gameState.playerPosition = { x: 100, y: 300 };
+            gameState.playerVelocity = { x: 0, y: 0 };
+            gameState.isGrounded = false;
+            gameState.isCrouching = false;
+            
+            // Limpar arrays
+            enemies = [];
+            abilityEffects = [];
+            particles = [];
+            damageNumbers = [];
+            
+            // Configurar fase específica
+            switch(phaseNumber) {
+                case 1: // Início da Missão 1 - Muralhas da Aurora (antes do Tarek)
+                    setupPhase1_PreTarek();
+                    stopMusic();
+                    playMusic('music_platforming', true);
+                    break;
+                case 2: // Encontro com Tarek (Câmera Fixa, Diálogo)
+                    setupPhase1_TarekEncounter();
+                    break;
+                case 3: // Batalha contra Tarek
+                    setupPhase1_TarekBossFight();
+                    break;
+                // Adicione outras fases aqui
+                default:
+                    setupPhase1_PreTarek();
+            }
+            
+            // Reset câmera (será ajustado por fixedCamera se necessário)
+            gameState.cameraOffset = { x: 0, y: 0 };
+            gameState.targetCameraOffset = { x: 0, y: 0 };
+        }
+
+        function setupPhase1_PreTarek() {
+            // Muralhas da Aurora - Parte inicial de plataforma
+            // Aqui o jogador atravessa o ambiente até chegar aos portões de Tupãry
+            platforms = [
+                { x: 0, y: 400, width: 1000, height: 50, type: 'ground' }, // Chão principal
+                { x: 200, y: 350, width: 80, height: 20, type: 'platform' },
+                { x: 350, y: 300, width: 80, height: 20, type: 'platform', slippery: true }, // Plataforma escorregadia
+                { x: 500, y: 250, width: 100, height: 20, type: 'platform' },
+                { x: 700, y: 320, width: 120, height: 20, type: 'platform' },
+                { x: 900, y: 380, width: 50, height: 20, type: 'platform' },
+                
+                // Exemplo de Plataforma com Espinhos
+                { x: 1100, y: 400, width: 150, height: 50, type: 'ground' }, // Chão
+                { x: 1100, y: 350, width: 150, height: 50, type: 'spike' }, // Espinhos em cima da plataforma
+                { x: 1300, y: 400, width: 100, height: 50, type: 'ground' },
+            ];
+            enemies = []; // Sem inimigos nesta seção para focar na plataforma
+            checkpoints = []; // Não há checkpoints antes do encontro com Tarek
+            
+            backgroundLayers = [
+                { color: '#1a237e', speed: 0.1, type: 'sky' },
+                { color: '#283593', speed: 0.3, type: 'mountains' },
+                { color: '#3949ab', speed: 0.5, type: 'hills' },
+                { color: '#5c6bc0', speed: 0.7, type: 'foreground' }
+            ];
+
+            // Posição para o jogador chegar e iniciar o encontro com Tarek
+            // CONFIG.WORLD_WIDTH é o limite total do mundo, mas para o encontro, definimos um limite local
+            CONFIG.WORLD_WIDTH = 1400; // Ajuste o tamanho do mundo para esta parte
+            
+            // Reset do estado de encontro com Tarek
+            gameState.inTarekEncounter = false;
+            gameState.tarekDialogStep = 0;
+            gameState.tarekDialogCompleted = false;
+            gameState.fixedCamera = false;
+        }
+
+        function setupPhase1_TarekEncounter() {
+            // Fase de encontro com Tarek: câmera fixa e diálogo
+            platforms = [
+                { x: 0, y: 400, width: canvas.width, height: 50, type: 'ground' } // Chão simples para o encontro
+            ];
+            enemies = []; // Sem inimigos até a luta
+            checkpoints = []; // Sem checkpoints durante diálogo
+            
+            backgroundLayers = [
+                { color: '#0f1419', speed: 0.1, type: 'sky' },
+                { color: '#1a1a2e', speed: 0.3, type: 'mountains' }
+            ];
+
+            gameState.fixedCamera = true;
+            gameState.fixedCameraTarget = { x: 0, y: 0 }; // Câmera fixa na posição inicial do canvas
+            gameState.playerPosition = { x: 150, y: 300 }; // Posição inicial do jogador
+            gameState.playerVelocity = { x: 0, y: 0 };
+
+            const tarek = {
+                type: 'boss_dialogue', // Tipo específico para Tarek em diálogo
+                name: 'Tarek, o Guerreiro',
+                position: { x: 600, y: 300 }, // Posição de Tarek na cena fixa
+                facing: 'left', // Tarek olhando para o jogador
+                health: 1, maxHealth: 1, // Não é um inimigo real ainda
+                damage: 0 // Não causa dano
+            };
+            enemies.push(tarek);
+            
+            gameState.inTarekEncounter = true;
+            // Inicia o diálogo de Tarek
+            startTarekDialogue();
+        }
+
+        function setupPhase1_TarekBossFight() {
+            // Fase de batalha contra Tarek
+            platforms = [
+                { x: 0, y: 400, width: canvas.width, height: 50, type: 'ground' } // Arena simples
+            ];
+            enemies = []; // Limpa inimigos antes de adicionar Tarek como boss
+            checkpoints = [];
+            
+            backgroundLayers = [
+                { color: '#0f1419', speed: 0.1, type: 'sky' },
+                { color: '#1a1a2e', speed: 0.3, type: 'mountains' }
+            ];
+
+            gameState.fixedCamera = true;
+            gameState.fixedCameraTarget = { x: 0, y: 0 }; // Câmera fixa na arena
+            gameState.playerPosition = { x: 150, y: 300 }; // Posição inicial do jogador
+            
+            // Adicionar Tarek como oponente da luta
+            triggerBossFight(); // Função que cria e adiciona Tarek aos inimigos
+            stopMusic();
+            playMusic('music_boss_tarek', true);
+        }
+
+
+        // ===== CUTSCENES E NARRATIVA =====
+        function showIntroCutscene() {
+            gameState.inCutscene = true;
+            const overlay = document.getElementById('cinematic-overlay');
+            const titleElement = document.getElementById('cinematic-title');
+            const textElement = document.getElementById('cinematic-text');
+            
+            overlay.style.display = 'flex';
+            
+            const introSequence = [
+                {
+                    title: "O DESEQUILÍBRIO",
+                    text: "O mundo treme sob o peso do desequilíbrio. Ignys, o Reino do Fogo, deseja guerra e já move suas tropas em direção aos reinos vizinhos."
+                },
+                {
+                    title: "O CORAÇÃO DE GELO",
+                    text: "Em Tupãry, o Coração de Gelo guarda a metade maligna de Anhangá, o espírito que traz caos."
+                },
+                {
+                    title: "A CONVOCAÇÃO",
+                    text: `Umbra convoca você, ${gameState.playerName}, o Escolhido: recuperar o Coração de Gelo e impedir que Ignys obtenha poder suficiente para dominar todos os reinos.`
+                },
+                {
+                    title: "O DESTINO",
+                    text: "Cada passo, cada luta, cada escolha será decisiva para a sobrevivência de todos."
+                }
+            ];
+            
+            let currentSequence = 0;
+            
+            function showNextSequence() {
+                if (currentSequence < introSequence.length) {
+                    const sequence = introSequence[currentSequence];
+                    
+                    titleElement.textContent = sequence.title;
+                    textElement.textContent = sequence.text;
+                    
+                    // Reset animations
+                    titleElement.style.animation = 'none';
+                    textElement.style.animation = 'none';
+                    void titleElement.offsetWidth; // Trigger reflow
+                    void textElement.offsetWidth;
+                    
+                    titleElement.style.animation = 'fadeInText 2s forwards';
+                    textElement.style.animation = 'fadeInText 3s forwards 0.5s';
+                    
+                    currentSequence++;
+                    setTimeout(showNextSequence, 5000); // Exibe cada trecho por 5 segundos
+                } else {
+                    // Após a cutscene, iniciar a primeira fase (plataforma antes do Tarek)
+                    overlay.style.display = 'none';
+                    gameState.inCutscene = false;
+                    loadPhase(1); // Transiciona para a fase de plataforma
+                }
+            }
+            
+            showNextSequence();
+        }
+
+        function showPhaseIntro(phaseNumber) {
+            gameState.inCutscene = true;
+            const overlay = document.getElementById('cinematic-overlay');
+            const titleElement = document.getElementById('cinematic-title');
+            const textElement = document.getElementById('cinematic-text');
+            
+            overlay.style.display = 'flex';
+            
+            let phaseTitle = '';
+            let phaseDescription = '';
+            
+            switch(phaseNumber) {
+                case 1:
+                    phaseTitle = "MISSÃO 1 – AS MURALHAS DA AURORA";
+                    phaseDescription = `Você, ${gameState.playerName}, deve provar seu valor nas terras gélidas. Avance pelos portões de Tupãry.`;
+                    break;
+                case 2:
+                    phaseTitle = "ENCONTRO COM TAREK";
+                    phaseDescription = "Tarek, o Guerreiro, bloqueia a passagem. Prepare-se para o desafio.";
+                    break;
+            }
+            
+            titleElement.textContent = phaseTitle;
+            textElement.textContent = phaseDescription;
+            
+            titleElement.style.animation = 'none';
+            textElement.style.animation = 'none';
+            void titleElement.offsetWidth;
+            void textElement.offsetWidth;
+            titleElement.style.animation = 'fadeInText 2s forwards';
+            textElement.style.animation = 'fadeInText 3s forwards 0.5s';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                gameState.inCutscene = false;
+                
+                // Salvar checkpoint inicial
+                saveCheckpoint('phase_start');
+            }, 6000);
+        }
+
+        function skipCutscene() {
+            const overlay = document.getElementById('cinematic-overlay');
+            overlay.style.display = 'none';
+            gameState.inCutscene = false;
+            
+            if (gameState.currentPhase === 0) { // Se pulou a intro principal
+                loadPhase(1);
+            } else if (gameState.currentPhase === 1) { // Se pulou a intro da fase 1
+                // Nada a fazer, já está na fase 1
+            }
+            // Add other skip conditions if needed for future cinematics
+        }
+
+        function showDialog(speaker, text, options = null) {
+            gameState.inDialog = true;
+            gameState.gamePaused = true; // Pausa o jogo durante o diálogo
+            const dialogContainer = document.getElementById('dialog-container');
+            const speakerElement = document.getElementById('dialog-speaker');
+            const textElement = document.getElementById('dialog-text');
+            const optionsElement = document.getElementById('dialog-options');
+            
+            dialogContainer.style.display = 'block';
+            speakerElement.textContent = speaker;
+            textElement.textContent = text;
+            
+            // Limpar opções anteriores
+            optionsElement.innerHTML = '';
+            
+            if (options && options.length > 0) {
+                options.forEach((option, index) => {
+                    const button = document.createElement('div');
+                    button.className = 'dialog-option';
+                    button.textContent = option.text;
+                    button.addEventListener('click', () => {
+                        dialogContainer.style.display = 'none';
+                        gameState.inDialog = false;
+                        gameState.gamePaused = false; // Despausa o jogo ao fechar diálogo
+                        if (option.action) option.action();
+                    });
+                    optionsElement.appendChild(button);
+                });
+            } else {
+                const button = document.createElement('div');
+                button.className = 'dialog-option';
+                button.textContent = 'Continuar';
+                button.addEventListener('click', () => {
+                    dialogContainer.style.display = 'none';
+                    gameState.inDialog = false;
+                    gameState.gamePaused = false; // Despausa o jogo ao fechar diálogo
+                });
+                optionsElement.appendChild(button);
+            }
+        }
+
+        function startTarekDialogue() {
+            gameState.tarekDialogStep = 0;
+            const tarekDialogs = [
+                { speaker: "TAREK, O GUERREIRO", text: `Então você é ${gameState.playerName}, o tal Escolhido?` },
+                { speaker: "TAREK, O GUERREIRO", text: "Estas muralhas não são lugar para forasteiros fracos." },
+                { speaker: "TAREK, O GUERREIRO", text: "Prove que merece passar por aqui, ou volte de onde veio!" }
+            ];
+
+            function showTarekLine() {
+                if (gameState.tarekDialogStep < tarekDialogs.length) {
+                    const line = tarekDialogs[gameState.tarekDialogStep];
+                    showDialog(line.speaker, line.text, [{ text: "Continuar", action: () => {
+                        gameState.tarekDialogStep++;
+                        showTarekLine();
+                    }}]);
+                } else {
+                    // Diálogo completo, inicia a batalha
+                    gameState.tarekDialogCompleted = true;
+                    gameState.inTarekEncounter = false;
+                    loadPhase(3); // Transiciona para a fase de batalha contra Tarek
+                }
+            }
+            showTarekLine();
+        }
+
+        // ===== SISTEMA DE CHECKPOINTS =====
+        function saveCheckpoint(checkpointName) {
+            gameState.currentCheckpoint = checkpointName;
+            
+            const checkpointData = {
+                name: checkpointName,
+                phase: gameState.currentPhase,
+                position: { ...gameState.playerPosition },
+                health: gameState.playerHealth,
+                mana: gameState.playerMana,
+                xp: gameState.playerXP,
+                level: gameState.playerLevel
+            };
+            
+            setCookie('tupary_checkpoint', JSON.stringify(checkpointData));
+            showCheckpointNotification('Checkpoint Salvo', `Progresso salvo em: ${getCheckpointDescription(checkpointName)}`);
+        }
+
+        function loadCheckpoint() {
+            const checkpointData = getCookie('tupary_checkpoint');
+            if (checkpointData) {
+                try {
+                    const data = JSON.parse(checkpointData);
+                    
+                    gameState.currentPhase = data.phase;
+                    gameState.currentCheckpoint = data.name;
+                    gameState.playerPosition = { ...data.position };
+                    gameState.playerHealth = data.health;
+                    gameState.playerMana = data.mana;
+                    gameState.playerXP = data.xp;
+                    gameState.playerLevel = data.level;
+                    
+                    loadPhase(data.phase);
+                    setupCharacter(gameState.playerMaxHealth, gameState.playerMaxMana, gameState.playerDamage, gameState.playerSpeed); // Atualiza stats
+                    updateAllUI(); // Atualiza UI com stats carregados
+                    return true;
+                } catch (e) {
+                    console.error('Erro ao carregar checkpoint:', e);
+                }
+            }
+            return false;
+        }
+
+        function getCheckpointDescription(checkpointName) {
+            const checkpoint = checkpoints.find(cp => cp.name === checkpointName);
+            return checkpoint ? checkpoint.description : 'Localização Desconhecida';
+        }
+
+        function showCheckpointNotification(title, description) {
+            const notification = document.getElementById('checkpoint-notification');
+            const titleEl = notification.querySelector('.checkpoint-text');
+            const descEl = notification.querySelector('.checkpoint-description');
+            
+            titleEl.textContent = title;
+            descEl.textContent = description;
+            
+            notification.style.display = 'block';
+            notification.style.animation = 'checkpointPulse 2s ease-in-out';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+
+        function restartFromCheckpoint() {
+            togglePause();
+            
+            if (loadCheckpoint()) {
+                showCheckpointNotification('Checkpoint Carregado', 'Retornando ao último checkpoint salvo...');
+            } else {
+                loadPhase(gameState.currentPhase); // Se não há checkpoint, reiniciar fase atual
+                gameState.playerHealth = gameState.playerMaxHealth; // Garante vida cheia
+                gameState.playerMana = gameState.playerMaxMana; // Garante mana cheia
+                updateAllUI();
+            }
+        }
+
+        // ===== LOOP PRINCIPAL DO JOGO =====
+        function gameLoop(timestamp) {
+            // Calcular delta time
+            let deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            // Limitar delta time para evitar grandes saltos
+            deltaTime = Math.min(deltaTime, CONFIG.DELTA_TIME_CAP);
+            
+            if (!gameState.gamePaused && gameState.gameStarted) { // Apenas atualiza e renderiza se o jogo estiver rodando e não pausado
+                // Atualizar lógica do jogo apenas se não estiver em cutscene/diálogo
+                if (!gameState.inCutscene && !gameState.inDialog) {
+                    update(deltaTime);
+                }
+                render(); // Sempre renderiza, mesmo em diálogo/cutscene para exibir a UI
+            } else if (gameState.inStartScreen) { // Renderiza apenas a tela inicial
+                // Não há update de lógica, apenas renderização estática
+                render(); // Renderiza o canvas para exibir fundo, mesmo que estático
+            }
+            
+            // Continuar o loop
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function update(deltaTime) {
+            // Atualizar jogador
+            updatePlayer(deltaTime);
+            
+            // Atualizar inimigos
+            updateEnemies(deltaTime);
+            
+            // Atualizar efeitos de habilidades
+            updateAbilityEffects(deltaTime);
+            
+            // Atualizar partículas
+            updateParticles(deltaTime);
+            
+            // Atualizar números de dano
+            updateDamageNumbers(deltaTime);
+            
+            // Atualizar cooldowns
+            updateCooldowns(deltaTime);
+            
+            // Regeneração
+            updateRegeneration(deltaTime);
+            
+            // Atualizar câmera
+            updateCamera(deltaTime);
+            
+            // Verificar checkpoints (apenas em fases de plataforma)
+            if (gameState.currentPhase === 1 || gameState.currentPhase === 4) { // Ex: 1: Plataforma pré-Tarek, 4: Futuras fases de plataforma
+                checkCheckpoints();
+            }
+            
+            // Verificar condições de vitória/derrota
+            checkGameConditions();
+        }
+
+        function updatePlayer(deltaTime) {
+            // Movimento horizontal (Teclado e Mobile)
+            let moveX = 0;
+            if (keys['a'] || keys['arrowleft'] || mobileControls.left) moveX = -1;
+            if (keys['d'] || keys['arrowright'] || mobileControls.right) moveX = 1;
+            
+            // Aplicar buffs da Fúria de Umbra
+            let currentSpeed = gameState.playerSpeed;
+            if (gameState.isUmbraFurious) {
+                currentSpeed *= CONFIG.UMBRA_FURY_SPEED_BOOST;
+                gameState.umbraFuryTimer -= deltaTime;
+                if (gameState.umbraFuryTimer <= 0) {
+                    gameState.isUmbraFurious = false;
+                    // Resetar quaisquer efeitos visuais da fúria
+                }
+            }
+
+            // Aplicar velocidade
+            gameState.playerVelocity.x = moveX * currentSpeed;
+            
+            // Pular (Teclado e Mobile)
+            if ((keys['w'] || keys['arrowup'] || keys[' '] || mobileControls.up) && gameState.isGrounded && !gameState.isCrouching) {
+                gameState.playerVelocity.y = -CONFIG.JUMP_FORCE;
+                gameState.isGrounded = false;
+                playSound('sfx_jump');
+                // Partículas de pulo
+                addParticles('jumpDust', gameState.playerPosition.x + 25, gameState.playerPosition.y + 50, 8);
+                
+                // Reset da tecla/controle para evitar pulos múltiplos
+                keys['w'] = false; keys['arrowup'] = false; keys[' '] = false; mobileControls.up = false;
+            }
+            
+            // Crouch (abaixar) (Teclado e Mobile)
+            if (keys['s'] || keys['arrowdown'] || mobileControls.down) {
+                if (!gameState.isCrouching && gameState.isGrounded) {
+                    gameState.isCrouching = true;
+                    // Ajusta a posição Y para que o chão seja mantido (o player "encolhe" para baixo)
+                    gameState.playerPosition.y += CONFIG.NORMAL_HEIGHT - CONFIG.CROUCH_HEIGHT;
+                }
+            } else {
+                if (gameState.isCrouching) {
+                    // Verificar se há espaço para ficar em pé
+                    const newY = gameState.playerPosition.y - (CONFIG.NORMAL_HEIGHT - CONFIG.CROUCH_HEIGHT);
+                    if (canStandUp(gameState.playerPosition.x, newY)) {
+                        gameState.isCrouching = false;
+                        gameState.playerPosition.y = newY;
+                    }
+                }
+            }
+            
+            // Aplicar gravidade
+            gameState.playerVelocity.y += CONFIG.GRAVITY;
+            
+            // Limitar velocidade vertical
+            if (gameState.playerVelocity.y > 15) {
+                gameState.playerVelocity.y = 15;
+            }
+            
+            // Atualizar posição
+            gameState.playerPosition.x += gameState.playerVelocity.x;
+            gameState.playerPosition.y += gameState.playerVelocity.y;
+            
+            // Verificar colisões
+            checkPlatformCollisions();
+            checkEnemyCollisions();
+            checkEffectCollisions();
+            
+            // Atualizar animação
+            updatePlayerAnimation();
+            
+            // Atualizar direção
+            if (moveX > 0) gameState.facing = 'right';
+            if (moveX < 0) gameState.facing = 'left';
+            
+            // Limitar jogador dentro do mundo (Ajustado para fases fixas)
+            if (!gameState.fixedCamera) { // Apenas se a câmera não estiver fixa
+                if (gameState.playerPosition.x < 0) {
+                    gameState.playerPosition.x = 0;
+                    gameState.playerVelocity.x = 0;
+                }
+                if (gameState.playerPosition.x > CONFIG.WORLD_WIDTH - 50) {
+                    gameState.playerPosition.x = CONFIG.WORLD_WIDTH - 50;
+                    gameState.playerVelocity.x = 0;
+                }
+            } else { // Se a câmera estiver fixa, limita o jogador à tela atual
+                if (gameState.playerPosition.x < 0) gameState.playerPosition.x = 0;
+                if (gameState.playerPosition.x > canvas.width - 50) gameState.playerPosition.x = canvas.width - 50;
+            }
+
+
+            // Verificar queda fora do mundo
+            if (gameState.playerPosition.y > CONFIG.WORLD_HEIGHT + 100) {
+                takeDamage(gameState.playerMaxHealth); // Morte instantânea por queda
+            }
+            
+            // Reduzir invencibilidade
+            if (gameState.isInvincible) {
+                gameState.invincibilityTimer -= deltaTime;
+                if (gameState.invincibilityTimer <= 0) {
+                    gameState.isInvincible = false;
+                }
+            }
+        }
+
+        function canStandUp(x, y) {
+            const playerWidth = 50;
+            const playerHeight = CONFIG.NORMAL_HEIGHT;
+            
+            // Verificar colisão com plataformas (agora também com espinhos)
+            for (const platform of platforms) {
+                if (x < platform.x + platform.width &&
+                    x + playerWidth > platform.x &&
+                    y < platform.y + platform.height &&
+                    y + playerHeight > platform.y) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function checkPlatformCollisions() {
+            gameState.isGrounded = false;
+            const playerWidth = 50;
+            const playerHeight = gameState.isCrouching ? CONFIG.CROUCH_HEIGHT : CONFIG.NORMAL_HEIGHT;
+            
+            for (const platform of platforms) {
+                // Verificar colisão AABB
+                if (gameState.playerPosition.x < platform.x + platform.width &&
+                    gameState.playerPosition.x + playerWidth > platform.x &&
+                    gameState.playerPosition.y < platform.y + platform.height &&
+                    gameState.playerPosition.y + playerHeight > platform.y) {
+                    
+                    // Se for um espinho, causa dano e ignora outras interações de plataforma
+                    if (platform.type === 'spike') {
+                        takeDamage(10); // Dano fixo de espinho
+                        // Não permite aterrissar ou parar no espinho, simula cair através ou ser empurrado
+                        continue; 
+                    }
+
+                    // Colisão de cima (aterrissando)
+                    if (gameState.playerVelocity.y > 0 && 
+                        gameState.playerPosition.y + playerHeight - gameState.playerVelocity.y <= platform.y) {
+                        gameState.playerPosition.y = platform.y - playerHeight;
+                        gameState.playerVelocity.y = 0;
+                        gameState.isGrounded = true;
+                        
+                        // Partículas de aterrissagem
+                        if (gameState.playerVelocity.y > 8) {
+                            addParticles('landDust', gameState.playerPosition.x + 25, gameState.playerPosition.y + playerHeight, 12);
+                            screenShake(3, 150);
+                        }
+                        
+                        // Efeito de plataforma escorregadia
+                        if (platform.slippery && Math.abs(gameState.playerVelocity.x) > 0) {
+                            gameState.playerVelocity.x *= 1.2; // Aumenta deslizamento
+                        }
+                    }
+                    // Colisão de baixo
+                    else if (gameState.playerVelocity.y < 0) {
+                        gameState.playerPosition.y = platform.y + platform.height;
+                        gameState.playerVelocity.y = 0;
+                    }
+                    // Colisão lateral
+                    else if (gameState.playerVelocity.x !== 0) {
+                        if (gameState.playerPosition.x < platform.x) {
+                            gameState.playerPosition.x = platform.x - playerWidth;
+                        } else {
+                            gameState.playerPosition.x = platform.x + platform.width;
+                        }
+                        gameState.playerVelocity.x = 0;
+                    }
+                }
+            }
+        }
+
+        function checkEnemyCollisions() {
+            if (gameState.isInvincible) return;
+            
+            const playerWidth = 50;
+            const playerHeight = gameState.isCrouching ? CONFIG.CROUCH_HEIGHT : CONFIG.NORMAL_HEIGHT;
+            
+            for (const enemy of enemies) {
+                // Não colide com Tarek em modo diálogo
+                if (enemy.type === 'boss_dialogue') continue;
+
+                // AABB collision check
+                const enemyWidth = enemy.type === 'boss' ? 70 : 50; // Tarek é maior
+                const enemyHeight = enemy.type === 'boss' ? 70 : 50;
+                
+                if (gameState.playerPosition.x < enemy.position.x + enemyWidth &&
+                    gameState.playerPosition.x + playerWidth > enemy.position.x &&
+                    gameState.playerPosition.y < enemy.position.y + enemyHeight &&
+                    gameState.playerPosition.y + playerHeight > enemy.position.y) {
+                    
+                    takeDamage(enemy.damage);
+                    
+                    // Knockback
+                    const knockbackForce = 8;
+                    const dx = (gameState.playerPosition.x + playerWidth/2) - (enemy.position.x + enemyWidth/2);
+                    gameState.playerVelocity.x = dx > 0 ? knockbackForce : -knockbackForce;
+                    gameState.playerVelocity.y = -5;
+                    
+                    break; // Apenas um dano por frame
+                }
+            }
+        }
+
+        function checkEffectCollisions() {
+            for (let i = abilityEffects.length - 1; i >= 0; i--) {
+                const effect = abilityEffects[i];
+                
+                // Efeitos causados pelo jogador
+                if (effect.damage && effect.origin === 'player' && effect.active !== false) {
+                    for (let j = enemies.length - 1; j >= 0; j--) {
+                        const enemy = enemies[j];
+                        // Ignora Tarek em modo diálogo
+                        if (enemy.type === 'boss_dialogue') continue;
+
+                        // Verificar se já atingiu este inimigo (para efeitos piercing ou área)
+                        if (effect.hitTargets && effect.hitTargets.includes(enemy)) {
+                            continue;
+                        }
+                        
+                        const enemyWidth = enemy.type === 'boss' ? 70 : 50;
+                        const enemyHeight = enemy.type === 'boss' ? 70 : 50;
+
+                        // Verifica colisão do efeito com o inimigo
+                        if (effect.x < enemy.position.x + enemyWidth &&
+                            effect.x + effect.width > enemy.position.x &&
+                            effect.y < enemy.position.y + enemyHeight &&
+                            effect.y + effect.height > enemy.position.y) {
+                            
+                            // Causar dano
+                            enemy.health -= effect.damage;
+                            playSound('sfx_damage_enemy'); // Som de dano no inimigo
+                            
+                            // Adicionar à lista de alvos atingidos
+                            if (effect.hitTargets) {
+                                effect.hitTargets.push(enemy);
+                            }
+                            
+                            // Efeitos visuais
+                            showDamageNumber(effect.damage, enemy.position.x + enemyWidth/2, enemy.position.y);
+                            addParticles('hitSpark', enemy.position.x + enemyWidth/2, enemy.position.y + enemyHeight/2, 8);
+                            screenShake(2, 100);
+                            
+                            // Knockback no inimigo
+                            if (effect.knockback) {
+                                const knockDirection = (enemy.position.x + enemyWidth/2) - (effect.x + effect.width/2) > 0 ? 1 : -1;
+                                enemy.position.x += knockDirection * effect.knockback;
+                            }
+                            
+                            // Efeitos especiais (congelamento, etc. - removido para o Escolhido, mas mantido para generalidade)
+                            
+                            // Verificar se inimigo morreu
+                            if (enemy.health <= 0) {
+                                gainXP(enemy.xpValue);
+                                // Efeitos de morte
+                                addParticles('deathExplosion', enemy.position.x + enemyWidth/2, enemy.position.y + enemyHeight/2, 20);
+                                screenShake(4, 200);
+                                enemies.splice(j, 1); // Remover inimigo
+                                
+                                if (enemy.type === 'boss') {
+                                    defeatBoss(enemy);
+                                }
+                            }
+                            
+                            // Desativar efeito se não for piercing ou de área
+                            if (!effect.piercing && !effect.areaEffect) {
+                                effect.active = false;
+                            }
+                        }
+                    }
+                }
+                
+                // Efeitos causados por inimigos
+                if (effect.damage && effect.origin === 'enemy' && !gameState.isInvincible && effect.active !== false) {
+                    const playerWidth = 50;
+                    const playerHeight = gameState.isCrouching ? CONFIG.CROUCH_HEIGHT : CONFIG.NORMAL_HEIGHT;
+                    
+                    // Verifica colisão do efeito com o jogador
+                    if (effect.x < gameState.playerPosition.x + playerWidth &&
+                        effect.x + effect.width > gameState.playerPosition.x &&
+                        effect.y < gameState.playerPosition.y + playerHeight &&
+                        effect.y + effect.height > gameState.playerPosition.y) {
+                        
+                        takeDamage(effect.damage);
+                        effect.active = false; // Efeitos de inimigo geralmente não são piercing para o jogador
+                    }
+                }
+            }
+        }
+
+        function updatePlayerAnimation() {
+            if (gameState.isUmbraFurious) {
+                gameState.currentAnimation = 'umbra_fury'; // Animação especial para ultimate
+            } else if (!gameState.isGrounded) {
+                gameState.currentAnimation = 'jump';
+            } else if (gameState.isCrouching) {
+                gameState.currentAnimation = 'crouch';
+            } else if (Math.abs(gameState.playerVelocity.x) > 0.1) {
+                gameState.currentAnimation = 'walk';
+            } else {
+                gameState.currentAnimation = 'idle';
+            }
+        }
+
+        function updateEnemies(deltaTime) {
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                
+                // Não atualiza inimigos em modo diálogo
+                if (enemy.type === 'boss_dialogue') continue;
+
+                // Reduzir timer de congelamento (se aplicável para futuros inimigos)
+                if (enemy.frozen) {
+                    enemy.frozenTimer -= deltaTime;
+                    if (enemy.frozenTimer <= 0) {
+                        enemy.frozen = false;
+                    }
+                    continue; // Pular atualização se congelado
+                }
+                
+                // Padrão de movimento
+                if (enemy.type === 'sentinel' && enemy.pattern === 'patrol') {
+                    updateEnemyPatrol(enemy, deltaTime);
+                }
+                
+                // IA de combate
+                if (enemy.type === 'sentinel') {
+                    updateEnemyAI(enemy, deltaTime);
+                } else if (enemy.type === 'boss') {
+                    updateBossAI(enemy, deltaTime);
+                }
+                
+                // Aplicar gravidade
+                enemy.velocity = enemy.velocity || { x: 0, y: 0 };
+                enemy.velocity.y += CONFIG.GRAVITY;
+                
+                // Atualizar posição
+                enemy.position.x += enemy.velocity.x;
+                enemy.position.y += enemy.velocity.y;
+                
+                // Verificar colisões com plataformas
+                checkEnemyPlatformCollisions(enemy);
+            }
+        }
+
+        function updateEnemyPatrol(enemy, deltaTime) {
+            if (!enemy.direction) {
+                enemy.direction = 1;
+                enemy.patrolStartX = enemy.position.x;
+            }
+            
+            enemy.position.x += enemy.speed * enemy.direction;
+            
+            // Verificar limites de patrulha
+            if (enemy.position.x > enemy.patrolStartX + enemy.patrolRange) {
+                enemy.direction = -1;
+            } else if (enemy.position.x < enemy.patrolStartX - enemy.patrolRange) {
+                enemy.direction = 1;
+            }
+        }
+
+        function updateEnemyAI(enemy, deltaTime) {
+            const distanceToPlayer = Math.abs(enemy.position.x - gameState.playerPosition.x);
+            const playerInRange = distanceToPlayer < 200; // Define range de ataque da sentinela
+            
+            if (playerInRange) {
+                enemy.attackCooldown = (enemy.attackCooldown || 0) - deltaTime;
+                if (enemy.attackCooldown <= 0) {
+                    enemyAttack(enemy);
+                    enemy.attackCooldown = 2000 + Math.random() * 1000; // 2-3 segundos de cooldown
+                }
+                
+                // Mover em direção ao jogador (lentamente)
+                if (distanceToPlayer > 60) {
+                    const direction = gameState.playerPosition.x > enemy.position.x ? 1 : -1;
+                    enemy.position.x += direction * enemy.speed * 0.5;
+                }
+            }
+        }
+
+        function enemyAttack(enemy) {
+            const direction = gameState.playerPosition.x > enemy.position.x ? 1 : -1;
+            
+            switch(enemy.type) {
+                case 'sentinel':
+                    // Projétil de gelo da sentinela
+                    addAbilityEffect({
+                        type: 'enemyIceShot',
+                        x: enemy.position.x + (direction > 0 ? 50 : -25),
+                        y: enemy.position.y + 15,
+                        width: 20,
+                        height: 6,
+                        duration: 2000,
+                        damage: enemy.damage,
+                        direction: direction,
+                        speed: 5,
+                        origin: 'enemy'
+                    });
+                    
+                    addParticles('enemyMuzzle', enemy.position.x + 25, enemy.position.y + 15, 6);
+                    break;
+            }
+        }
+
+        function checkEnemyPlatformCollisions(enemy) {
+            enemy.isGrounded = false;
+            const enemyWidth = enemy.type === 'boss' ? 70 : 50;
+            const enemyHeight = enemy.type === 'boss' ? 70 : 50;
+            
+            for (const platform of platforms) {
+                // Inimigos não colidem com espinhos
+                if (platform.type === 'spike') continue;
+
+                if (enemy.position.x < platform.x + platform.width &&
+                    enemy.position.x + enemyWidth > platform.x &&
+                    enemy.position.y < platform.y + platform.height &&
+                    enemy.position.y + enemyHeight > platform.y) {
+                    
+                    if (enemy.velocity.y > 0 && 
+                        enemy.position.y + enemyHeight - enemy.velocity.y <= platform.y) {
+                        enemy.position.y = platform.y - enemyHeight;
+                        enemy.velocity.y = 0;
+                        enemy.isGrounded = true;
+                    }
+                }
+            }
+        }
+
+        function updateAbilityEffects(deltaTime) {
+            for (let i = abilityEffects.length - 1; i >= 0; i--) {
+                const effect = abilityEffects[i];
+                effect.timer -= deltaTime;
+                
+                // Movimento baseado no tipo
+                switch(effect.type) {
+                    case 'energyProjectile': // Projétil do Escolhido
+                    case 'enemyIceShot': // Projétil da Sentinela
+                    case 'bossIceOrb': // Projétil de Tarek
+                        effect.x += effect.speed * effect.direction;
+                        // Partículas de rastro
+                        if (Math.random() < 0.4) {
+                            addParticles('projectileTrail', effect.x + effect.width/2, effect.y + effect.height/2, 2, effect.type === 'bossIceOrb' ? '#81d4fa' : '#3a86ff');
+                        }
+                        break;
+                    case 'bossDash': // Investida de Tarek
+                        if (effect.followBoss && effect.followBoss.position) {
+                            effect.x = effect.followBoss.position.x;
+                            effect.y = effect.followBoss.position.y;
+                        }
+                        break;
+                    case 'bossPrison': // Prisão de Gelo de Tarek
+                        if (effect.delay && effect.delay > 0) {
+                            effect.delay -= deltaTime;
+                            if (effect.delay <= 0) {
+                                effect.active = true;
+                                addParticles('prisonActivate', effect.x + effect.width/2, effect.y + effect.height/2, 20);
+                            }
+                        }
+                        if (effect.trapping && effect.active) {
+                            // Se o jogador estiver na área da prisão e a prisão estiver ativa
+                            const playerInTrap = 
+                                gameState.playerPosition.x > effect.x - 20 &&
+                                gameState.playerPosition.x < effect.x + effect.width + 20 &&
+                                gameState.playerPosition.y > effect.y - 10 &&
+                                gameState.playerPosition.y < effect.y + effect.height + 10;
+                            
+                            if (playerInTrap) {
+                                // Reduzir movimento do jogador
+                                gameState.playerVelocity.x *= 0.1;
+                                gameState.playerVelocity.y *= 0.1;
+                                
+                                // Dano contínuo
+                                if (Math.random() < 0.05) { // 5% de chance de causar dano por frame
+                                    takeDamage(effect.damage * (deltaTime / 1000)); // Dano contínuo baseado no tempo
+                                }
+                            }
+                        }
+                        break;
+                }
+                
+                // Remover efeitos expirados
+                if (effect.timer <= 0 || effect.active === false) { // Adicionado effect.active para remoção manual
+                    abilityEffects.splice(i, 1);
+                }
+            }
+        }
+
+        function updateParticles(deltaTime) {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                
+                // Atualizar posição
+                particle.x += particle.vx * (deltaTime / 16);
+                particle.y += particle.vy * (deltaTime / 16);
+                
+                // Aplicar gravidade em algumas partículas
+                if (particle.gravity) {
+                    particle.vy += CONFIG.GRAVITY * 0.3;
+                }
+                
+                // Reduzir vida
+                particle.life -= deltaTime;
+                
+                // Fade out
+                if (particle.life < particle.maxLife * 0.3) {
+                    particle.alpha = particle.life / (particle.maxLife * 0.3);
+                }
+                
+                // Remover partículas mortas
+                if (particle.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+            
+            // Limitar número de partículas
+            if (particles.length > CONFIG.MAX_PARTICLES) {
+                particles.splice(0, particles.length - CONFIG.MAX_PARTICLES);
+            }
+            
+            // Adicionar neve ambiente (apenas se não estiver na tela inicial ou menu)
+            if (!gameState.inStartScreen && !gameState.gamePaused) {
+                if (Math.random() < CONFIG.SNOW_SPAWN_RATE) {
+                    addParticles('snow', gameState.cameraOffset.x + Math.random() * canvas.width, -10 + gameState.cameraOffset.y, 1);
+                }
+            }
+        }
+
+        function updateDamageNumbers(deltaTime) {
+            // Os números de dano são elementos DOM, sua animação é controlada por CSS.
+            // Aqui, apenas os removemos quando o timer de data-timeLeft expira.
+            const damageContainer = document.getElementById('particle-container');
+            const existingNumbers = damageContainer.querySelectorAll('.damage-number, .xp-number');
+            
+            existingNumbers.forEach(number => {
+                const timeLeft = parseFloat(number.dataset.timeLeft) - deltaTime;
+                number.dataset.timeLeft = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    number.remove();
+                }
+            });
+        }
+
+        function updateCooldowns(deltaTime) {
+            for (const key in gameState.abilitiesCooldown) {
+                if (gameState.abilitiesCooldown[key] > 0) {
+                    gameState.abilitiesCooldown[key] -= deltaTime / 1000;
+                    
+                    // Atualizar visualização
+                    updateCooldownVisual(key);
+                }
+            }
+        }
+
+        function updateCooldownVisual(key) {
+            const btn = document.getElementById(`ability-${key.toLowerCase()}`);
+            const overlay = btn?.querySelector('.cooldown-overlay');
+            
+            if (btn && overlay) {
+                const cooldownRatio = gameState.abilitiesCooldown[key] / gameState.abilitiesMaxCooldown[key];
+                
+                if (cooldownRatio > 0) {
+                    btn.classList.add('cooldown');
+                    const angle = 360 * (1 - cooldownRatio);
+                    overlay.style.background = `conic-gradient(from 0deg, transparent ${angle}deg, rgba(0, 0, 0, 0.8) ${angle}deg)`;
+                } else {
+                    btn.classList.remove('cooldown');
+                    overlay.style.background = '';
+                }
+            }
+        }
+
+        function updateRegeneration(deltaTime) {
+            // Regeneração de mana (aumentada pelo CONFIG.MANA_REGEN_RATE)
+            if (gameState.playerMana < gameState.playerMaxMana) {
+                gameState.playerMana += CONFIG.MANA_REGEN_RATE * (deltaTime / 1000);
+                gameState.playerMana = Math.min(gameState.playerMana, gameState.playerMaxMana);
+                updateManaBar();
+            }
+            
+            // Regeneração lenta de vida (apenas fora de combate)
+            if (gameState.playerHealth < gameState.playerMaxHealth && !gameState.isInvincible) {
+                gameState.playerHealth += CONFIG.HEALTH_REGEN_RATE * (deltaTime / 1000);
+                gameState.playerHealth = Math.min(gameState.playerHealth, gameState.playerMaxHealth);
+                updateHealthBar();
+            }
+        }
+
+        function updateCamera(deltaTime) {
+            if (gameState.fixedCamera) {
+                // Se a câmera for fixa, ela não se move
+                gameState.cameraOffset.x = gameState.fixedCameraTarget.x;
+                gameState.cameraOffset.y = gameState.fixedCameraTarget.y;
+                return;
+            }
+
+            // Calcular posição alvo da câmera
+            gameState.targetCameraOffset.x = gameState.playerPosition.x - canvas.width / 2;
+            gameState.targetCameraOffset.y = gameState.playerPosition.y - canvas.height / 2;
+            
+            // Limitar câmera
+            gameState.targetCameraOffset.x = Math.max(0, Math.min(gameState.targetCameraOffset.x, CONFIG.WORLD_WIDTH - canvas.width));
+            gameState.targetCameraOffset.y = Math.max(-100, Math.min(gameState.targetCameraOffset.y, CONFIG.WORLD_HEIGHT - canvas.height + 100));
+            
+            // Suavizar movimento
+            gameState.cameraOffset.x += (gameState.targetCameraOffset.x - gameState.cameraOffset.x) * CONFIG.CAMERA_SMOOTHING;
+            gameState.cameraOffset.y += (gameState.targetCameraOffset.y - gameState.cameraOffset.y) * CONFIG.CAMERA_SMOOTHING;
+
+            // Se o jogador chegou ao final da fase de plataforma pré-Tarek, transiciona para o encontro
+            if (gameState.currentPhase === 1 && gameState.playerPosition.x >= CONFIG.WORLD_WIDTH - 50) {
+                loadPhase(2); // Transiciona para o encontro com Tarek (diálogo)
+            }
+        }
+
+        function checkCheckpoints() {
+            // Checkpoints são definidos por fase
+            if (gameState.currentPhase === 1) { // Checkpoints para a fase de plataforma pré-Tarek
+                if (gameState.playerPosition.x >= CONFIG.WORLD_WIDTH - 100 && gameState.currentCheckpoint !== 'pre_tarek_gate') {
+                    saveCheckpoint('pre_tarek_gate');
+                }
+            }
+            // Adicione outros checkpoints para outras fases aqui
+        }
+
+        function checkGameConditions() {
+            // Verificar morte do jogador
+            if (gameState.playerHealth <= 0) {
+                gameOver();
+            }
+            
+            // Verificar vitória da fase (ex: Tarek derrotado)
+            if (gameState.bossDefeated && gameState.currentPhase === 3) {
+                // Após derrotar Tarek, o jogo aguardará o diálogo de vitória para prosseguir
+            }
+        }
+
+        // ===== SISTEMA DE HABILIDADES =====
+        function useAbility(key) {
+            if (!currentChampion || gameState.abilitiesCooldown[key] > 0) return;
+            
+            const ability = currentChampion.abilities.find(a => a.key === key);
+            if (!ability) return;
+            
+            if (gameState.playerMana < ability.manaCost) {
+                // Feedback visual de mana insuficiente
+                flashScreen(getComputedStyle(document.documentElement).getPropertyValue('--mana-color'), 200);
+                return;
+            }
+            
+            // Consumir mana
+            gameState.playerMana -= ability.manaCost;
+            
+            // Definir cooldown
+            gameState.abilitiesCooldown[key] = ability.cooldown;
+            
+            // Executar habilidade
+            ability.execute();
+            
+            // Atualizar UI
+            updateManaBar();
+        }
+
+        function addAbilityEffect(effect) {
+            effect.timer = effect.duration || 1000;
+            effect.origin = effect.origin || 'player';
+            effect.active = effect.active !== false; // Efeito pode ser desativado manualmente (ex: impacto)
+            effect.hitTargets = effect.hitTargets || []; // Para controlar inimigos já atingidos por piercing/área
+            
+            abilityEffects.push(effect);
+        }
+
+        // ===== SISTEMA DE PARTÍCULAS =====
+        function addParticles(type, x, y, count, color = null) {
+            for (let i = 0; i < count; i++) {
+                const particle = createParticle(type, x, y, color);
+                particles.push(particle);
+            }
+        }
+
+        function createParticle(type, x, y, customColor = null) {
+            const baseParticle = {
+                x: x + (Math.random() - 0.5) * 20,
+                y: y + (Math.random() - 0.5) * 20,
+                vx: (Math.random() - 0.5) * 4,
+                vy: (Math.random() - 0.5) * 4,
+                size: 2 + Math.random() * 3,
+                alpha: 1,
+                gravity: false,
+                type: type // Adiciona o tipo para renderização específica
+            };
+            
+            switch(type) {
+                case 'snow':
+                    return {
+                        ...baseParticle,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: 1 + Math.random() * 2,
+                        size: 2 + Math.random() * 4,
+                        color: customColor || '#ffffff',
+                        life: 8000 + Math.random() * 4000,
+                        maxLife: 12000
+                    };
+                case 'jumpDust':
+                case 'landDust':
+                    return {
+                        ...baseParticle,
+                        vx: (Math.random() - 0.5) * 3,
+                        vy: -1 - Math.random() * 2,
+                        color: customColor || '#aaaaaa',
+                        life: 400 + Math.random() * 200,
+                        maxLife: 600,
+                        gravity: true
+                    };
+                case 'hitSpark':
+                    return {
+                        ...baseParticle,
+                        vx: (Math.random() - 0.5) * 6,
+                        vy: (Math.random() - 0.5) * 6,
+                        color: customColor || '#ffff00',
+                        life: 300 + Math.random() * 200,
+                        maxLife: 500
+                    };
+                case 'deathExplosion':
+                case 'explosion':
+                    return {
+                        ...baseParticle,
+                        vx: (Math.random() - 0.5) * 10,
+                        vy: (Math.random() - 0.5) * 10,
+                        color: customColor || (Math.random() > 0.5 ? '#ff6666' : '#ffaa66'),
+                        life: 800 + Math.random() * 400,
+                        maxLife: 1200,
+                        size: 3 + Math.random() * 5
+                    };
+                case 'projectileTrail':
+                    return {
+                        ...baseParticle,
+                        vx: (Math.random() - 0.5) * 2,
+                        vy: (Math.random() - 0.5) * 2,
+                        color: customColor || '#3a86ff', // Cor padrão para rastro de projétil do Escolhido
+                        life: 300 + Math.random() * 200,
+                        maxLife: 500,
+                        size: 1 + Math.random() * 2
+                    };
+                case 'umbraFuria': // Partículas para a Fúria de Umbra
+                    return {
+                        ...baseParticle,
+                        vx: (Math.random() - 0.5) * 5,
+                        vy: (Math.random() - 0.5) * 5,
+                        color: customColor || '#d4af37', // Dourado/âmbar
+                        life: 500 + Math.random() * 300,
+                        maxLife: 800,
+                        size: 3 + Math.random() * 4,
+                        gravity: false
+                    };
+                case 'bossIntro': // Partículas para a introdução do boss
+                    return {
+                        ...baseParticle,
+                        vx: (Math.random() - 0.5) * 8,
+                        vy: (Math.random() - 0.5) * 8,
+                        color: customColor || '#ff6b6b', // Vermelho fogo
+                        life: 1000 + Math.random() * 500,
+                        maxLife: 1500,
+                        size: 4 + Math.random() * 6
+                    };
+                default:
+                    return { ...baseParticle, color: customColor || '#ffffff', life: 500, maxLife: 500 };
+            }
+        }
+
+        // ===== SISTEMA DE DANO E COMBATE =====
+        function takeDamage(amount) {
+            if (gameState.isInvincible) return;
+            
+            let finalDamage = amount;
+            if (gameState.isUmbraFurious) {
+                finalDamage *= CONFIG.UMBRA_FURY_DAMAGE_REDUCTION; // Reduz dano recebido na ultimate
+            }
+
+            gameState.playerHealth -= finalDamage;
+            gameState.playerHealth = Math.max(0, gameState.playerHealth);
+            
+            playSound('sfx_damage_player'); // Som de dano no jogador
+            
+            // Ativar invencibilidade temporária
+            gameState.isInvincible = true;
+            gameState.invincibilityTimer = CONFIG.INVINCIBILITY_DURATION;
+            
+            // Efeitos visuais
+            flashScreen(getComputedStyle(document.documentElement).getPropertyValue('--health-color'), CONFIG.DAMAGE_FLASH_DURATION);
+            screenShake(5, 300);
+            showDamageNumber(finalDamage, gameState.playerPosition.x + 25, gameState.playerPosition.y, true);
+            
+            // Atualizar UI
+            updateHealthBar();
+            
+            // Verificar morte
+            if (gameState.playerHealth <= 0) {
+                gameOver();
+            }
+        }
+
+        function showDamageNumber(damage, x, y, isPlayerDamage = false) {
+            const damageContainer = document.getElementById('particle-container');
+            const damageNumber = document.createElement('div');
+            
+            damageNumber.className = isPlayerDamage ? 'damage-number' : 'damage-number'; // Classe genérica, pode diferenciar CSS
+            damageNumber.textContent = Math.round(damage);
+            damageNumber.style.left = (x - gameState.cameraOffset.x) + 'px';
+            damageNumber.style.top = (y - gameState.cameraOffset.y) + 'px';
+            damageNumber.style.color = isPlayerDamage ? getComputedStyle(document.documentElement).getPropertyValue('--health-color') : getComputedStyle(document.documentElement).getPropertyValue('--text-light');
+            damageNumber.dataset.timeLeft = '1000';
+            
+            damageContainer.appendChild(damageNumber);
+        }
+
+        function gainXP(amount) {
+            gameState.playerXP += amount;
+            
+            // Mostrar número de XP
+            const xpContainer = document.getElementById('particle-container');
+            const xpNumber = document.createElement('div');
+            xpNumber.className = 'xp-number';
+            xpNumber.textContent = `+${amount} XP`;
+            xpNumber.style.left = (gameState.playerPosition.x + 25 - gameState.cameraOffset.x) + 'px';
+            xpNumber.style.top = (gameState.playerPosition.y - gameState.cameraOffset.y) + 'px';
+            xpNumber.dataset.timeLeft = '1500';
+            xpContainer.appendChild(xpNumber);
+            
+            // Partículas de XP
+            addParticles('xpGain', gameState.playerPosition.x + 25, gameState.playerPosition.y, 8, getComputedStyle(document.documentElement).getPropertyValue('--xp-color'));
+            
+            // Verificar level up
+            if (gameState.playerXP >= gameState.playerNextLevelXP) {
+                levelUp();
+            }
+            
+            updateXPBar();
+            updatePlayerStats();
+        }
+
+        function levelUp() {
+            playSound('sfx_level_up'); // Som de level up
+            gameState.playerLevel++;
+            gameState.playerXP -= gameState.playerNextLevelXP;
+            gameState.playerNextLevelXP = Math.floor(gameState.playerNextLevelXP * 1.5); // XP para o próximo nível cresce mais rápido
+            
+            // Aumentos automáticos de atributos (sem escolha do jogador)
+            gameState.playerMaxHealth += 10;
+            gameState.playerHealth = gameState.playerMaxHealth; // Cura completa
+            gameState.playerMaxMana += 15;
+            gameState.playerMana = gameState.playerMaxMana; // Restaura completa
+            gameState.playerDamage += 5;
+            gameState.playerSpeed += 0.2;
+            
+            // Efeitos visuais
+            flashScreen(getComputedStyle(document.documentElement).getPropertyValue('--xp-color'), 500);
+            addParticles('umbraFuria', gameState.playerPosition.x + 25, gameState.playerPosition.y + 25, 30); // Partículas douradas para level up
+            
+            // Mostrar notificação de level up (sem opções)
+            showLevelUpNotification();
+            updateAllUI(); // Atualiza UI com novos stats
+            saveProgress(); // Salva o progresso após level up
+        }
+
+        function showLevelUpNotification() {
+            const levelUpMenu = document.getElementById('level-up');
+            levelUpMenu.style.display = 'block';
+            levelUpMenu.style.animation = 'levelUpAnimation 0.8s forwards';
+            gameState.gamePaused = true;
+        }
+
+        // ===== BOSS FIGHT - TAREK =====
+        function triggerBossFight() {
+            gameState.inBossFight = true;
+            gameState.fixedCamera = true; // Mantém a câmera fixa na arena
+            
+            playSound('sfx_boss_roar'); // Som de rugido do boss
+
+            const tarek = {
+                type: 'boss',
+                name: 'Tarek, o Guerreiro',
+                position: { x: 600, y: 300 }, // Posição de Tarek na arena fixa
+                facing: 'left', // Tarek olhando para o jogador
+                health: 500, // Vida do boss
+                maxHealth: 500,
+                damage: 25, // Dano básico de colisão
+                speed: 1.5,
+                velocity: { x: 0, y: 0 },
+                isGrounded: false,
+                xpValue: 500, // XP por derrotar Tarek
+                
+                // IA do Boss
+                aiState: 'combat', // Começa em combate
+                aiTimer: 0,
+                attackCooldown: 0,
+                lastAttack: 0,
+                
+                // Habilidades do Boss (Nome, Cooldown em ms, Range, Dano)
+                abilities: [
+                    { name: 'Golpe Devastador', cooldown: 3000, range: 80, damage: 35 },
+                    { name: 'Investida Gélida', cooldown: 6000, range: 300, damage: 45 },
+                    { name: 'Orbe Congelante', cooldown: 5000, range: 400, damage: 30 },
+                    { name: 'Prisão de Gelo', cooldown: 10000, range: 200, damage: 20 }
+                ]
+            };
+            
+            enemies.push(tarek);
+            
+            // Mostrar barra de vida do boss
+            document.getElementById('boss-name').style.display = 'block';
+            document.getElementById('boss-health-bar').style.display = 'block';
+            updateBossHealthBar(tarek);
+            
+            // Salvar checkpoint antes do boss
+            saveCheckpoint('tarek_fight_start');
+            
+            // Efeitos visuais de início da luta
+            screenShake(8, 500);
+            flashScreen(getComputedStyle(document.documentElement).getPropertyValue('--accent-fire'), 300);
+            addParticles('bossIntro', tarek.position.x + 35, tarek.position.y + 35, 40);
+        }
+
+        function updateBossAI(boss, deltaTime) {
+            const distanceToPlayer = Math.abs(boss.position.x - gameState.playerPosition.x);
+            const verticalDistance = Math.abs(boss.position.y - gameState.playerPosition.y);
+            const currentTime = Date.now();
+            
+            // Verifica se Tarek está "enraged" (menos vida)
+            if (boss.health < boss.maxHealth * 0.4 && !boss.enraged) {
+                boss.enraged = true;
+                boss.speed *= 1.3; // Aumenta velocidade
+                boss.damage *= 1.1; // Aumenta dano
+                // Reduz cooldowns das habilidades
+                boss.abilities.forEach(ab => ab.cooldown *= 0.8);
+
+                flashScreen(getComputedStyle(document.documentElement).getPropertyValue('--accent-fire'), 500);
+                addParticles('bossIntro', boss.position.x + 35, boss.position.y + 35, 50); // Mais partículas
+
+                showDialog("TAREK", "Você... é mais forte do que pensei! Mas não vou cair facilmente!", []);
+            }
+            
+            // Atualizar cooldowns das habilidades do boss
+            boss.abilities.forEach(ability => {
+                // Para boss, usamos Date.now() para último uso e cooldown
+                if (currentTime - (ability.lastUsed || 0) < ability.cooldown) {
+                    ability.ready = false;
+                } else {
+                    ability.ready = true;
+                }
+            });
+            
+            boss.aiTimer += deltaTime;
+            
+            switch(boss.aiState) {
+                case 'combat':
+                    // Decide qual habilidade usar baseado na distância e se está pronta
+                    let chosenAbility = null;
+                    const rand = Math.random(); // Ajuda na aleatoriedade da escolha
+
+                    if (distanceToPlayer < boss.abilities[0].range && boss.abilities[0].ready) { // Golpe Devastador (curta)
+                        chosenAbility = boss.abilities[0];
+                    } else if (distanceToPlayer > 100 && distanceToPlayer < boss.abilities[1].range && boss.abilities[1].ready) { // Investida Gélida (média)
+                        chosenAbility = boss.abilities[1];
+                    } else if (distanceToPlayer > 150 && boss.abilities[2].ready) { // Orbe Congelante (longa)
+                        chosenAbility = boss.abilities[2];
+                    } else if (boss.abilities[3].ready && rand < 0.3) { // Prisão de Gelo (ocasionalmente)
+                        chosenAbility = boss.abilities[3];
+                    }
+                    
+                    if (chosenAbility && boss.aiTimer > 500) { // Pequeno delay entre ações
+                        executeBossAbility(boss, chosenAbility);
+                        boss.aiState = 'attacking'; // Entra em estado de ataque
+                        boss.aiTimer = 0; // Reseta o timer para controlar a duração do ataque
+                    } else {
+                        // Se não puder atacar, move-se em direção ao jogador
+                        moveBossTowardsPlayer(boss, distanceToPlayer);
+                    }
+                    break;
+                    
+                case 'attacking':
+                    // Permanece neste estado por um tempo, simulando a execução do ataque
+                    if (boss.aiTimer > 1000) { // Duração da animação/execução do ataque
+                        boss.aiState = 'combat';
+                        boss.aiTimer = 0;
+                    }
+                    break;
+            }
+            updateBossHealthBar(boss); // Atualiza a barra de vida do boss
+        }
+
+        function moveBossTowardsPlayer(boss, distance) {
+            // Tarek se move em direção ao jogador se não estiver muito perto
+            if (distance > 50) {
+                const direction = gameState.playerPosition.x > boss.position.x ? 1 : -1;
+                boss.position.x += direction * boss.speed;
+                boss.facing = direction === 1 ? 'right' : 'left'; // Atualiza a direção do Tarek
+
+                // Tarek também tenta pular se o jogador estiver em uma plataforma superior
+                if (gameState.isGrounded && gameState.playerPosition.y < boss.position.y - 50 && boss.isGrounded) {
+                    boss.velocity.y = -CONFIG.JUMP_FORCE * 0.8;
+                    boss.isGrounded = false;
+                }
+            } else {
+                boss.velocity.x = 0; // Para quando está perto
+            }
+        }
+
+        function executeBossAbility(boss, ability) {
+            const direction = gameState.playerPosition.x > boss.position.x ? 1 : -1;
+            ability.lastUsed = Date.now(); // Marca o último uso para cooldown
+            
+            switch(ability.name) {
+                case 'Golpe Devastador':
+                    addAbilityEffect({
+                        type: 'bossSlash',
+                        x: boss.position.x + (direction > 0 ? 70 : -50),
+                        y: boss.position.y + 10,
+                        width: 70,
+                        height: 30,
+                        duration: 300,
+                        damage: ability.damage,
+                        origin: 'enemy',
+                        knockback: 20
+                    });
+                    screenShake(6, 300);
+                    break;
+                case 'Investida Gélida':
+                    boss.velocity.x = direction * 10; // Impulso para o dash
+                    addAbilityEffect({
+                        type: 'bossDash',
+                        x: boss.position.x,
+                        y: boss.position.y,
+                        width: 70,
+                        height: 50,
+                        duration: 800,
+                        damage: ability.damage,
+                        origin: 'enemy',
+                        followBoss: boss // Efeito segue o boss durante o dash
+                    });
+                    addParticles('dashIce', boss.position.x + 35, boss.position.y + 35, 30);
+                    screenShake(8, 400);
+                    break;
+                case 'Orbe Congelante':
+                    addAbilityEffect({
+                        type: 'bossIceOrb',
+                        x: boss.position.x + (direction > 0 ? 80 : -30),
+                        y: boss.position.y + 20,
+                        width: 40,
+                        height: 40,
+                        duration: 3000,
+                        damage: ability.damage,
+                        direction: direction,
+                        speed: 4,
+                        origin: 'enemy'
+                    });
+                    break;
+                case 'Prisão de Gelo':
+                    // Cria múltiplas prisões ao redor do jogador
+                    for (let i = 0; i < 3; i++) {
+                        const offsetX = (i - 1) * 80; // Espaçamento
+                        addAbilityEffect({
+                            type: 'bossPrison',
+                            x: gameState.playerPosition.x + offsetX - 15, // Posição em relação ao jogador
+                            y: gameState.playerPosition.y - 60,
+                            width: 30,
+                            height: 120,
+                            duration: 5000, // Duração da prisão
+                            damage: ability.damage, // Dano contínuo ou inicial
+                            origin: 'enemy',
+                            trapping: true, // Indica que o efeito prende
+                            delay: i * 200, // Cada prisão aparece com um pequeno delay
+                            active: false // Inicialmente inativo até o delay passar
+                        });
+                    }
+                    screenShake(5, 600);
+                    break;
+            }
+        }
+
+        function updateBossHealthBar(boss) {
+            const healthFill = document.getElementById('boss-health-fill');
+            const healthPercentage = (boss.health / boss.maxHealth) * 100;
+            healthFill.style.width = healthPercentage + '%';
+            
+            // Mudar cor baseada na vida (pode ser ajustado no CSS também)
+            if (healthPercentage > 60) {
+                healthFill.style.background = 'linear-gradient(90deg, #4caf50, #8bc34a)';
+            } else if (healthPercentage > 30) {
+                healthFill.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
+            } else {
+                healthFill.style.background = 'linear-gradient(90deg, #f44336, #e53935)';
+            }
+        }
+
+        function defeatBoss(boss) {
+            gameState.bossDefeated = true;
+            gameState.inBossFight = false;
+            
+            stopMusic(); // Para a música de boss
+            
+            // Esconder barra do boss
+            document.getElementById('boss-name').style.display = 'none';
+            document.getElementById('boss-health-bar').style.display = 'none';
+            
+            // Efeitos visuais de vitória
+            flashScreen(getComputedStyle(document.documentElement).getPropertyValue('--accent-gold'), 800);
+            screenShake(10, 1000);
+            addParticles('victoryExplosion', boss.position.x + 35, boss.position.y + 35, 60);
+            
+            // XP massivo por derrotar o boss
+            gainXP(boss.xpValue);
+            
+            // Remover boss
+            const bossIndex = enemies.indexOf(boss);
+            if (bossIndex > -1) {
+                enemies.splice(bossIndex, 1);
+            }
+            
+            // Diálogo de vitória
+            setTimeout(() => {
+                showDialog(
+                    "TAREK",
+                    `Impressionante, ${gameState.playerName}... Você realmente tem a força de um Escolhido. Pode passar, mas saiba que desafios ainda maiores o aguardam adiante.`,
+                    [
+                        {
+                            text: "Obrigado pela luta honrosa, Tarek.",
+                            action: () => {
+                                showDialog(
+                                    "TAREK",
+                                    "Que os ventos gelados guiem seus passos, Escolhido. E que você encontre o que procura antes que seja tarde demais.",
+                                    [
+                                        {
+                                            text: "Continuar jornada",
+                                            action: () => {
+                                                saveCheckpoint('boss_defeated');
+                                                // Transição para a próxima fase (Missão 2) ou tela de vitória temporária
+                                                showDialog(
+                                                    "NARRAÇÃO",
+                                                    "Com Tarek derrotado, o caminho para o interior de Tupãry está aberto. Mas esta é apenas a primeira de muitas provações que aguardam o Escolhido...",
+                                                    [
+                                                        {
+                                                            text: "Fim da Demo (Avance para a Missão 2 em breve)",
+                                                            action: () => showVictoryScreen() // Mostrar tela de vitória de demo
+                                                        }
+                                                    ]
+                                                );
+                                            }
+                                        }
+                                    ]
+                                );
+                            }
+                        }
+                    ]
+                );
+            }, 2000);
+        }
+
+        // ===== EFEITOS VISUAIS =====
+        function screenShake(intensity, duration) {
+            if (!gameSettings.screenShake) return; // Se o usuário desativou no settings
+            const gameContainer = document.getElementById('game-container');
+            const originalTransform = gameContainer.style.transform;
+            
+            const startTime = Date.now();
+            
+            function shake() {
+                const elapsed = Date.now() - startTime;
+                if (elapsed < duration) {
+                    const progress = elapsed / duration;
+                    const currentIntensity = intensity * (1 - progress);
+                    
+                    const offsetX = (Math.random() - 0.5) * currentIntensity;
+                    const offsetY = (Math.random() - 0.5) * currentIntensity;
+                    
+                    gameContainer.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+                    requestAnimationFrame(shake);
+                } else {
+                    gameContainer.style.transform = originalTransform;
+                }
+            }
+            
+            shake();
+        }
+
+        function flashScreen(color, duration) {
+            const flash = document.getElementById('screen-flash');
+            flash.style.background = color;
+            flash.classList.add('active');
+            
+            setTimeout(() => {
+                flash.classList.remove('active');
+            }, duration);
+        }
+
+        // ===== RENDERIZAÇÃO =====
+        function render() {
+            // Limpar canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Renderizar background com parallax
+            renderBackground();
+            
+            // Renderizar plataformas
+            renderPlatforms();
+            
+            // Renderizar efeitos de habilidades (atrás dos personagens)
+            renderAbilityEffects();
+            
+            // Renderizar jogador
+            renderPlayer();
+            
+            // Renderizar inimigos
+            renderEnemies();
+            
+            // Renderizar partículas
+            renderParticles();
+            
+            // Renderizar efeitos de debug (se necessário)
+            if (window.DEBUG_MODE) {
+                renderDebugInfo();
+            }
+        }
+
+        function renderBackground() {
+            // Gradiente base do céu
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--primary-dark'));
+            gradient.addColorStop(0.3, getComputedStyle(document.documentElement).getPropertyValue('--primary-medium'));
+            gradient.addColorStop(0.7, getComputedStyle(document.documentElement).getPropertyValue('--primary-light'));
+            gradient.addColorStop(1, '#2c3e50'); // Adicionado um tom mais escuro para o horizonte
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Camadas de parallax
+            backgroundLayers.forEach((layer, index) => {
+                const parallaxOffset = (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x) * layer.speed;
+                
+                // Desenhar montanhas/colinas como formas simples
+                ctx.fillStyle = layer.color;
+                ctx.globalAlpha = 0.6 - (index * 0.1);
+                
+                // Criar formas de montanha procedurais
+                ctx.beginPath();
+                ctx.moveTo(-parallaxOffset, canvas.height);
+                
+                for (let x = -200; x < canvas.width + 200; x += 50 + Math.random() * 20) { // Variar largura para mais naturalidade
+                    const height = 100 + Math.sin((x + parallaxOffset) * 0.01) * 50 + Math.sin((x + parallaxOffset) * 0.003) * 100;
+                    ctx.lineTo(x - parallaxOffset, canvas.height - height - (index * 30));
+                }
+                
+                ctx.lineTo(canvas.width + 200, canvas.height);
+                ctx.closePath();
+                ctx.fill();
+            });
+            
+            ctx.globalAlpha = 1;
+        }
+
+        function renderPlatforms() {
+            for (const platform of platforms) {
+                const x = platform.x - (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x);
+                const y = platform.y - (gameState.fixedCamera ? gameState.fixedCameraTarget.y : gameState.cameraOffset.y);
+                
+                // Culling - não renderizar se fora da tela
+                if (x + platform.width < -50 || x > canvas.width + 50 || 
+                    y + platform.height < -50 || y > canvas.height + 50) {
+                    continue;
+                }
+                
+                // Renderização de Plataformas
+                if (platform.type === 'ground' || platform.type === 'platform') {
+                    // Cor base da plataforma
+                    if (platform.slippery) {
+                        // Plataforma de gelo
+                        const iceGradient = ctx.createLinearGradient(x, y, x, y + platform.height);
+                        iceGradient.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--accent-ice'));
+                        iceGradient.addColorStop(0.5, '#bbdefb');
+                        iceGradient.addColorStop(1, '#90caf9');
+                        ctx.fillStyle = iceGradient;
+                    } else {
+                        // Plataforma de pedra (ajustado para ser mais escuro e rochoso)
+                        const stoneGradient = ctx.createLinearGradient(x, y, x, y + platform.height);
+                        stoneGradient.addColorStop(0, '#5a5a5a');
+                        stoneGradient.addColorStop(0.5, '#4a4a4a');
+                        stoneGradient.addColorStop(1, '#3a3a3a');
+                        ctx.fillStyle = stoneGradient;
+                    }
+                    ctx.fillRect(x, y, platform.width, platform.height);
+                    
+                    // Detalhes visuais
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, platform.width, platform.height);
+                } else if (platform.type === 'spike') {
+                    // Renderizar Espinhos de Gelo (Placeholder)
+                    // Você pode substituir isso por um sprite de espinhos de gelo
+                    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--spike-color');
+                    ctx.beginPath();
+                    for (let i = 0; i < platform.width; i += 10) { // Desenha múltiplos triângulos para simular espinhos
+                        ctx.moveTo(x + i, y + platform.height);
+                        ctx.lineTo(x + i + 5, y);
+                        ctx.lineTo(x + i + 10, y + platform.height);
+                        ctx.fill();
+                    }
+                    ctx.closePath();
+                    // Bordas para espinhos
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x, y, platform.width, platform.height);
+                }
+            }
+        }
+
+        function renderPlayer() {
+            const x = gameState.playerPosition.x - (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x);
+            const y = gameState.playerPosition.y - (gameState.fixedCamera ? gameState.fixedCameraTarget.y : gameState.cameraOffset.y);
+            const width = 50;
+            const height = gameState.isCrouching ? CONFIG.CROUCH_HEIGHT : CONFIG.NORMAL_HEIGHT;
+            
+            // Culling
+            if (x + width < -50 || x > canvas.width + 50 || y + height < -50 || y > canvas.height + 50) {
+                return;
+            }
+            
+            // Efeito de invencibilidade (piscar)
+            if (gameState.isInvincible && Math.floor(Date.now() / 100) % 2) {
+                ctx.globalAlpha = 0.5;
+            }
+            
+            // Corpo principal do jogador (Placeholder para Sprite)
+            // Futuramente, você carregará e desenhará o sprite aqui:
+            // const playerSprite = ASSET_MANAGER.getAsset(CONFIG.ASSET_PATHS.player_idle); // ou player_walk, etc.
+            // ctx.drawImage(playerSprite, x, y, width, height);
+
+            const playerColor = gameState.isUmbraFurious ? getComputedStyle(document.documentElement).getPropertyValue('--accent-gold') : getComputedStyle(document.documentElement).getPropertyValue('--accent-blue');
+            ctx.fillStyle = playerColor;
+            ctx.fillRect(x, y, width, height);
+            
+            // Detalhes simples do jogador (olhos, etc. - placeholders para o sprite)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            // Olhos
+            ctx.fillRect(x + 15, y + 8, 3, 3);
+            ctx.fillRect(x + 32, y + 8, 3, 3);
+
+            // Indicador de direção
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            if (gameState.facing === 'right') {
+                ctx.beginPath();
+                ctx.moveTo(x + width, y + height / 2);
+                ctx.lineTo(x + width - 10, y + height / 2 - 10);
+                ctx.lineTo(x + width - 10, y + height / 2 + 10);
+                ctx.closePath();
+                ctx.fill();
+            } else {
+                ctx.beginPath();
+                ctx.moveTo(x, y + height / 2);
+                ctx.lineTo(x + 10, y + height / 2 - 10);
+                ctx.lineTo(x + 10, y + height / 2 + 10);
+                ctx.closePath();
+                ctx.fill();
+            }
+            
+            ctx.globalAlpha = 1;
+        }
+
+        function renderEnemies() {
+            for (const enemy of enemies) {
+                const x = enemy.position.x - (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x);
+                const y = enemy.position.y - (gameState.fixedCamera ? gameState.fixedCameraTarget.y : gameState.cameraOffset.y);
+                const width = enemy.type === 'boss' || enemy.type === 'boss_dialogue' ? 70 : 50; // Tarek é maior
+                const height = enemy.type === 'boss' || enemy.type === 'boss_dialogue' ? 70 : 50;
+                
+                // Culling
+                if (x + width < -50 || x > canvas.width + 50 || y + height < -50 || y > canvas.height + 50) {
+                    continue;
+                }
+                
+                // Efeito de congelamento (se aplicável para futuros inimigos)
+                if (enemy.frozen) {
+                    ctx.globalAlpha = 0.7;
+                    ctx.fillStyle = '#81d4fa';
+                    ctx.fillRect(x - 5, y - 5, width + 10, height + 10);
+                }
+                
+                // Renderizar baseado no tipo
+                if (enemy.type === 'sentinel') {
+                    renderSentinel(enemy, x, y, width, height);
+                } else if (enemy.type === 'boss' || enemy.type === 'boss_dialogue') {
+                    renderBoss(enemy, x, y, width, height);
+                }
+                
+                // Barra de vida do inimigo (apenas se não for diálogo ou já estiver morto)
+                if (enemy.health < enemy.maxHealth && enemy.health > 0 && enemy.type !== 'boss_dialogue') {
+                    const barWidth = width + 10; // Barra um pouco maior que o inimigo
+                    const barHeight = 6;
+                    const barX = x - 5;
+                    const barY = y - 15;
+                    
+                    // Fundo da barra
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                    ctx.fillRect(barX, barY, barWidth, barHeight);
+                    
+                    // Barra de vida
+                    const healthPercent = enemy.health / enemy.maxHealth;
+                    ctx.fillStyle = healthPercent > 0.5 ? '#4caf50' : healthPercent > 0.25 ? '#ff9800' : '#f44336';
+                    ctx.fillRect(barX, barY, barWidth * healthPercent, barHeight);
+                    
+                    // Borda
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(barX, barY, barWidth, barHeight);
+                }
+                
+                // Nome do inimigo (apenas para boss)
+                if ((enemy.type === 'boss' || enemy.type === 'boss_dialogue') && enemy.name) {
+                    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-light');
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(enemy.name, x + width/2, y - 25);
+                    ctx.textAlign = 'left';
+                }
+                
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function renderSentinel(enemy, x, y, width, height) {
+            // Renderização da Sentinela (Placeholder para Sprite)
+            // Você pode carregar um sprite aqui: ASSET_MANAGER.getAsset(CONFIG.ASSET_PATHS.sentinel_sprite)
+            ctx.fillStyle = '#78909c'; // Cor cinza-azulada para sentinela
+            ctx.fillRect(x, y, width, height);
+            
+            // Detalhes simples (olhos, etc.)
+            ctx.fillStyle = '#cfd8dc'; // Cor mais clara para detalhes
+            ctx.fillRect(x + 10, y + 10, width - 20, height - 20);
+
+            // Olhos
+            ctx.fillStyle = '#00e5ff'; // Brilho azul
+            ctx.fillRect(x + 15, y + 5, 4, 4);
+            ctx.fillRect(x + 31, y + 5, 4, 4);
+        }
+
+        function renderBoss(enemy, x, y, width, height) {
+            // Renderização de Tarek (Placeholder para Sprite)
+            // Você pode carregar um sprite aqui: ASSET_MANAGER.getAsset(CONFIG.ASSET_PATHS.tarek_sprite)
+            
+            // Tarek é maior que inimigos normais
+            const bossWidth = 70;
+            const bossHeight = 70;
+            const bossX = x; // Ajustar conforme o sprite
+            const bossY = y; // Ajustar conforme o sprite
+            
+            // Aura de poder (se enraged)
+            if (enemy.enraged) {
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                ctx.fillRect(bossX - 5, bossY - 5, bossWidth + 10, bossHeight + 10);
+            }
+            
+            // Corpo do boss
+            const bossGradient = ctx.createLinearGradient(bossX, bossY, bossX, bossY + bossHeight);
+            bossGradient.addColorStop(0, '#a0522d'); // Marrom mais escuro para Tarek
+            bossGradient.addColorStop(0.5, '#8b4513');
+            bossGradient.addColorStop(1, '#692e0e');
+            
+            ctx.fillStyle = bossGradient;
+            ctx.fillRect(bossX, bossY, bossWidth, bossHeight);
+            
+            // Detalhes da armadura e características (placeholder)
+            ctx.fillStyle = '#4a2d1d'; // Marrom mais escuro para armadura
+            ctx.fillRect(bossX + 10, bossY + 15, bossWidth - 20, 20); // Armadura no peito
+
+            // Olhos
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-fire');
+            ctx.fillRect(bossX + 20, bossY + 8, 6, 6);
+            ctx.fillRect(bossX + bossWidth - 26, bossY + 8, 6, 6);
+
+            // Adicione mais detalhes visuais para Tarek aqui
+            // Ex: arma, chifres, etc.
+        }
+
+        function renderAbilityEffects() {
+            for (const effect of abilityEffects) {
+                const x = effect.x - (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x);
+                const y = effect.y - (gameState.fixedCamera ? gameState.fixedCameraTarget.y : gameState.cameraOffset.y);
+                
+                // Culling
+                if (x + effect.width < -50 || x > canvas.width + 50 || 
+                    y + effect.height < -50 || y > canvas.height + 50 || !effect.active) {
+                    continue;
+                }
+                
+                switch(effect.type) {
+                    case 'meleeAttack':
+                        renderMeleeAttack(effect, x, y);
+                        break;
+                    case 'energyProjectile':
+                        renderEnergyProjectile(effect, x, y);
+                        break;
+                    case 'arcaneExplosion':
+                        renderArcaneExplosion(effect, x, y);
+                        break;
+                    case 'bossSlash':
+                        renderBossSlash(effect, x, y);
+                        break;
+                    case 'bossIceOrb':
+                        renderBossIceOrb(effect, x, y);
+                        break;
+                    case 'bossPrison':
+                        renderBossPrison(effect, x, y);
+                        break;
+                    case 'enemyIceShot':
+                        renderEnemyIceShot(effect, x, y);
+                        break;
+                }
+            }
+        }
+
+        function renderMeleeAttack(effect, x, y) {
+            // Efeito de ataque corpo a corpo (Ataque Rápido)
+            const alpha = 1 - (effect.duration - effect.timer) / effect.duration;
+            ctx.globalAlpha = alpha * 0.8;
+            
+            ctx.fillStyle = effect.umbraBoosted ? getComputedStyle(document.documentElement).getPropertyValue('--accent-gold-light') : getComputedStyle(document.documentElement).getPropertyValue('--text-light');
+            ctx.fillRect(x, y, effect.width, effect.height);
+            
+            ctx.globalAlpha = 1;
+        }
+
+        function renderEnergyProjectile(effect, x, y) {
+            // Projétil de Energia (habilidade 'I')
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-blue');
+            ctx.fillRect(x, y, effect.width, effect.height);
+        }
+
+        function renderArcaneExplosion(effect, x, y) {
+            // Explosão Arcana (habilidade 'O')
+            const progress = 1 - (effect.timer / effect.duration);            
+            const maxRadius = effect.width / 2;
+            const currentRadius = maxRadius * progress;
+            
+            ctx.globalAlpha = (1 - progress) * 0.7; // Fade out
+            
+            const gradient = ctx.createRadialGradient(
+                x + effect.width/2, y + effect.height/2, 0,
+                x + effect.width/2, y + effect.height/2, currentRadius
+            );
+            gradient.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--accent-gold-light'));
+            gradient.addColorStop(0.5, getComputedStyle(document.documentElement).getPropertyValue('--accent-gold'));
+            gradient.addColorStop(1, 'rgba(255, 107, 107, 0)');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(x + effect.width/2, y + effect.height/2, currentRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.globalAlpha = 1;
+        }
+
+        function renderBossSlash(effect, x, y) {
+            // Ataque de Tarek - Golpe Devastador
+            const alpha = 1 - (effect.duration - effect.timer) / effect.duration;
+            
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-fire');
+            ctx.fillRect(x, y, effect.width, effect.height);
+            ctx.globalAlpha = 1;
+        }
+
+        function renderBossIceOrb(effect, x, y) {
+            // Orbe de Gelo de Tarek
+            const time = Date.now() / 1000;
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-ice');
+            ctx.beginPath();
+            ctx.arc(x + effect.width/2, y + effect.height/2, effect.width/2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function renderBossPrison(effect, x, y) {
+            // Prisão de Gelo de Tarek
+            ctx.fillStyle = 'rgba(168, 208, 230, 0.7)';
+            ctx.fillRect(x, y, effect.width, effect.height);
+            
+            // Bordas cristalinas
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-ice');
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y, effect.width, effect.height);
+        }
+
+        function renderEnemyIceShot(effect, x, y) {
+            // Projétil de Gelo de Sentinela
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-ice');
+            ctx.fillRect(x, y, effect.width, effect.height);
+        }
+
+        function renderParticles() {
+            for (const particle of particles) {
+                const x = particle.x - (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x);
+                const y = particle.y - (gameState.fixedCamera ? gameState.fixedCameraTarget.y : gameState.cameraOffset.y);
+                
+                // Culling
+                if (x < -20 || x > canvas.width + 20 || y < -20 || y > canvas.height + 20) {
+                    continue;
+                }
+                
+                ctx.globalAlpha = particle.alpha || 1;
+                ctx.fillStyle = particle.color;
+                
+                // Renderizar baseado no tipo
+                switch(particle.type) {
+                    case 'snow':
+                        ctx.beginPath();
+                        ctx.arc(x, y, particle.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                    default:
+                        // Partícula circular padrão
+                        ctx.beginPath();
+                        ctx.arc(x, y, particle.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                }
+            }
+            
+            ctx.globalAlpha = 1;
+        }
+
+        function renderDebugInfo() {
+            // Informações de debug (apenas se DEBUG_MODE estiver ativo)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(10, canvas.height - 150, 200, 140);
+            
+            ctx.fillStyle = '#00ff00';
+            ctx.font = '12px monospace';
+            ctx.fillText(`FPS: ${Math.round(1000 / (Date.now() - lastTime))}`, 15, canvas.height - 130);
+            ctx.fillText(`Player: ${Math.round(gameState.playerPosition.x)}, ${Math.round(gameState.playerPosition.y)}`, 15, canvas.height - 115);
+            ctx.fillText(`Velocity: ${Math.round(gameState.playerVelocity.x)}, ${Math.round(gameState.playerVelocity.y)}`, 15, canvas.height - 100);
+            ctx.fillText(`Camera: ${Math.round(gameState.cameraOffset.x)}, ${Math.round(gameState.cameraOffset.y)}`, 15, canvas.height - 85);
+            ctx.fillText(`Enemies: ${enemies.length}`, 15, canvas.height - 70);
+            ctx.fillText(`Particles: ${particles.length}`, 15, canvas.height - 55);
+            ctx.fillText(`Effects: ${abilityEffects.length}`, 15, canvas.height - 40);
+            ctx.fillText(`Grounded: ${gameState.isGrounded}`, 15, canvas.height - 25);
+            ctx.fillText(`Animation: ${gameState.currentAnimation}`, 15, canvas.height - 10);
+        }
+
+        // ===== ATUALIZAÇÃO DE UI =====
+        function updateAllUI() {
+            updateHealthBar();
+            updateManaBar();
+            updateXPBar();
+            updatePlayerStats();
+        }
+
+        function updateHealthBar() {
+            const healthFill = document.getElementById('health-fill');
+            const healthText = document.getElementById('health-text');
+            
+            if (healthFill && healthText) {
+                const percentage = (gameState.playerHealth / gameState.playerMaxHealth) * 100;
+                healthFill.style.width = percentage + '%';
+                healthText.textContent = `${Math.round(gameState.playerHealth)}/${gameState.playerMaxHealth}`;
+            }
+        }
+
+        function updateManaBar() {
+            const manaFill = document.getElementById('mana-fill');
+            const manaText = document.getElementById('mana-text');
+            
+            if (manaFill && manaText) {
+                const percentage = (gameState.playerMana / gameState.playerMaxMana) * 100;
+                manaFill.style.width = percentage + '%';
+                manaText.textContent = `${Math.round(gameState.playerMana)}/${gameState.playerMaxMana}`;
+            }
+        }
+
+        function updateXPBar() {
+            const xpFill = document.getElementById('xp-fill');
+            const xpText = document.getElementById('xp-text');
+            
+            if (xpFill && xpText) {
+                const percentage = (gameState.playerXP / gameState.playerNextLevelXP) * 100;
+                xpFill.style.width = percentage + '%';
+                xpText.textContent = `${gameState.playerXP}/${gameState.playerNextLevelXP}`;
+            }
+        }
+
+        function updatePlayerStats() {
+            const levelEl = document.getElementById('player-level');
+            const classEl = document.getElementById('player-class');
+            const damageEl = document.getElementById('player-damage');
+            
+            if (levelEl) levelEl.textContent = gameState.playerLevel;
+            if (classEl) classEl.textContent = gameState.playerClass; // Agora é sempre "Escolhido"
+            if (damageEl) damageEl.textContent = Math.round(gameState.playerDamage);
+        }
+
+        // ===== CONTROLE DE JOGO =====
+        function togglePause() {
+            if (gameState.inStartScreen || gameState.inCutscene || gameState.inDialog) return; // Não pode pausar nesses estados
+            
+            gameState.gamePaused = !gameState.gamePaused;
+            const pauseMenu = document.getElementById('pause-menu');
+            
+            if (gameState.gamePaused) {
+                pauseMenu.style.display = 'flex';
+                stopMusic(); // Pausa a música
+            } else {
+                pauseMenu.style.display = 'none';
+                if (gameState.inBossFight) {
+                    playMusic('music_boss_tarek', true); // Retoma música do boss
+                } else {
+                    playMusic('music_platforming', true); // Retoma música da fase
+                }
+            }
+        }
+
+        function gameOver() {
+            gameState.gamePaused = true;
+            stopMusic(); // Para a música
+            
+            // Efeitos visuais de game over
+            flashScreen('rgba(0, 0, 0, 0.8)', 1000);
+            
+            setTimeout(() => {
+                showDialog(
+                    "SISTEMA",
+                    `${gameState.playerName} foi derrotado... Mas a jornada não termina aqui. O destino de todos os reinos ainda depende de suas escolhas.`,
+                    [
+                        {
+                            text: "Voltar ao último checkpoint",
+                            action: () => {
+                                restartFromCheckpoint();
+                            }
+                        },
+                        {
+                            text: "Reiniciar fase atual",
+                            action: () => {
+                                loadPhase(gameState.currentPhase);
+                                gameState.gamePaused = false;
+                            }
+                        },
+                        {
+                            text: "Voltar ao menu principal",
+                            action: () => {
+                                exitToMenu();
+                            }
+                        }
+                    ]
+                );
+            }, 1500);
+        }
+
+        function completePhase() {
+            gameState.gamePaused = true;
+            stopMusic();
+            
+            // Efeitos de vitória
+            flashScreen(getComputedStyle(document.documentElement).getPropertyValue('--accent-gold'), 800);
+            addParticles('victory', gameState.playerPosition.x + 25, gameState.playerPosition.y, 50);
+            
+            setTimeout(() => {
+                if (gameState.currentPhase < 2) { // Exemplo: se houver mais fases após a 1
+                    showDialog(
+                        "SISTEMA",
+                        "Fase concluída com maestria! Você provou ser digno do título de Escolhido. Preparando para os próximos desafios...",
+                        [
+                            {
+                                text: "Continuar para próxima fase",
+                                action: () => {
+                                    // loadPhase(gameState.currentPhase + 1); // Descomente para carregar próxima fase
+                                    showVictoryScreen(); // Por enquanto, vai para a tela de vitória de demo
+                                    gameState.gamePaused = false;
+                                }
+                            },
+                            {
+                                text: "Salvar e voltar ao menu",
+                                action: () => {
+                                    saveProgress();
+                                    exitToMenu();
+                                }
+                            }
+                        ]
+                    );
+                } else {
+                    showVictoryScreen();
+                }
+            }, 2000);
+        }
+
+        function showVictoryScreen() {
+            const overlay = document.getElementById('cinematic-overlay');
+            const titleElement = document.getElementById('cinematic-title');
+            const textElement = document.getElementById('cinematic-text');
+            
+            overlay.style.display = 'flex';
+            
+            titleElement.textContent = "VITÓRIA!";
+            textElement.innerHTML = `
+                <p>Parabéns, ${gameState.playerName}!</p>
+                <br>
+                <p>Você completou a primeira parte da jornada em Tupãry. Tarek foi derrotado e o caminho para o interior do reino gelado está aberto.</p>
+                <br>
+                <p>Mas esta é apenas a primeira de muitas provações. O Coração de Gelo ainda aguarda, e Ignys se aproxima...</p>
+                <br>
+                <p><strong>Estatísticas Finais:</strong></p>
+                <p>Nível Alcançado: ${gameState.playerLevel}</p>
+                <p>Classe: ${gameState.playerClass}</p>
+                <p>XP Total: ${gameState.playerXP}</p>
+                <br>
+                <p><em>Obrigado por jogar Tupãry: O Reino Congelado!</em></p>
+                <p><em>Mais capítulos em breve...</em></p>
+            `;
+            
+            titleElement.style.animation = 'none';
+            textElement.style.animation = 'none';
+            void titleElement.offsetWidth;
+            void textElement.offsetWidth;
+            titleElement.style.animation = 'fadeInText 2s forwards';
+            textElement.style.animation = 'fadeInText 3s forwards 1s';
+            
+            // Botão especial de vitória
+            const skipBtn = document.getElementById('skip-btn');
+            skipBtn.textContent = 'Voltar ao Menu';
+            skipBtn.onclick = () => {
+                // Limpar save para permitir novo jogo
+                setCookie('tupary_save', '', -1);
+                setCookie('tupary_checkpoint', '', -1);
+                exitToMenu();
+            };
+        }
+
+        // ===== SISTEMA DE CONFIGURAÇÕES =====
+        const gameSettings = {
+            volume: 0.7,
+            sfxVolume: 0.8,
+            musicVolume: 0.6,
+            showFPS: false,
+            particleQuality: 'high', // low, medium, high
+            screenShake: true,
+            
+            load: function() {
+                const saved = getCookie('tupary_settings');
+                if (saved) {
+                    try {
+                        const settings = JSON.parse(saved);
+                        Object.assign(this, settings);
+                    } catch (e) {
+                        console.error('Erro ao carregar configurações:', e);
+                    }
+                }
+            },
+            
+            save: function() {
+                setCookie('tupary_settings', JSON.stringify(this));
+            }
+        };
+
+        // ===== OTIMIZAÇÕES DE PERFORMANCE =====
+        function optimizePerformance() {
+            // Ajustar qualidade baseada na performance (exemplo)
+            const fps = 1000 / (Date.now() - lastTime);
+            
+            if (fps < 30) {
+                CONFIG.MAX_PARTICLES = Math.max(50, CONFIG.MAX_PARTICLES - 10);
+                CONFIG.SNOW_SPAWN_RATE *= 0.8;
+            } else if (fps > 55) {
+                CONFIG.MAX_PARTICLES = Math.min(200, CONFIG.MAX_PARTICLES + 5);
+                CONFIG.SNOW_SPAWN_RATE = Math.min(0.15, CONFIG.SNOW_SPAWN_RATE * 1.1);
+            }
+        }
+
+        // ===== INICIALIZAÇÃO FINAL =====
+        function finalizeInitialization() {
+            gameSettings.load();
+            
+            // Configurar debug mode
+            if (window.location.hash === '#debug') {
+                window.DEBUG_MODE = true;
+                console.log('Debug mode ativado');
+            }
+            
+            // Otimização contínua
+            setInterval(optimizePerformance, 5000);
+            
+            console.log('Tupãry: O Reino Congelado - Inicializado com sucesso!');
+        }
+
+        // ===== EVENTOS DE JANELA =====
+        window.addEventListener('beforeunload', (e) => {
+            // Salvar progresso antes de fechar
+            if (gameState.gameStarted && !gameState.inStartScreen) {
+                saveProgress();
+            }
+        });
+
+        window.addEventListener('visibilitychange', () => {
+            // Pausar quando aba perde foco
+            if (document.hidden && gameState.gameStarted && !gameState.inStartScreen && !gameState.gamePaused) {
+                togglePause();
+            }
+        });
+
+        // ===== INÍCIO DO JOGO =====
+        window.addEventListener('DOMContentLoaded', () => {
+            init();
+            finalizeInitialization();
+        });
+
+        // ===== EXPOSIÇÃO GLOBAL PARA DEBUG =====
+        if (window.DEBUG_MODE) {
+            window.gameState = gameState;
+            window.CONFIG = CONFIG;
+            window.enemies = enemies;
+            window.particles = particles;
+            window.abilityEffects = abilityEffects;
+            window.platforms = platforms;
+            
+            // Comandos de debug
+            window.debugCommands = {
+                godMode: () => {
+                    gameState.playerMaxHealth = 9999;
+                    gameState.playerHealth = 9999;
+                    gameState.playerMaxMana = 9999;
+                    gameState.playerMana = 9999;
+                    updateAllUI();
+                },
+                
+                levelUp: () => {
+                    gainXP(gameState.playerNextLevelXP); // Força level up
+                },
+                
+                teleport: (x, y) => {
+                    gameState.playerPosition.x = x || 4800; // Teleporta para o final da fase, por exemplo
+                    gameState.playerPosition.y = y || 300;
+                },
+                
+                spawnBoss: () => { // Usado para debugar a luta com Tarek diretamente
+                    loadPhase(3); // Carrega a fase de batalha com Tarek
+                },
+                
+                clearEnemies: () => {
+                    enemies.length = 0;
+                },
+                
+                addParticles: (type, count) => {
+                    addParticles(type || 'snow', gameState.playerPosition.x, gameState.playerPosition.y, count || 50);
+                }
+            };
+            
+            console.log('Debug commands available:', Object.keys(window.debugCommands));
+        }
+    </script>
+</body>
+</html>
