@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tupãry: O Reino Congelado</title>
+    <!-- Link para o arquivo CSS externo -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Aviso de Orientação Mobile -->
+    <div class="orientation-warning" id="orientation-warning">
+        <div class="rotate-icon">📱</div>
+        <h2>Vire o Dispositivo</h2>
+        <p>Para uma melhor experiência de jogo, por favor vire seu dispositivo para o modo paisagem (horizontal).</p>
+    </div>
+
+    <!-- Container Principal do Jogo -->
+    <div id="game-container">
+        <!-- Tela de Início / Menu Principal -->
+        <div class="main-menu" id="main-menu">
+            <h1 class="game-title">TUPÃRY</h1>
+            <p class="game-subtitle">O Reino Congelado</p>
+            
+            <div class="character-selection">
+                <h3>Desperte, Escolhido! Diga-me seu nome e escolha seu destino:</h3>
+                <div class="name-input-group">
+                    <label for="player-name">Nome do Escolhido:</label>
+                    <input type="text" id="player-name" class="name-input" placeholder="Seu nome, para que o destino o chame..." maxlength="20">
+                </div>
+                
+                <div class="class-selection">
+                    <div class="class-option" data-class="archer">
+                        <div class="class-name">Atirador Gélido</div>
+                        <div class="class-description">Especialista em ataques à distância e mobilidade. Domina o gelo para criar projéteis devastadores e controlar o campo de batalha.</div>
+                        <div class="class-abilities">Habilidades: Tiro Gélido (U) • Investida Rápida (I) • Orbe Perfurante (O) • Barreira de Cristal (P)</div>
+                    </div>
+                    
+                    <div class="class-option" data-class="warrior">
+                        <div class="class-name">Guerreiro do Gelo</div>
+                        <div class="class-description">Combatente corpo a corpo resiliente. Usa a força do gelo para amplificar seus golpes e resistir aos ataques inimigos.</div>
+                        <div class="class-abilities">Habilidades: Golpe Glacial (U) • Investida Brutal (I) • Orbe Próximo (O) • Prisão Defensiva (P)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="start-game-btn" id="start-game-btn" disabled>Iniciar Jornada</button>
+        </div>
+
+        <!-- Canvas do Jogo -->
+        <canvas id="game-canvas"></canvas>
+        
+        <!-- Flash de Tela -->
+        <div class="screen-flash" id="screen-flash"></div>
+        
+        <!-- Container de Partículas -->
+        <div class="particle-container" id="particle-container"></div>
+
+        <!-- UI Layer -->
+        <div class="ui-layer">
+            <!-- Barras de Status -->
+            <div class="status-bars">
+                <div class="status-bar">
+                    <div class="status-icon">❤️</div>
+                    <div class="bar-container">
+                        <div class="bar-fill health-fill" id="health-fill"></div>
+                        <div class="bar-text" id="health-text">100/100</div>
+                    </div>
+                </div>
+                
+                <div class="status-bar">
+                    <div class="status-icon">💙</div>
+                    <div class="bar-container">
+                        <div class="bar-fill mana-fill" id="mana-fill"></div>
+                        <div class="bar-text" id="mana-text">100/100</div>
+                    </div>
+                </div>
+                
+                <div class="status-bar">
+                    <div class="status-icon">⭐</div>
+                    <div class="bar-container">
+                        <div class="bar-fill xp-fill" id="xp-fill"></div>
+                        <div class="bar-text" id="xp-text">0/100</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats do Jogador -->
+            <div class="player-stats" id="player-stats">
+                <div class="stat-line">
+                    <span class="stat-label">Nível:</span>
+                    <span class="stat-value" id="player-level">1</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-label">Classe:</span>
+                    <span class="stat-value" id="player-class">-</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-label">Dano:</span>
+                    <span class="stat-value" id="player-damage">15</span>
+                </div>
+            </div>
+            
+            <!-- Barra de Vida do Boss -->
+            <div class="boss-name" id="boss-name">TAREK, O GUERREIRO</div>
+            <div class="boss-health-bar" id="boss-health-bar">
+                <div class="boss-health-fill" id="boss-health-fill"></div>
+            </div>
+            
+            <!-- Habilidades (Desktop) -->
+            <div class="abilities-container" id="abilities-container">
+                <div class="ability-btn" id="ability-u" data-key="U">
+                    U
+                    <div class="cooldown-overlay"></div>
+                    <div class="ability-tooltip">
+                        <div class="tooltip-name" id="tooltip-u-name">Ataque Rápido</div>
+                        <div class="tooltip-description" id="tooltip-u-desc">Golpe ágil de curta distância.</div>
+                        <div class="tooltip-cost" id="tooltip-u-cost">Custo: 0 Mana</div>
+                    </div>
+                </div>
+                
+                <div class="ability-btn" id="ability-i" data-key="I">
+                    I
+                    <div class="cooldown-overlay"></div>
+                    <div class="ability-tooltip">
+                        <div class="tooltip-name" id="tooltip-i-name">Projétil de Energia</div>
+                        <div class="tooltip-description" id="tooltip-i-desc">Lança um projétil rápido à distância.</div>
+                        <div class="tooltip-cost" id="tooltip-i-cost">Custo: 15 Mana</div>
+                    </div>
+                </div>
+                
+                <div class="ability-btn" id="ability-o" data-key="O">
+                    O
+                    <div class="cooldown-overlay"></div>
+                    <div class="ability-tooltip">
+                        <div class="tooltip-name" id="tooltip-o-name">Explosão Arcana</div>
+                        <div class="tooltip-description" id="tooltip-o-desc">Causa uma explosão de energia que danifica múltiplos inimigos à frente.</div>
+                        <div class="tooltip-cost" id="tooltip-o-cost">Custo: 30 Mana</div>
+                    </div>
+                </div>
+                
+                <div class="ability-btn" id="ability-p" data-key="P">
+                    P
+                    <div class="cooldown-overlay"></div>
+                    <div class="ability-tooltip">
+                        <div class="tooltip-name" id="tooltip-p-name">Fúria de Umbra</div>
+                        <div class="tooltip-description" id="tooltip-p-desc">Canaliza a energia de Umbra para ficar mais rápido, resistente e poderoso no ataque.</div>
+                        <div class="tooltip-cost" id="tooltip-p-cost">Custo: 50 Mana</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Botão de Pausa -->
+            <div class="pause-btn" id="pause-btn">⏸️</div>
+            
+            <!-- Controles Mobile (D-pad e Ações) -->
+            <div class="mobile-controls" id="mobile-controls">
+                <div class="mobile-dpad">
+                    <div class="dpad-btn dpad-up" id="mobile-up">▲</div>
+                    <div class="dpad-btn dpad-left" id="mobile-left">◀</div>
+                    <div class="dpad-btn dpad-center"></div>
+                    <div class="dpad-btn dpad-right" id="mobile-right">▶</div>
+                    <div class="dpad-btn dpad-down" id="mobile-down">▼</div>
+                </div>
+                
+                <div class="mobile-action-buttons">
+                    <div class="mobile-btn" id="mobile-ability-u">U</div>
+                    <div class="mobile-btn" id="mobile-ability-i">I</div>
+                    <div class="mobile-btn" id="mobile-ability-o">O</div>
+                    <div class="mobile-btn" id="mobile-ability-p">P</div>
+                </div>
+            </div>
+            
+            <!-- Sistema de Diálogo -->
+            <div class="dialog-container" id="dialog-container">
+                <div class="dialog-speaker" id="dialog-speaker"></div>
+                <div class="dialog-text" id="dialog-text"></div>
+                <div class="dialog-options" id="dialog-options"></div>
+            </div>
+            
+            <!-- Overlay de Cutscene -->
+            <div class="cinematic-overlay" id="cinematic-overlay">
+                <div class="cinematic-title" id="cinematic-title"></div>
+                <div class="cinematic-text" id="cinematic-text"></div>
+                <button class="skip-btn" id="skip-btn">Pular (Espaço)</button>
+            </div>
+            
+            <!-- Menu de Pausa -->
+            <div class="pause-menu" id="pause-menu">
+                <h2 class="pause-title">JOGO PAUSADO</h2>
+                <button class="menu-option" id="resume-btn">Continuar</button>
+                <button class="menu-option" id="restart-btn">Reiniciar Checkpoint</button>
+                <button class="menu-option" id="save-btn">Salvar Progresso</button>
+                <button class="menu-option" id="exit-btn">Voltar ao Menu</button>
+            </div>
+            
+            <!-- Sistema de Level Up (Com Escolhas) -->
+            <div class="level-up" id="level-up">
+                <h2 class="level-up-title">NÍVEL AUMENTADO!</h2>
+                <p class="level-up-subtitle">Escolha uma melhoria para fortalecer seu poder:</p>
+                <div class="upgrade-options">
+                    <div class="upgrade-option" data-upgrade="health">
+                        <div class="upgrade-name">+ Vitalidade Aprimorada</div>
+                        <div class="upgrade-description">Aumenta sua vida máxima em 25 pontos e restaura completamente sua saúde.</div>
+                    </div>
+                    <div class="upgrade-option" data-upgrade="mana">
+                        <div class="upgrade-name">+ Reserva Mística</div>
+                        <div class="upgrade-description">Aumenta sua mana máxima em 35 pontos e acelera a regeneração em 50%.</div>
+                    </div>
+                    <div class="upgrade-option" data-upgrade="damage">
+                        <div class="upgrade-name">+ Poder Destrutivo</div>
+                        <div class="upgrade-description">Aumenta o dano de todas suas habilidades em 8 pontos permanentemente.</div>
+                    </div>
+                    <div class="upgrade-option" data-upgrade="speed">
+                        <div class="upgrade-name">+ Agilidade Gélida</div>
+                        <div class="upgrade-description">Aumenta velocidade de movimento em 20% e reduz cooldowns em 15%.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notificação de Checkpoint -->
+            <div class="checkpoint-notification" id="checkpoint-notification">
+                <div class="checkpoint-text">CHECKPOINT SALVO</div>
+                <div class="checkpoint-description">Seu progresso foi salvo automaticamente</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link para o arquivo JavaScript externo -->
+    <script src="script.js"></script>
+</body>
+</html>

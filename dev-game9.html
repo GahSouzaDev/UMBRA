@@ -64,7 +64,6 @@
             max-height: 770px;
             overflow: hidden;
             border: 3px solid var(--accent-gold);
-            border-radius: 8px;
             box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
             background: linear-gradient(to bottom, #0f1419, #1a1a2e);
         }
@@ -559,9 +558,41 @@
 
         .dpad-up { grid-area: 1 / 2 / 2 / 3; }
         .dpad-left { grid-area: 2 / 1 / 3 / 2; }
-        .dpad-center { grid-area: 2 / 2 / 3 / 3; opacity: 0.3; pointer-events: none;}
+              .dpad-center { grid-area: 2 / 2 / 3 / 3; opacity: 0.3; pointer-events: none;}
         .dpad-right { grid-area: 2 / 3 / 3 / 4; }
         .dpad-down { grid-area: 3 / 2 / 4 / 3; }
+
+        .mobile-action-buttons {
+            grid-column: 3 / 4;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            position: relative;
+            margin-right: 20px;
+            justify-self: end;
+        }
+
+        .mobile-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .mobile-btn:active {
+            transform: scale(0.9);
+            background: rgba(212, 175, 55, 0.3);
+        }
 
         /* ===== SISTEMA DE DIÁLOGO ===== */
         .dialog-container {
@@ -911,7 +942,7 @@
             background: rgba(0, 0, 0, 0.8);
             border: 3px solid var(--accent-fire);
             border-radius: 10px;
-            display: none; /* Controlled by JS */
+            display: none;
             overflow: hidden;
             z-index: 10;
             box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
@@ -946,7 +977,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            display: none; /* Controlled by JS */
+            display: none;
             z-index: 10;
         }
 
@@ -1023,17 +1054,12 @@
                 padding: 15px;
             }
 
-            /* Removido: display: none para .abilities-container */
-            .abilities-container {
-                display: flex; /* Garante que os botões desktop apareçam no mobile */
-                bottom: 10px; /* Ajusta a posição para não colidir com o D-pad */
-                right: 10px;
-                gap: 8px;
-            }
-
-
             .mobile-controls {
                 display: grid;
+            }
+
+            .abilities-container {
+                display: none;
             }
 
             .status-bars {
@@ -1126,13 +1152,13 @@
                 margin-left: 10px;
             }
 
-            /* Ajusta a posição dos botões de habilidade no mobile landscape */
-            .abilities-container {
+            .mobile-action-buttons {
                 bottom: 10px;
                 right: 10px;
-                gap: 5px;
+                margin-right: 10px;
             }
-            .ability-btn {
+
+            .mobile-btn {
                 width: 45px;
                 height: 45px;
                 font-size: 14px;
@@ -1290,7 +1316,13 @@
                     <div class="dpad-btn dpad-right" id="mobile-right">▶</div>
                     <div class="dpad-btn dpad-down" id="mobile-down">▼</div>
                 </div>
-                <!-- mobile-action-buttons REMOVIDOS - habilidades desktop funcionam diretamente -->
+                
+                <div class="mobile-action-buttons">
+                    <div class="mobile-btn" id="mobile-ability-u">U</div>
+                    <div class="mobile-btn" id="mobile-ability-i">I</div>
+                    <div class="mobile-btn" id="mobile-ability-o">O</div>
+                    <div class="mobile-btn" id="mobile-ability-p">P</div>
+                </div>
             </div>
             
             <!-- Sistema de Diálogo -->
@@ -1402,7 +1434,6 @@
 
                 sentinel_sprite: 'assets/inimigos/sentinela.gif', // Placeholder
                 tarek_sprite: 'assets/bosses/tarek.gif', // Placeholder
-                tarek_background: 'assets/fundos/gelo/muralhas-gelo.png', // NOVO: Fundo para luta com Tarek
 
                 projectile_i: 'assets/sprites/effects/projectile_i.gif', // Placeholder
                 explosion_o: 'assets/sprites/effects/explosion_o.gif', // Placeholder
@@ -1424,81 +1455,10 @@
                 sfx_damage_enemy: 'assets/audio/sfx/damage_enemy.mp3',
                 sfx_level_up: 'assets/audio/sfx/level_up.mp3',
                 sfx_boss_roar: 'assets/audio/sfx/boss_roar.mp3',
+                tarek_bg: 'assets/fundos/gelo/muralhas-gelo.png' // NOVO: Fundo para Tarek
             },
-            ASSET_LOADED: {} // Objeto para armazenar as imagens e AnimationManager carregados
+            ASSET_LOADED: {} // Objeto para armazenar as imagens carregadas
         };
-
-        // ===== CLASSES DE ANIMAÇÃO =====
-        // Classe para gerenciar animações de sprites
-        class AnimationManager {
-            constructor(frames, frameDelay = 100, loop = true) {
-                // frames pode ser um array de Image objetos, ou um único Image objeto
-                this.frames = Array.isArray(frames) ? frames : [frames];
-                this.frameDelay = frameDelay; // Tempo em ms para cada frame
-                this.loop = loop;
-                this.currentFrameIndex = 0;
-                this.frameTimer = 0; // Tempo acumulado para o próximo frame
-                this.isPlaying = true;
-                this.onFinishCallback = null; // Callback para animações não-looping
-            }
-
-            // Define o callback a ser chamado quando a animação não-looping termina
-            onFinish(callback) {
-                this.onFinishCallback = callback;
-                return this;
-            }
-
-            // Inicia ou retoma a animação
-            play() {
-                this.isPlaying = true;
-            }
-
-            // Pausa a animação
-            pause() {
-                this.isPlaying = false;
-            }
-
-            // Reseta a animação para o primeiro quadro
-            reset() {
-                this.currentFrameIndex = 0;
-                this.frameTimer = 0;
-                this.isPlaying = true; // Reinicia a reprodução por padrão ao resetar
-            }
-
-            // NOVO: Adiciona um método para definir se a animação deve fazer loop
-            setLoop(loop) {
-                this.loop = loop;
-            }
-
-            // Atualiza o estado da animação (avança o quadro)
-            update(deltaTime) {
-                if (!this.isPlaying || this.frames.length <= 1) return; // Não anima se só tem um frame
-
-                this.frameTimer += deltaTime;
-                if (this.frameTimer >= this.frameDelay) {
-                    this.currentFrameIndex++;
-                    this.frameTimer = 0;
-
-                    if (this.currentFrameIndex >= this.frames.length) {
-                        if (this.loop) {
-                            this.currentFrameIndex = 0; // Volta para o início
-                        } else {
-                            this.currentFrameIndex = this.frames.length - 1; // Para no último quadro
-                            this.isPlaying = false; // Para a animação
-                            if (this.onFinishCallback) {
-                                this.onFinishCallback(); // Chama o callback de término
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Retorna o objeto Image do quadro atual
-            getCurrentFrame() {
-                if (this.frames.length === 0) return null;
-                return this.frames[this.currentFrameIndex];
-            }
-        }
 
         // ===== VARIÁVEIS GLOBAIS =====
         let canvas, ctx;
@@ -1508,7 +1468,7 @@
         // Estado do jogo
         let gameState = {
             playerName: '',
-            playerClass: '', // Inicializa como string vazia
+            playerClass: '',
             playerHealth: 100,
             playerMaxHealth: 100,
             playerMana: 100,
@@ -1517,7 +1477,7 @@
             playerVelocity: { x: 0, y: 0 },
             playerLevel: 1,
             playerXP: 0,
-            playerNextLevelXP: 100,
+            playerNextLevelXP: 200, // Aumentado XP para próximo nível
             playerDamage: 15,
             playerSpeed: CONFIG.PLAYER_SPEED,
             
@@ -1527,7 +1487,7 @@
             isInvincible: false,
             invincibilityTimer: 0,
             facing: 'right',
-            currentAnimation: 'idle', // String que define a animação atual (ex: 'idle', 'walk', 'jump')
+            currentAnimation: 'idle',
             isUmbraFurious: false, /* Mantido para demonstração da ultimate do Escolhido */
             umbraFuryTimer: 0,
             
@@ -1557,8 +1517,7 @@
             // Tarek Encounter
             inTarekEncounter: false,
             tarekDialogStep: 0,
-            tarekDialogCompleted: false, // NOVO: Flag para evitar re-trigger do diálogo de Tarek
-            tarekEncounterTriggerX: 5500, // NOVO: Posição X para iniciar o encontro com Tarek
+            tarekDialogCompleted: false,
 
             // Fixed camera for specific encounters
             fixedCamera: false,
@@ -1586,7 +1545,10 @@
             down: false,
             left: false,
             right: false,
-            // mobile-ability controls removidos, usando os botões desktop
+            abilityU: false,
+            abilityI: false,
+            abilityO: false,
+            abilityP: false
         };
 
         // Classes de Personagem
@@ -1611,10 +1573,6 @@
         let introSequence = []; // Will be populated by showIntroCutscene
         let currentSequenceIndex = 0;
 
-        // Gerenciadores de animação para o jogador e inimigos
-        let playerAnimation = null;
-        let sentinelAnimation = null;
-        let tarekAnimation = null; // NOVO: Gerenciador de animação para o Tarek
 
         // ===== SISTEMA DE ÁUDIO =====
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1751,7 +1709,6 @@
                 playerClass: gameState.playerClass,
                 playerLevel: gameState.playerLevel,
                 playerXP: gameState.playerXP,
-                playerNextLevelXP: gameState.playerNextLevelXP, // NOVO: Salvar XP para próximo nível
                 playerMaxHealth: gameState.playerMaxHealth,
                 playerMaxMana: gameState.playerMaxMana,
                 playerDamage: gameState.playerDamage,
@@ -1760,8 +1717,7 @@
                 currentCheckpoint: gameState.currentCheckpoint,
                 bossDefeated: gameState.bossDefeated,
                 abilitiesMaxCooldown: gameState.abilitiesMaxCooldown,
-                manaRegenRate: CONFIG.MANA_REGEN_RATE,
-                tarekDialogCompleted: gameState.tarekDialogCompleted // NOVO: Salvar estado do diálogo Tarek
+                manaRegenRate: CONFIG.MANA_REGEN_RATE
             };
             
             setCookie('tupary_save', JSON.stringify(saveData));
@@ -1809,6 +1765,7 @@
         }
 
         // Nova função para carregar todos os assets (imagens e sons)
+        // E para carregar GIFs animados em elementos <img> ocultos para reprodução no Canvas
         async function loadAllAssets() {
             const assetPromises = [];
             for (const [key, path] of Object.entries(CONFIG.ASSET_PATHS)) {
@@ -1818,41 +1775,20 @@
                         const img = new Image();
                         img.src = path;
                         img.onload = () => {
-                            // AVISO MUITO IMPORTANTE SOBRE ANIMAÇÕES (LEIA COM ATENÇÃO):
-                            // O elemento HTML Canvas (onde o jogo é desenhado) NÃO é capaz de reproduzir GIFs animados.
-                            // Quando você desenha um arquivo .gif no Canvas, ele SEMPRE usa apenas o PRIMEIRO QUADRO (frame) desse GIF.
-                            // O sistema de AnimationManager implementado AQUI está PRONTO para animações,
-                            // mas ele precisa de MÚLTIPLOS ARQUIVOS DE IMAGEM ESTÁTICOS (ex: PNGs numerados) para cada frame da animação,
-                            // e NÃO um único arquivo .gif para a animação inteira.
-                            //
-                            // Exemplo: Para o personagem 'andar', em vez de 'escolhido-andando01.gif',
-                            // você precisaria de 'escolhido-andando-01.png', 'escolhido-andando-02.png', etc.
-                            // E ENTÃO, você carregaria ESSES MÚLTIPLOS PNGs na CONFIG.ASSET_PATHS e os passaria como um ARRAY para o AnimationManager.
-                            //
-                            // O CÓDIGO ABAIXO JÁ GEREA A LÓGICA de TRANSITION entre as animações (parado, andando, pulando, atacando).
-                            // A razão pela qual você vê "estático" é APENAS porque os assets fornecidos são GIFs de quadro único para o Canvas.
-                            //
-                            // Para ter ANIMAÇÃO REAL no Canvas, você precisaria de assets como:
-                            // CONFIG.ASSET_PATHS = {
-                            //    player_idle_frame1: 'assets/personagens/Escolhido/idle_01.png',
-                            //    player_idle_frame2: 'assets/personagens/Escolhido/idle_02.png',
-                            //    // ...
-                            //    player_walk_frame1: 'assets/personagens/Escolhido/walk_01.png',
-                            //    player_walk_frame2: 'assets/personagens/Escolhido/walk_02.png',
-                            //    // ... e assim por diante para todas as animações
-                            // };
-                            //
-                            // E inicializar o AnimationManager assim:
-                            // playerAnimation = {
-                            //    idle: new AnimationManager([
-                            //        CONFIG.ASSET_LOADED.player_idle_frame1,
-                            //        CONFIG.ASSET_LOADED.player_idle_frame2,
-                            //    ], 150),
-                            //    // ...
-                            // };
-                            //
-                            // Sem esses assets em múltiplos frames, o comportamento atual (troca da "pose" estática) é o máximo que o Canvas permite com um único arquivo GIF.
-                            CONFIG.ASSET_LOADED[key] = img; 
+                            // Para GIFs animados no Canvas, precisamos de um elemento <img> DOM para reproduzir a animação
+                            // e então desenhamos esse elemento no Canvas
+                            if (path.endsWith('.gif')) {
+                                const gifElement = document.createElement('img');
+                                gifElement.src = path;
+                                gifElement.style.display = 'none'; // Esconde o elemento <img>
+                                gifElement.id = `__temp_gif_player_${key}`; // ID para facilitar debug
+                                document.body.appendChild(gifElement); // Adiciona ao DOM para o navegador animar
+                                CONFIG.ASSET_LOADED[key] = gifElement; // Armazena a referência ao elemento <img>
+                                console.log(`GIF animado preparado: ${path}`);
+                            } else {
+                                // Para imagens estáticas (PNG, JPEG) ou primeiro frame de GIF para outras finalidades
+                                CONFIG.ASSET_LOADED[key] = img;
+                            }
                             ASSETS_LOADED_COUNT++;
                             console.log(`Imagem carregada: ${path} (${ASSETS_LOADED_COUNT}/${TOTAL_ASSETS_TO_LOAD})`);
                             resolve();
@@ -1873,22 +1809,6 @@
             }
             await Promise.all(assetPromises);
             console.log("Todos os assets carregados.");
-
-            // Inicializar os AnimationManagers após carregar todos os assets
-            playerAnimation = {
-                idle: new AnimationManager(CONFIG.ASSET_LOADED.player_idle, 150),
-                walk: new AnimationManager(CONFIG.ASSET_LOADED.player_walk, 100),
-                jump: new AnimationManager(CONFIG.ASSET_LOADED.player_jump, 100, false), // Não loop
-                crouch: new AnimationManager(CONFIG.ASSET_LOADED.player_crouch, 100),
-                attack_u: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_u, 80, false).onFinish(() => gameState.currentAnimation = 'idle'),
-                attack_i: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_i, 100, false).onFinish(() => gameState.currentAnimation = 'idle'),
-                attack_o: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_o, 120, false).onFinish(() => gameState.currentAnimation = 'idle'),
-                ultimate: new AnimationManager(CONFIG.ASSET_LOADED.player_ultimate, 100).setLoop(true), // Loop enquanto estiver furioso
-                take_damage: new AnimationManager(CONFIG.ASSET_LOADED.player_damage, 200, false).onFinish(() => gameState.currentAnimation = 'idle')
-            };
-
-            sentinelAnimation = new AnimationManager(CONFIG.ASSET_LOADED.sentinel_sprite, 150); // Single frame default
-            tarekAnimation = new AnimationManager(CONFIG.ASSET_LOADED.tarek_sprite, 150); // Single frame default
         }
 
         /* Nova função: Pré-calcula cores CSS para acesso mais rápido */
@@ -1918,48 +1838,21 @@
             }
         }
 
-        function populateMainMenuWithSavedData(savedData) {
-            document.getElementById('player-name').value = savedData.playerName || '';
-            if (savedData.playerClass) {
-                // Adiciona a classe 'selected' visualmente
-                document.querySelector(`[data-class="${savedData.playerClass}"]`)?.classList.add('selected');
-                // NOVO: Garantir que o playerClass do gameState seja restaurado,
-                // já que validateMenuInputs agora confia mais nele.
-                gameState.playerClass = savedData.playerClass; 
+        function populateMainMenuWithSavedData(data) {
+            document.getElementById('player-name').value = data.playerName || '';
+            if (data.playerClass) {
+                selectClass(data.playerClass);
             }
             validateMenuInputs();
 
-            // Object.assign(gameState, savedData); // Isso pode sobrescrever mais do que queremos no menu
-
-            // Restaurar apenas os estados relevantes para o jogo, se já estiver iniciado
-            if (savedData.gameStarted && !savedData.inMenu) {
-                // Restaurar estados específicos para evitar problemas
-                gameState.playerName = savedData.playerName;
-                gameState.playerClass = savedData.playerClass;
-                gameState.playerLevel = savedData.playerLevel;
-                gameState.playerXP = savedData.playerXP;
-                gameState.playerNextLevelXP = savedData.playerNextLevelXP;
-                gameState.playerMaxHealth = savedData.playerMaxHealth;
-                gameState.playerMaxMana = savedData.playerMaxMana;
-                gameState.playerDamage = savedData.playerDamage;
-                gameState.playerSpeed = savedData.playerSpeed;
-                gameState.currentPhase = savedData.currentPhase;
-                gameState.currentCheckpoint = savedData.currentCheckpoint;
-                gameState.bossDefeated = savedData.bossDefeated;
-                gameState.abilitiesMaxCooldown = savedData.abilitiesMaxCooldown;
-                CONFIG.MANA_REGEN_RATE = savedData.manaRegenRate;
-                gameState.tarekDialogCompleted = savedData.tarekDialogCompleted;
-
+            Object.assign(gameState, data);
+            
+            if (gameState.gameStarted && !gameState.inMenu) {
                 document.getElementById('main-menu').style.display = 'none';
                 loadPhase(gameState.currentPhase);
                 setupCharacter(gameState.playerClass, gameState.playerMaxHealth, gameState.playerMaxMana, gameState.playerDamage, gameState.playerSpeed, gameState.abilitiesMaxCooldown, gameState.manaRegenRate);
                 updateAllUI();
-                // Verifica se era uma fase de boss para tocar a música correta
-                if (gameState.inBossFight) {
-                    playMusic('music_boss_tarek', true);
-                } else {
-                    playMusic('music_platforming', true);
-                }
+                playMusic('music_platforming', true);
             }
         }
 
@@ -1986,8 +1879,6 @@
                             cooldown: 0.6,
                             execute: function() {
                                 playSound('sfx_attack_u');
-                                gameState.currentAnimation = 'attack_u'; // Ativa animação de ataque
-                                playerAnimation.attack_u.reset(); // Reinicia animação de ataque
                                 addAbilityEffect({
                                     type: 'energyProjectile',
                                     x: gameState.playerPosition.x + (gameState.facing === 'right' ? 55 : -25),
@@ -2012,8 +1903,6 @@
                             cooldown: 5,
                             execute: function() {
                                 playSound('sfx_ability_i');
-                                gameState.currentAnimation = 'attack_i'; // Ativa animação
-                                playerAnimation.attack_i.reset();
                                 gameState.playerVelocity.x = (gameState.facing === 'right' ? 12 : -12);
                                 gameState.isInvincible = true;
                                 gameState.invincibilityTimer = 300;
@@ -2029,8 +1918,6 @@
                             cooldown: 4,
                             execute: function() {
                                 playSound('sfx_ability_o');
-                                gameState.currentAnimation = 'attack_o'; // Ativa animação
-                                playerAnimation.attack_o.reset();
                                 addAbilityEffect({
                                     type: 'energyProjectile',
                                     x: gameState.playerPosition.x + (gameState.facing === 'right' ? 55 : -25),
@@ -2050,7 +1937,7 @@
                         {
                             key: 'P',
                             name: 'Fúria de Umbra',
-                            description: 'Canaliza a energia de Umbra para amplificar poder.',
+                            description: 'Canaliza a energia de Umbra para ficar mais rápido, resistente e poderoso no ataque.',
                             damage: (base) => base,
                             manaCost: 50,
                             cooldown: 8, // Cooldown reduzido para a ultimate da classe
@@ -2058,8 +1945,6 @@
                                 playSound('sfx_ability_p');
                                 gameState.isUmbraFurious = true;
                                 gameState.umbraFuryTimer = CONFIG.UMBRA_FURY_DURATION;
-                                gameState.currentAnimation = 'ultimate'; // Ativa animação
-                                playerAnimation.ultimate.reset();
                             }
                         }
                     ]
@@ -2073,22 +1958,14 @@
                     abilitiesMaxCooldown: { U: 0.5, I: 2, O: 4, P: 20 },
                     manaRegenRate: 1.5,
                     abilities: [ /* Habilidades dummy, a ultimate 'P' é a relevante */
-                        { key: 'U', name: 'Ataque Rápido', description: 'Golpe ágil de curta distância.', damage: (base) => base * 1.0, manaCost: 0, cooldown: 0.5, execute: () => {
-                            gameState.currentAnimation = 'attack_u'; playerAnimation.attack_u.reset();
-                        } },
-                        { key: 'I', name: 'Projétil de Energia', description: 'Lança um projétil rápido à distância.', damage: (base) => base * 1.0, manaCost: 15, cooldown: 2, execute: () => {
-                            gameState.currentAnimation = 'attack_i'; playerAnimation.attack_i.reset();
-                        } },
-                        { key: 'O', name: 'Explosão Arcana', description: 'Causa uma explosão de energia.', damage: (base) => base * 1.8, manaCost: 30, cooldown: 4, execute: () => {
-                            gameState.currentAnimation = 'attack_o'; playerAnimation.attack_o.reset();
-                        } },
+                        { key: 'U', name: 'Ataque Rápido', description: 'Golpe ágil de curta distância.', damage: (base) => base * 1.0, manaCost: 0, cooldown: 0.5, execute: () => {} },
+                        { key: 'I', name: 'Projétil de Energia', description: 'Lança um projétil rápido à distância.', damage: (base) => base * 1.0, manaCost: 15, cooldown: 2, execute: () => {} },
+                        { key: 'O', name: 'Explosão Arcana', description: 'Causa uma explosão de energia.', damage: (base) => base * 1.8, manaCost: 30, cooldown: 4, execute: () => {} },
                         { key: 'P', name: 'Fúria de Umbra', description: 'Canaliza a energia de Umbra para ficar mais rápido, resistente e poderoso no ataque.', damage: (base) => base, manaCost: 50, cooldown: 20,
                             execute: function() {
                                 playSound('sfx_ability_p');
                                 gameState.isUmbraFurious = true;
                                 gameState.umbraFuryTimer = CONFIG.UMBRA_FURY_DURATION;
-                                gameState.currentAnimation = 'ultimate';
-                                playerAnimation.ultimate.reset();
                             }
                         }
                     ]
@@ -2158,12 +2035,6 @@
                     const key = e.currentTarget.dataset.key;
                     if (key) useAbility(key);
                 });
-                // NOVO: Adiciona suporte a toque para dispositivos móveis
-                btn.addEventListener('touchstart', (e) => {
-                    e.preventDefault(); // Previne o clique "fantasma" após o toque
-                    const key = e.currentTarget.dataset.key;
-                    if (key) useAbility(key);
-                });
             });
             
             /* Level up (com escolhas) */
@@ -2211,13 +2082,17 @@
             document.getElementById('mobile-right').addEventListener('touchstart', (e) => { e.preventDefault(); mobileControls.right = true; });
             document.getElementById('mobile-right').addEventListener('touchend', () => mobileControls.right = false);
 
-            // Botões de Habilidade MOBILE-ACTION-BUTTONS REMOVIDOS - Usar os botões desktop/UI
+            /* Botões de Habilidade */
+            document.getElementById('mobile-ability-u').addEventListener('touchstart', (e) => { e.preventDefault(); useAbility('U'); });
+            document.getElementById('mobile-ability-i').addEventListener('touchstart', (e) => { e.preventDefault(); useAbility('I'); });
+            document.getElementById('mobile-ability-o').addEventListener('touchstart', (e) => { e.preventDefault(); useAbility('O'); });
+            document.getElementById('mobile-ability-p').addEventListener('touchstart', (e) => { e.preventDefault(); useAbility('P'); });
             updateMobileControlsVisibility();
         }
 
         function updateMobileControlsVisibility() {
             const mobileControlsDiv = document.getElementById('mobile-controls');
-            // NOVO: Apenas o D-pad é controlado aqui. Os botões de habilidade desktop são sempre visíveis.
+            // Apenas mostre os controles móveis se estiver em modo móvel e paisagem
             if (isMobile && isLandscape) {
                 mobileControlsDiv.style.display = 'grid';
             } else {
@@ -2228,14 +2103,10 @@
         // ===== MENU PRINCIPAL =====
         function validateMenuInputs() {
             const name = document.getElementById('player-name').value.trim();
-            // --- LINHA MODIFICADA AQUI ---
-            // Antes: const selectedClass = document.querySelector('.class-option.selected');
-            // Agora: Verifica diretamente se gameState.playerClass tem um valor (ou seja, foi selecionado)
-            const classIsSelected = !!gameState.playerClass; 
-            // -----------------------------
+            const selectedClass = document.querySelector('.class-option.selected');
             const startBtn = document.getElementById('start-game-btn');
             
-            if (name.length >= 2 && classIsSelected) {
+            if (name.length >= 2 && selectedClass) {
                 startBtn.disabled = false;
             } else {
                 startBtn.disabled = true;
@@ -2249,14 +2120,14 @@
             const selectedOption = document.querySelector(`[data-class="${className}"]`);
             if (selectedOption) {
                 selectedOption.classList.add('selected');
-                gameState.playerClass = className; // ISSO É IMPORTANTE: Define a classe no estado do jogo
-                validateMenuInputs(); // Chama a validação após a seleção
+                gameState.playerClass = className;
+                validateMenuInputs();
             }
         }
 
         function startGame() {
             const name = document.getElementById('player-name').value.trim();
-            if (name.length < 2 || !gameState.playerClass) return; // Garante que a classe foi selecionada
+            if (name.length < 2 || !gameState.playerClass) return;
             
             gameState.playerName = name;
             gameState.inMenu = false;
@@ -2319,7 +2190,7 @@
                 playerMana: 100, playerMaxMana: 100,
                 playerPosition: { x: 100, y: 300 },
                 playerVelocity: { x: 0, y: 0 },
-                playerLevel: 1, playerXP: 0, playerNextLevelXP: 100,
+                playerLevel: 1, playerXP: 0, playerNextLevelXP: 200, // Resetado para valor inicial
                 playerDamage: 15, playerSpeed: CONFIG.PLAYER_SPEED,
                 isGrounded: false, isCrouching: false, isInvincible: false, facing: 'right', currentAnimation: 'idle',
                 isUmbraFurious: false, umbraFuryTimer: 0,
@@ -2331,8 +2202,7 @@
                 cameraOffset: { x: 0, y: 0 }, targetCameraOffset: { x: 0, y: 0 },
                 currentPhase: 0, currentCheckpoint: 'start',
                 inBossFight: false, bossDefeated: false,
-                inTarekEncounter: false, tarekDialogStep: 0, tarekDialogCompleted: false, // NOVO: resetar
-                tarekEncounterTriggerX: 5500, // NOVO: resetar
+                inTarekEncounter: false, tarekDialogStep: 0, tarekDialogCompleted: false,
                 fixedCamera: false, fixedCameraTarget: { x: 0, y: 0 }
             };
 
@@ -2344,7 +2214,8 @@
             deactivateOverlayMenu('level-up');
             deactivateOverlayMenu('dialog-container');
             deactivateOverlayMenu('cinematic-overlay'); 
-            // NOVO: Esconder barra de vida do boss ao sair para o menu
+
+            // NOVO: Esconder barra de vida do boss ao voltar para o menu
             document.getElementById('boss-name').style.display = 'none';
             document.getElementById('boss-health-bar').style.display = 'none';
 
@@ -2383,7 +2254,7 @@
                     setupPhase1_MuralhasAurora();
                     stopMusic();
                     playMusic('music_platforming', true);
-                    // NOVO: Garantir que barra de vida do boss esteja escondida ao carregar fase normal
+                    // Esconder barra de vida do boss
                     document.getElementById('boss-name').style.display = 'none';
                     document.getElementById('boss-health-bar').style.display = 'none';
                     break;
@@ -2445,31 +2316,31 @@
                     type: 'sentinel',
                     position: { x: 600, y: 300 },
                     health: 50, maxHealth: 50, damage: 10, speed: 1,
-                    patrolRange: 100, xpValue: 10, direction: 1, attackCooldown: 0 // XP reduzido
+                    patrolRange: 100, xpValue: 10, direction: 1, attackCooldown: 0 // XP ajustado
                 },
                 {
                     type: 'sentinel',
                     position: { x: 1600, y: 250 },
                     health: 50, maxHealth: 50, damage: 10, speed: 1,
-                    patrolRange: 120, xpValue: 10, direction: 1, attackCooldown: 0 // XP reduzido
+                    patrolRange: 120, xpValue: 10, direction: 1, attackCooldown: 0 // XP ajustado
                 },
                 {
                     type: 'sentinel',
                     position: { x: 2700, y: 250 },
                     health: 50, maxHealth: 50, damage: 10, speed: 1,
-                    patrolRange: 100, xpValue: 10, direction: -1, attackCooldown: 0 // XP reduzido
+                    patrolRange: 100, xpValue: 10, direction: -1, attackCooldown: 0 // XP ajustado
                 },
                 {
                     type: 'sentinel',
                     position: { x: 3700, y: 300 },
                     health: 50, maxHealth: 50, damage: 10, speed: 1,
-                    patrolRange: 150, xpValue: 10, direction: 1, attackCooldown: 0 // XP reduzido
+                    patrolRange: 150, xpValue: 10, direction: 1, attackCooldown: 0 // XP ajustado
                 },
                 {
                     type: 'sentinel',
                     position: { x: 4600, y: 250 },
                     health: 50, maxHealth: 50, damage: 10, speed: 1,
-                    patrolRange: 100, xpValue: 10, direction: -1, attackCooldown: 0 // XP reduzido
+                    patrolRange: 100, xpValue: 10, direction: -1, attackCooldown: 0 // XP ajustado
                 }
             ];
 
@@ -2477,6 +2348,8 @@
                 { x: 1000, y: 350, width: 50, height: 50, name: 'checkpoint1', description: 'Primeiro Checkpoint' },
                 { x: 2500, y: 350, width: 50, height: 50, name: 'checkpoint2', description: 'Segundo Checkpoint' },
                 { x: 4000, y: 350, width: 50, height: 50, name: 'checkpoint3', description: 'Terceiro Checkpoint' },
+                // NOVO: Checkpoint de transição para a luta com Tarek (no final do mapa)
+                { x: 5800, y: 350, width: 50, height: 50, name: 'tarek_trigger', description: 'Gatilho Tarek' } 
             ];
             
             backgroundLayers = [
@@ -2490,7 +2363,7 @@
             
             gameState.inTarekEncounter = false;
             gameState.tarekDialogStep = 0;
-            // gameState.tarekDialogCompleted não resetar aqui, é salvo no progresso
+            gameState.tarekDialogCompleted = false;
             gameState.fixedCamera = false;
         }
 
@@ -2501,8 +2374,9 @@
             enemies = [];
             checkpoints = [];
             
-            backgroundLayers = [ // NOVO: background será handled por renderBackground usando image
-                { type: 'image', assetKey: 'tarek_background' }
+            backgroundLayers = [
+                { color: '#0f1419', speed: 0.1, type: 'sky' },
+                { color: '#1a1a2e', speed: 0.3, type: 'mountains' }
             ];
 
             gameState.fixedCamera = true;
@@ -2512,7 +2386,7 @@
 
             const tarek = {
                 type: 'boss_dialogue',
-                name: 'Tarek, o Guerreiro',
+                name: 'TAREK, O GUERREIRO', // Nome do boss em maiúsculas
                 position: { x: 600, y: 300 },
                 facing: 'left',
                 health: 1, maxHealth: 1,
@@ -2521,10 +2395,6 @@
             enemies.push(tarek);
             
             gameState.inTarekEncounter = true;
-            // NOVO: Esconder barra de vida do boss no encontro de diálogo
-            document.getElementById('boss-name').style.display = 'none';
-            document.getElementById('boss-health-bar').style.display = 'none';
-
             startTarekDialogue();
         }
 
@@ -2535,8 +2405,9 @@
             enemies = [];
             checkpoints = [];
             
-            backgroundLayers = [ // NOVO: background será handled por renderBackground usando image
-                { type: 'image', assetKey: 'tarek_background' }
+            backgroundLayers = [
+                { color: '#0f1419', speed: 0.1, type: 'sky' },
+                { color: '#1a1a2e', speed: 0.3, type: 'mountains' }
             ];
 
             gameState.fixedCamera = true;
@@ -2597,6 +2468,7 @@
             const titleElement = document.getElementById('cinematic-title');
             const textElement = document.getElementById('cinematic-text');
             const gifElement = document.getElementById('cutscene-gif');
+            // const overlay = document.getElementById('cinematic-overlay'); // Não precisa mais de referência direta ao overlay aqui
 
             console.log(`showNextSequenceStep called. Current index: ${currentSequenceIndex}`);
 
@@ -2708,7 +2580,7 @@
                         showTarekLine();
                     }}]);
                 } else {
-                    gameState.tarekDialogCompleted = true; // NOVO: Marcar diálogo como completo
+                    gameState.tarekDialogCompleted = true;
                     gameState.inTarekEncounter = false;
                     loadPhase(3); // Inicia a fase da batalha com Tarek
                 }
@@ -2728,15 +2600,13 @@
                 mana: gameState.playerMana,
                 xp: gameState.playerXP,
                 level: gameState.playerLevel,
-                playerNextLevelXP: gameState.playerNextLevelXP, // NOVO: Salvar XP para próximo nível
                 playerClass: gameState.playerClass,
                 playerMaxHealth: gameState.playerMaxHealth,
                 playerMaxMana: gameState.playerMaxMana,
                 playerDamage: gameState.playerDamage,
                 playerSpeed: gameState.playerSpeed,
                 abilitiesMaxCooldown: gameState.abilitiesMaxCooldown,
-                manaRegenRate: CONFIG.MANA_REGEN_RATE,
-                tarekDialogCompleted: gameState.tarekDialogCompleted // NOVO: Salvar estado do diálogo Tarek
+                manaRegenRate: CONFIG.MANA_REGEN_RATE
             };
             
             setCookie('tupary_checkpoint', JSON.stringify(checkpointData));
@@ -2756,14 +2626,17 @@
                     gameState.playerMana = data.mana;
                     gameState.playerXP = data.xp;
                     gameState.playerLevel = data.level;
-                    gameState.playerNextLevelXP = data.playerNextLevelXP; // NOVO: Carregar XP para próximo nível
                     gameState.playerClass = data.playerClass;
-                    gameState.tarekDialogCompleted = data.tarekDialogCompleted; // NOVO: Carregar estado do diálogo Tarek
 
                     setupCharacter(data.playerClass, data.playerMaxHealth, data.playerMaxMana, data.playerDamage, data.playerSpeed, data.abilitiesMaxCooldown, data.manaRegenRate);
                     
                     loadPhase(data.phase);
                     updateAllUI();
+                    // NOVO: Esconder barra de vida do boss ao carregar checkpoint se não for fase de boss
+                    if (gameState.currentPhase !== 3) {
+                        document.getElementById('boss-name').style.display = 'none';
+                        document.getElementById('boss-health-bar').style.display = 'none';
+                    }
                     return true;
                 } catch (e) {
                     console.error('Erro ao carregar checkpoint:', e);
@@ -2799,15 +2672,11 @@
             if (loadCheckpoint()) {
                 showCheckpointNotification('Checkpoint Carregado', 'Retornando ao último checkpoint salvo...');
             } else {
-                // Se não houver checkpoint, apenas reinicia a fase atual com vida cheia
                 loadPhase(gameState.currentPhase);
                 gameState.playerHealth = gameState.playerMaxHealth;
                 gameState.playerMana = gameState.playerMaxMana;
                 updateAllUI();
             }
-            // NOVO: Garantir que barra de vida do boss esteja escondida ao reiniciar checkpoint (se não estiver na fase do boss)
-            document.getElementById('boss-name').style.display = 'none';
-            document.getElementById('boss-health-bar').style.display = 'none';
         }
 
         // ===== LOOP PRINCIPAL DO JOGO =====
@@ -2821,11 +2690,11 @@
                 if (!gameState.inCutscene && !gameState.inDialog) {
                     update(deltaTime);
                 }
-                render(deltaTime); // NOVO: Passar deltaTime para render
+                render();
             } else if (gameState.inMenu) {
                 renderMenu();
             } else {
-                render(deltaTime); // NOVO: Passar deltaTime para render mesmo pausado para animações de UI
+                render();
             }
             
             animationFrameId = requestAnimationFrame(gameLoop);
@@ -2843,7 +2712,11 @@
             updateFallingSpikes(deltaTime);
             
             if (gameState.currentPhase === 1) {
-                checkCheckpoints();
+                // NOVO: Verifica se o jogador atingiu o gatilho para o Tarek
+                const tarekTrigger = checkpoints.find(cp => cp.name === 'tarek_trigger');
+                if (tarekTrigger && gameState.playerPosition.x >= tarekTrigger.x && !gameState.inTarekEncounter && !gameState.tarekDialogCompleted && !gameState.bossDefeated) {
+                    loadPhase(2); // Inicia o encontro com Tarek
+                }
             }
             
             checkGameConditions();
@@ -2860,7 +2733,6 @@
                 gameState.umbraFuryTimer -= deltaTime;
                 if (gameState.umbraFuryTimer <= 0) {
                     gameState.isUmbraFurious = false;
-                    playerAnimation.ultimate.setLoop(false); // Parar loop da ultimate
                 }
             }
 
@@ -2904,23 +2776,30 @@
             checkEffectCollisions();
             checkFallingSpikeCollisions();
             
-            updatePlayerAnimation(deltaTime); // NOVO: Passar deltaTime para atualização da animação
+            updatePlayerAnimation();
             
             if (moveX > 0) gameState.facing = 'right';
             if (moveX < 0) gameState.facing = 'left';
             
+            // Ajustado para não sair do mundo ao chegar no gatilho do Tarek
             if (!gameState.fixedCamera) {
                 if (gameState.playerPosition.x < 0) {
                     gameState.playerPosition.x = 0;
                     gameState.playerVelocity.x = 0;
                 }
-                if (gameState.playerPosition.x > CONFIG.WORLD_WIDTH - CONFIG.PLAYER_WIDTH) {
+                const tarekTriggerX = checkpoints.find(cp => cp.name === 'tarek_trigger')?.x || CONFIG.WORLD_WIDTH;
+                if (gameState.playerPosition.x > tarekTriggerX - CONFIG.PLAYER_WIDTH && gameState.currentPhase === 1) {
+                     // Não permite ir além do gatilho se ainda não passou para a fase do Tarek
+                    if (!gameState.inTarekEncounter && !gameState.tarekDialogCompleted && !gameState.bossDefeated) {
+                        gameState.playerPosition.x = tarekTriggerX - CONFIG.PLAYER_WIDTH;
+                        gameState.playerVelocity.x = 0;
+                    } else if (gameState.bossDefeated) { // Se Tarek derrotado, pode passar
+                         // Permite ao jogador continuar a explorar o restante do mundo após Tarek
+                         // Mantém a câmera seguindo, mas não tem mais gatilho de fase por X
+                    }
+                } else if (gameState.playerPosition.x > CONFIG.WORLD_WIDTH - CONFIG.PLAYER_WIDTH) { // Limite do mundo se não for a área do Tarek
                     gameState.playerPosition.x = CONFIG.WORLD_WIDTH - CONFIG.PLAYER_WIDTH;
                     gameState.playerVelocity.x = 0;
-                }
-                // NOVO: Gatilho preciso para o encontro com Tarek
-                if (gameState.currentPhase === 1 && gameState.playerPosition.x >= gameState.tarekEncounterTriggerX && !gameState.tarekDialogCompleted) {
-                    loadPhase(2); // Transita para a fase do encontro com Tarek
                 }
             } else {
                 if (gameState.playerPosition.x < 0) gameState.playerPosition.x = 0;
@@ -3025,6 +2904,7 @@
                 const dy = playerCenterY - enemyCenterY;
                 const distanceSq = dx * dx + dy * dy; /* Usando distância ao quadrado */
                 const collisionThresholdSq = (playerHalfWidth + enemyHalfWidth - 10) * (playerHalfHeight + enemyHalfHeight - 10); /* Ajuste para melhor sensibilidade */
+                
                 if (distanceSq < collisionThresholdSq) {
                     takeDamage(enemy.damage);
                     
@@ -3133,46 +3013,18 @@
             }
         }
 
-        function updatePlayerAnimation(deltaTime) {
-            // Atualiza o AnimationManager com o deltaTime
-            // Garante que o AnimationManager correto esteja sendo atualizado, mesmo se a animação tiver terminado
-            if (playerAnimation[gameState.currentAnimation]) {
-                playerAnimation[gameState.currentAnimation].update(deltaTime);
-            }
-
-            // A lógica de transição de animação deve vir DEPOIS de atualizar o AnimationManager atual
-            // para que o frameTimer seja incrementado corretamente.
-            if (gameState.isInvincible) {
-                // Animação de dano tem prioridade visualmente.
-                // Se não estiver já na animação de dano ou se ela tiver terminado, ativa.
-                if (gameState.currentAnimation !== 'take_damage' || !playerAnimation.take_damage.isPlaying) {
-                     gameState.currentAnimation = 'take_damage';
-                     playerAnimation.take_damage.reset();
-                }
-            } else if (playerAnimation.attack_u.isPlaying || playerAnimation.attack_i.isPlaying || playerAnimation.attack_o.isPlaying) {
-                // Manter animação de ataque se estiver em curso.
-                // gameState.currentAnimation já foi setado na função useAbility().
-                // Não sobrescrever se a animação de ataque ainda está rodando.
-            } else if (gameState.isUmbraFurious) {
-                if (gameState.currentAnimation !== 'ultimate') {
-                    gameState.currentAnimation = 'ultimate';
-                    playerAnimation.ultimate.reset();
-                }
+        function updatePlayerAnimation() {
+            // Se o jogador estiver furioso (ultimate), prioriza essa animação
+            if (currentChampion.id === 'umbraArcher' && gameState.isUmbraFurious) {
+                gameState.currentAnimation = 'player_ultimate';
             } else if (!gameState.isGrounded) {
-                if (gameState.currentAnimation !== 'jump') {
-                    gameState.currentAnimation = 'jump';
-                    playerAnimation.jump.reset(); // Reinicia a animação de pulo
-                }
+                gameState.currentAnimation = 'player_jump';
+            } else if (gameState.isCrouching) {
+                gameState.currentAnimation = 'player_crouch';
             } else if (Math.abs(gameState.playerVelocity.x) > 0.1) {
-                if (gameState.currentAnimation !== 'walk') {
-                    gameState.currentAnimation = 'walk';
-                    playerAnimation.walk.reset(); // Reinicia a animação de andar
-                }
+                gameState.currentAnimation = 'player_walk';
             } else {
-                if (gameState.currentAnimation !== 'idle') {
-                    gameState.currentAnimation = 'idle';
-                    playerAnimation.idle.reset(); // Reinicia a animação de idle
-                }
+                gameState.currentAnimation = 'player_idle';
             }
         }
 
@@ -3180,11 +3032,7 @@
             for (let i = enemies.length - 1; i >= 0; i--) {
                 const enemy = enemies[i];
                 
-                if (enemy.type === 'boss_dialogue') {
-                    // NOVO: Atualiza a animação do boss de diálogo
-                    tarekAnimation.update(deltaTime);
-                    continue;
-                }
+                if (enemy.type === 'boss_dialogue') continue;
 
                 if (enemy.frozen) {
                     enemy.frozenTimer -= deltaTime;
@@ -3196,14 +3044,12 @@
                 
                 if (enemy.type === 'sentinel' && enemy.pattern === 'patrol') {
                     updateEnemyPatrol(enemy, deltaTime);
-                    sentinelAnimation.update(deltaTime); // NOVO: Atualiza animação do sentinela
                 }
                 
                 if (enemy.type === 'sentinel') {
                     updateEnemyAI(enemy, deltaTime);
                 } else if (enemy.type === 'boss') {
                     updateBossAI(enemy, deltaTime);
-                    tarekAnimation.update(deltaTime); // NOVO: Atualiza animação do boss
                 }
                 
                 enemy.velocity = enemy.velocity || { x: 0, y: 0 };
@@ -3392,7 +3238,7 @@
                             const enemyProjectiles = abilityEffects.filter(ae => ae.origin === 'enemy' && (ae.type.includes('Projectile') || ae.type.includes('Orb')));
                             enemyProjectiles.forEach(proj => {
                                 if (proj.x < effect.x + effect.width && proj.x + proj.width > effect.x &&
-                                    proj.y < effect.y + effect.height && proj.y + effect.height > effect.y) {
+                                    proj.y < effect.y + effect.height && proj.y + proj.height > effect.y) {
                                     proj.active = false; /* Destrói o projétil inimigo */
                                 }
                             });
@@ -3533,6 +3379,7 @@
             
             const playerWidth = CONFIG.PLAYER_WIDTH;
             const playerHeight = gameState.isCrouching ? CONFIG.CROUCH_HEIGHT : CONFIG.NORMAL_HEIGHT;
+            
             for (const spike of fallingSpikes) {
                 if (!spike.active) continue;
                 
@@ -3780,7 +3627,7 @@
             playSound('sfx_level_up');
             gameState.playerLevel++;
             gameState.playerXP -= gameState.playerNextLevelXP;
-            gameState.playerNextLevelXP = Math.floor(gameState.playerNextLevelXP * 1.8); // NOVO: XP para próximo nível escala mais rápido
+            gameState.playerNextLevelXP = Math.floor(gameState.playerNextLevelXP * 1.5);
             
             flashScreen(COLOR_XP, 500);
             addParticles('umbraFuria', gameState.playerPosition.x + CONFIG.PLAYER_WIDTH / 2, gameState.playerPosition.y + CONFIG.PLAYER_HEIGHT / 2, 30);
@@ -3831,7 +3678,7 @@
 
             const tarek = {
                 type: 'boss',
-                name: 'Tarek, o Guerreiro',
+                name: 'TAREK, O GUERREIRO', // Nome do boss em maiúsculas
                 position: { x: canvas.width - 150, y: 300 },
                 facing: 'left',
                 health: 500,
@@ -3840,7 +3687,7 @@
                 speed: 1.5,
                 velocity: { x: 0, y: 0 },
                 isGrounded: false,
-                xpValue: 250, // NOVO: XP do boss reduzido
+                xpValue: 500,
                 
                 aiState: 'combat',
                 aiTimer: 0,
@@ -4134,7 +3981,7 @@
         }
 
         // ===== RENDERIZAÇÃO =====
-        function render(deltaTime) { // NOVO: Recebe deltaTime
+        function render() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             renderBackground();
@@ -4162,44 +4009,47 @@
         }
 
         function renderBackground() {
-            // NOVO: Renderiza um plano de fundo estático se especificado pela fase
-            if (backgroundLayers.length > 0 && backgroundLayers[0].type === 'image') {
-                const imgAsset = CONFIG.ASSET_LOADED[backgroundLayers[0].assetKey];
-                if (imgAsset) {
-                    ctx.drawImage(imgAsset, 0, 0, canvas.width, canvas.height);
-                    return; // Sai da função, não renderiza as camadas procedurais
+            // Se estiver nas fases do Tarek, usa o fundo específico
+            if (gameState.currentPhase === 2 || gameState.currentPhase === 3) {
+                const tarekBgImage = CONFIG.ASSET_LOADED.tarek_bg;
+                if (tarekBgImage instanceof HTMLImageElement) { // Garante que é um elemento <img>
+                    // Desenha a imagem de fundo de Tarek, cobrindo todo o Canvas
+                    ctx.drawImage(tarekBgImage, 0, 0, canvas.width, canvas.height);
+                } else {
+                    // Fallback para cor sólida se a imagem não carregar ou não for um HTMLImageElement
+                    ctx.fillStyle = '#1a1a1a';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }
+            } else {
+                // Fundo gradiente padrão para outras fases
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--primary-dark'));
+                gradient.addColorStop(0.3, getComputedStyle(document.documentElement).getPropertyValue('--primary-medium'));
+                gradient.addColorStop(0.7, getComputedStyle(document.documentElement).getPropertyValue('--primary-light'));
+                gradient.addColorStop(1, '#2c3e50');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                backgroundLayers.forEach((layer, index) => {
+                    const parallaxOffset = (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x) * layer.speed;
+                    
+                    ctx.fillStyle = layer.color;
+                    ctx.globalAlpha = 0.6 - (index * 0.1);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(-parallaxOffset, canvas.height);
+                    
+                    for (let x = -200; x < canvas.width + 200; x += 50 + Math.random() * 20) {
+                        const height = 100 + Math.sin((x + parallaxOffset) * 0.01) * 50 + Math.sin((x + parallaxOffset) * 0.003) * 100;
+                        ctx.lineTo(x - parallaxOffset, canvas.height - height - (index * 30));
+                    }
+                    
+                    ctx.lineTo(canvas.width + 200, canvas.height);
+                    ctx.closePath();
+                    ctx.fill();
+                });
             }
-
-            // Renderização de plano de fundo procedural padrão
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--primary-dark'));
-            gradient.addColorStop(0.3, getComputedStyle(document.documentElement).getPropertyValue('--primary-medium'));
-            gradient.addColorStop(0.7, getComputedStyle(document.documentElement).getPropertyValue('--primary-light'));
-            gradient.addColorStop(1, '#2c3e50');
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            backgroundLayers.forEach((layer, index) => {
-                const parallaxOffset = (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x) * layer.speed;
-                
-                ctx.fillStyle = layer.color;
-                ctx.globalAlpha = 0.6 - (index * 0.1);
-                
-                ctx.beginPath();
-                ctx.moveTo(-parallaxOffset, canvas.height);
-                
-                for (let x = -200; x < canvas.width + 200; x += 50 + Math.random() * 20) {
-                    const height = 100 + Math.sin((x + parallaxOffset) * 0.01) * 50 + Math.sin((x + parallaxOffset) * 0.003) * 100;
-                    ctx.lineTo(x - parallaxOffset, canvas.height - height - (index * 30));
-                }
-                
-                ctx.lineTo(canvas.width + 200, canvas.height);
-                ctx.closePath();
-                ctx.fill();
-            });
-            
             ctx.globalAlpha = 1;
         }
 
@@ -4289,21 +4139,22 @@
                 ctx.globalAlpha = 0.5; // Efeito de piscar durante a invencibilidade
             }
 
-            // NOVO: Usa o AnimationManager para obter o quadro atual
-            let playerImage = playerAnimation[gameState.currentAnimation].getCurrentFrame();
-
-            if (playerImage) {
+            // A imagem para desenhar será o elemento <img> oculto que o navegador está animando
+            const playerImageElement = CONFIG.ASSET_LOADED[gameState.currentAnimation]; 
+            
+            if (playerImageElement && playerImageElement instanceof HTMLImageElement) { // Garante que é um elemento <img>
                 ctx.save(); // Salva o estado atual do canvas
                 if (gameState.facing === 'left') {
                     ctx.translate(x + width, y);
                     ctx.scale(-1, 1); // Espelha a imagem horizontalmente
-                    ctx.drawImage(playerImage, 0, 0, width, height); // Desenha a imagem espelhada
+                    ctx.drawImage(playerImageElement, 0, 0, width, height); // Desenha o elemento <img>
                 } else {
-                    ctx.drawImage(playerImage, x, y, width, height); // Desenha a imagem normalmente
+                    ctx.drawImage(playerImageElement, x, y, width, height); // Desenha o elemento <img> normalmente
                 }
                 ctx.restore(); // Restaura o estado anterior do canvas
             } else {
-                // Fallback: Desenha um retângulo colorido se o GIF não carregar
+                // Fallback: Desenha um retângulo colorido se o GIF não carregar ou não for um HTMLImageElement
+                console.warn(`Player image not found or not an HTMLImageElement for animation: ${gameState.currentAnimation}. Falling back to colored rectangle.`);
                 let playerColor;
                 if (currentChampion.id === 'chosenOne' && gameState.isUmbraFurious) {
                     playerColor = COLOR_ACCENT_GOLD;
@@ -4373,9 +4224,8 @@
         }
 
         function renderSentinel(enemy, x, y, width, height) {
-            // NOVO: Usa o AnimationManager para o sentinel
-            const sentinelImage = sentinelAnimation.getCurrentFrame();
-            if (sentinelImage) {
+            const sentinelImage = CONFIG.ASSET_LOADED.sentinel_sprite;
+            if (sentinelImage instanceof HTMLImageElement) {
                 ctx.drawImage(sentinelImage, x, y, width, height);
             } else {
                 ctx.fillStyle = '#78909c';
@@ -4401,9 +4251,8 @@
                 ctx.fillRect(bossX - 5, bossY - 5, bossWidth + 10, bossHeight + 10);
             }
             
-            // NOVO: Usa o AnimationManager para o Tarek
-            const bossImage = tarekAnimation.getCurrentFrame();
-            if (bossImage) {
+            const bossImage = CONFIG.ASSET_LOADED.tarek_sprite;
+            if (bossImage instanceof HTMLImageElement) {
                 ctx.save();
                 if (enemy.facing === 'left') {
                     ctx.translate(bossX + bossWidth, bossY);
@@ -4734,7 +4583,7 @@
                 // showDialog já ativa dialog-container com pointer-events auto
                 showDialog(
                     "SISTEMA",
-                    `${gameState.playerName} foi derrotado... Mas a jornada não termina aqui. O destino de todos os reinos ainda depende de suas escolhas.`,
+                    ` ${gameState.playerName} foi derrotado... Mas a jornada não termina aqui. O destino de todos os reinos ainda depende de suas escolhas.`,
                     [
                         {
                             text: "Voltar ao último checkpoint",
@@ -4839,7 +4688,12 @@
                 CONFIG.SNOW_SPAWN_RATE *= 0.8;
             } else if (fps > 55) {
                 CONFIG.MAX_PARTICLES = Math.min(200, CONFIG.MAX_PARTICLES + 5);
-                CONFIG.SNOW_SPAWN_RATE = Math.min(0.15, CONFIG.SNOW_SPAWN_RATE * 1.1);
+/*************  ✨ Windsurf Command ⭐  *************/
+            /**
+             * Salva as configurações atuais em um cookie.
+             * @this {GameSettings}
+             */
+/*******  77840ad2-2821-439c-a660-b32f2550846e  *******/                CONFIG.SNOW_SPAWN_RATE = Math.min(0.15, CONFIG.SNOW_SPAWN_RATE * 1.1);
             }
         }
 
