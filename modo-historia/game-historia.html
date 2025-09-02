@@ -1071,7 +1071,6 @@
 
             .mobile-controls {
                 display: grid;
-                height: 120px; /* Reduz a altura dos controles móveis */
             }
 
             .status-bars {
@@ -1135,40 +1134,6 @@
             .upgrade-option {
                 padding: 12px;
             }
-            
-            /* Ajustes específicos para a batalha com boss no mobile */
-            .boss-health-bar {
-                top: 60px; /* Posição mais alta para liberar espaço */
-                width: 300px;
-                height: 16px;
-            }
-            
-            .boss-name {
-                top: 35px;
-                font-size: 16px;
-            }
-            
-            /* Reduz ainda mais o espaço dos controles durante batalhas com boss */
-            .boss-battle .mobile-controls {
-                height: 100px;
-                opacity: 0.7; /* Transparência para não atrapalhar a visão */
-                transition: opacity 0.3s;
-            }
-            
-            .boss-battle .mobile-controls:active {
-                opacity: 1; /* Volta à opacidade total quando tocado */
-            }
-            
-            .boss-battle .abilities-container {
-                bottom: 5px;
-                gap: 5px;
-            }
-            
-            .boss-battle .ability-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 16px;
-            }
         }
 
         @media (max-height: 500px) and (orientation: landscape) {
@@ -1226,39 +1191,6 @@
                 position: relative;
                 z-index: 100; /* Garante que fique visível */
             }
-            
-            /* Ajustes específicos para batalha com boss em landscape */
-            .boss-health-bar {
-                top: 40px;
-                width: 250px;
-                height: 14px;
-            }
-            
-            .boss-name {
-                top: 20px;
-                font-size: 14px;
-            }
-            
-            .boss-battle .mobile-controls {
-                height: 90px;
-            }
-            
-            .boss-battle .abilities-container {
-                bottom: 5px;
-                right: 5px;
-            }
-        }
-        
-        /* Classe especial para quando estiver em batalha com boss */
-        .boss-battle .status-bars,
-        .boss-battle .player-stats {
-            opacity: 0.7; /* Transparência para não atrapalhar a visão */
-            transition: opacity 0.3s;
-        }
-        
-        .boss-battle .status-bars:hover,
-        .boss-battle .player-stats:hover {
-            opacity: 1; /* Volta à opacidade total quando o jogador interagir */
         }
     </style>
 </head>
