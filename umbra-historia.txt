@@ -61,7 +61,9 @@
             width: 100%;
             height: 100%;
             max-width: 1600px;
-            max-height: 770px;
+            /* --- MODIFIED: Removed fixed max-height for better mobile scaling --- */
+            max-height: 770px; /* Keep for desktop aspect ratio */
+            /* --- END MODIFIED --- */
             overflow: hidden;
             border: 3px solid var(--accent-gold);
             border-radius: 8px;
@@ -130,7 +132,7 @@
             z-index: 50;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: center; /* --- MODIFIED: Adjusted for better vertical alignment on mobile --- */
             align-items: center;
             padding: 20px;
         }
@@ -161,6 +163,10 @@
             margin-bottom: 30px;
             width: 100%;
             max-width: 700px;
+            /* --- MODIFIED: Ensure content fits and scrolls if necessary --- */
+            overflow-y: auto;
+            max-height: 70vh; /* Allow scrolling for content if it gets too tall */
+            /* --- END MODIFIED --- */
         }
 
         .character-selection h3 {
@@ -268,6 +274,9 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            /* --- MODIFIED: Ensure button is always visible below content --- */
+            margin-top: 20px; 
+            /* --- END MODIFIED --- */
         }
 
         .start-game-btn:hover {
@@ -409,14 +418,14 @@
             font-weight: bold;
         }
 
-        /* ===== SISTEMA DE HABILIDADES (Desktop) ===== */
+        /* ===== SISTEMA DE HABILIDADES (Desktop & Mobile) ===== */
         .abilities-container {
             position: absolute;
             bottom: 15px;
             right: 15px;
             display: flex;
             gap: 12px;
-            pointer-events: auto;
+            pointer-events: auto; /* --- MODIFIED: Ensure buttons are always clickable --- */
         }
 
         .ability-btn {
@@ -509,7 +518,7 @@
             font-style: italic;
         }
 
-        /* ===== CONTROLES MOBILE (D-pad e Ações) ===== */
+        /* ===== CONTROLES MOBILE (D-pad) ===== */
         .mobile-controls {
             position: absolute;
             bottom: 0;
@@ -983,19 +992,37 @@
             100% { opacity: 0; transform: translateY(-30px) scale(1.2); }
         }
 
+        /* --- NEW: Debug Animation Info --- */
+        .debug-animation-info {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            color: limegreen;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 5px;
+            border-radius: 3px;
+            z-index: 100;
+        }
+        /* --- END NEW --- */
+
+
         /* ===== RESPONSIVIDADE ===== */
         @media (max-width: 800px) {
             #game-container {
                 width: 100vw;
                 height: 100vh;
                 max-width: none;
-                max-height: none;
+                max-height: none; /* --- MODIFIED --- */
                 border: none;
                 border-radius: 0;
             }
 
             .main-menu {
                 padding: 10px;
+                justify-content: flex-start; /* --- MODIFIED: Push content to top on mobile --- */
+                padding-top: 5vh; /* --- NEW: Add some top padding --- */
             }
 
             .game-title {
@@ -1010,6 +1037,8 @@
             .character-selection {
                 padding: 15px;
                 margin-bottom: 15px;
+                max-height: unset; /* --- MODIFIED: Allow character selection to take necessary height --- */
+                overflow-y: visible; /* --- MODIFIED: Let content flow naturally --- */
             }
 
             .class-selection {
@@ -1023,14 +1052,14 @@
                 padding: 15px;
             }
 
-            /* Removido: display: none para .abilities-container */
             .abilities-container {
-                display: flex; /* Garante que os botões desktop apareçam no mobile */
-                bottom: 10px; /* Ajusta a posição para não colidir com o D-pad */
+                display: flex; 
+                bottom: 10px; 
                 right: 10px;
                 gap: 8px;
+                flex-wrap: wrap; /* --- NEW: Allow abilities to wrap if many --- */
+                justify-content: flex-end; /* --- NEW: Align to right --- */
             }
-
 
             .mobile-controls {
                 display: grid;
@@ -1235,7 +1264,7 @@
                 <div class="boss-health-fill" id="boss-health-fill"></div>
             </div>
             
-            <!-- Habilidades (Desktop) -->
+            <!-- Habilidades (Desktop & Mobile) -->
             <div class="abilities-container" id="abilities-container">
                 <div class="ability-btn" id="ability-u" data-key="U">
                     U
@@ -1281,7 +1310,7 @@
             <!-- Botão de Pausa -->
             <div class="pause-btn" id="pause-btn">⏸️</div>
             
-            <!-- Controles Mobile (D-pad e Ações) -->
+            <!-- Controles Mobile (D-pad) -->
             <div class="mobile-controls" id="mobile-controls">
                 <div class="mobile-dpad">
                     <div class="dpad-btn dpad-up" id="mobile-up">▲</div>
@@ -1347,6 +1376,9 @@
                 <div class="checkpoint-description">Seu progresso foi salvo automaticamente</div>
             </div>
         </div>
+        <!-- --- NEW: Debug Animation Info Display --- -->
+        <div id="debug-animation-info" class="debug-animation-info" style="display: none;"></div>
+        <!-- --- END NEW --- -->
     </div>
 
     <script>
@@ -1383,34 +1415,34 @@
             DELTA_TIME_CAP: 32,
 
             // Habilidades do Escolhido
-            UMBRA_FURY_DURATION: 7000,
-            UMBRA_FURY_DAMAGE_BOOST: 1.5,
-            UMBRA_FURY_SPEED_BOOST: 1.3,
-            UMBRA_FURY_DAMAGE_REDUCTION: 0.5,
+            UMBRA_FURY_DURATION: 7000, /* Mantido para a classe Chosen One */
+            UMBRA_FURY_DAMAGE_BOOST: 1.5, /* Mantido para a classe Chosen One */
+            UMBRA_FURY_SPEED_BOOST: 1.3, /* Mantido para a classe Chosen One */
+            UMBRA_FURY_DAMAGE_REDUCTION: 0.5, /* Mantido para a classe Chosen One */
 
-            // CAMINHOS DE RECURSOS (GIFs e Imagens)
+            // --- MODIFIED: CAMINHOS DE RECURSOS (AGORA COM SUPORTE A ANIMAÇÕES BASEADAS EM QUADROS) ---
             ASSET_PATHS: {
-                player_idle: 'assets/personagens/Escolhido/gifs/escolhido-parado01.gif',
-                player_walk: 'assets/personagens/Escolhido/gifs/escolhido-andando01.gif', // Placeholder
-                player_jump: 'assets/personagens/Escolhido/gifs/escolhido-salto01.gif',
-                player_crouch: 'assets/personagens/Escolhido/gifs/escolhido-abaixar.gif', // Placeholder
-                player_attack_u: 'assets/personagens/Escolhido/gifs/escolhido-ataque-u.gif', // Placeholder
-                player_attack_i: 'assets/personagens/Escolhido/gifs/escolhido-ataque-i.gif', // Placeholder
-                player_attack_o: 'assets/personagens/Escolhido/gifs/escolhido-ataque-o.gif', // Placeholder
-                player_ultimate: 'assets/personagens/Escolhido/gifs/escolhido-ultimate.gif', // Placeholder
-                player_damage: 'assets/personagens/Escolhido/gifs/escolhido-dano.gif', // Placeholder para dano
+                // Para player_idle, você precisaria de player_idle_00.png, player_idle_01.png, etc.
+                player_idle_frames: Array.from({length: 6}, (_, i) => `assets/personagens/Escolhido/escolhido-parado-${String(i).padStart(2, '0')}.png`), // NEW: Array of frame paths
+                player_walk_frames: Array.from({length: 8}, (_, i) => `assets/personagens/Escolhido/walk/escolhido-andando-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for walk frames
+                player_jump_frames: Array.from({length: 1}, (_, i) => `assets/personagens/Escolhido/jump/escolhido-salto-00.png`), // NEW: Placeholder for jump frames
+                player_crouch_frames: Array.from({length: 1}, (_, i) => `assets/personagens/Escolhido/crouch/escolhido-abaixar-00.png`), // NEW: Placeholder for crouch frames
+                player_attack_u_frames: Array.from({length: 3}, (_, i) => `assets/personagens/Escolhido/attack_u/escolhido-ataque-u-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for attack u frames
+                player_attack_i_frames: Array.from({length: 3}, (_, i) => `assets/personagens/Escolhido/attack_i/escolhido-ataque-i-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for attack i frames
+                player_attack_o_frames: Array.from({length: 3}, (_, i) => `assets/personagens/Escolhido/attack_o/escolhido-ataque-o-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for attack o frames
+                player_ultimate_frames: Array.from({length: 4}, (_, i) => `assets/personagens/Escolhido/ultimate/escolhido-ultimate-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for ultimate frames
+                player_damage_frames: Array.from({length: 1}, (_, i) => `assets/personagens/Escolhido/damage/escolhido-dano-00.png`), // NEW: Placeholder for damage frames
 
-                sentinel_sprite: 'assets/inimigos/sentinela.gif', // Placeholder
-                tarek_sprite: 'assets/bosses/tarek.gif', // Placeholder
-                tarek_background: 'assets/fundos/gelo/muralhas-gelo.png', // NOVO: Fundo para luta com Tarek
+                sentinel_sprite_frames: Array.from({length: 2}, (_, i) => `assets/inimigos/sentinela-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for sentinel frames
+                tarek_sprite_frames: Array.from({length: 2}, (_, i) => `assets/bosses/tarek-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for tarek frames
+                tarek_background: 'assets/fundos/gelo/muralhas-gelo.png', 
 
-                projectile_i: 'assets/sprites/effects/projectile_i.gif', // Placeholder
-                explosion_o: 'assets/sprites/effects/explosion_o.gif', // Placeholder
-                tarek_ice_orb: 'assets/sprites/effects/tarek_ice_orb.gif', // Placeholder
-                tarek_prison: 'assets/sprites/effects/tarek_prison.gif', // Placeholder
+                projectile_i: 'assets/sprites/effects/projectile_i.gif', // Original GIFs can still be used for static images or single-frame effects
+                explosion_o: 'assets/sprites/effects/explosion_o.gif', 
+                tarek_ice_orb: 'assets/sprites/effects/tarek_ice_orb.gif', 
+                tarek_prison: 'assets/sprites/effects/tarek_prison.gif',
 
-                // Cutscene
-                cutscene_gif_1: 'assets/animacoes/AislinsVsFayra.gif', // GIF fornecido
+                cutscene_gif_1: 'assets/animacoes/AislinsVsFayra.gif', 
 
                 music_menu: 'assets/audio/music/menu.mp3',
                 music_platforming: 'assets/audio/music/platforming.mp3',
@@ -1426,14 +1458,15 @@
                 sfx_boss_roar: 'assets/audio/sfx/boss_roar.mp3',
             },
             ASSET_LOADED: {} // Objeto para armazenar as imagens e AnimationManager carregados
+            // --- END MODIFIED ---
         };
 
         // ===== CLASSES DE ANIMAÇÃO =====
         // Classe para gerenciar animações de sprites
         class AnimationManager {
-            constructor(frames, frameDelay = 100, loop = true) {
-                // frames pode ser um array de Image objetos, ou um único Image objeto
-                this.frames = Array.isArray(frames) ? frames : [frames];
+            constructor(framesData, frameDelay = 100, loop = true) {
+                // framesData é um array de { img: Image, loaded: boolean }
+                this.frames = framesData;
                 this.frameDelay = frameDelay; // Tempo em ms para cada frame
                 this.loop = loop;
                 this.currentFrameIndex = 0;
@@ -1458,11 +1491,11 @@
                 this.isPlaying = false;
             }
 
-            // Reseta a animação para o primeiro quadro
+            // Reseta a animação para o primeiro quadro e garante que está tocando
             reset() {
                 this.currentFrameIndex = 0;
                 this.frameTimer = 0;
-                this.isPlaying = true; // Reinicia a reprodução por padrão ao resetar
+                this.isPlaying = true; 
             }
 
             // NOVO: Adiciona um método para definir se a animação deve fazer loop
@@ -1472,7 +1505,7 @@
 
             // Atualiza o estado da animação (avança o quadro)
             update(deltaTime) {
-                if (!this.isPlaying || this.frames.length <= 1) return; // Não anima se só tem um frame
+                if (!this.isPlaying || this.frames.length <= 1) return; // Não anima se só tem um frame ou está parado
 
                 this.frameTimer += deltaTime;
                 if (this.frameTimer >= this.frameDelay) {
@@ -1493,11 +1526,17 @@
                 }
             }
 
-            // Retorna o objeto Image do quadro atual
+            // Retorna o objeto { img: Image, loaded: boolean } do quadro atual
             getCurrentFrame() {
                 if (this.frames.length === 0) return null;
                 return this.frames[this.currentFrameIndex];
             }
+
+            // --- NEW: Get current frame index for debugging ---
+            getCurrentFrameIndex() {
+                return this.currentFrameIndex;
+            }
+            // --- END NEW ---
         }
 
         // ===== VARIÁVEIS GLOBAIS =====
@@ -1528,7 +1567,7 @@
             invincibilityTimer: 0,
             facing: 'right',
             currentAnimation: 'idle', // String que define a animação atual (ex: 'idle', 'walk', 'jump')
-            isUmbraFurious: false, /* Mantido para demonstração da ultimate do Escolhido */
+            isUmbraFurious: false, /* Mantido para demonstração da ultimate do Escolhido Original */
             umbraFuryTimer: 0,
             
             // Habilidades (cooldowns dinâmicos)
@@ -1586,7 +1625,6 @@
             down: false,
             left: false,
             right: false,
-            // mobile-ability controls removidos, usando os botões desktop
         };
 
         // Classes de Personagem
@@ -1720,7 +1758,8 @@
                 }
             } else {
                 orientationWarning.style.display = 'none';
-                if (gameState.gameStarted && gameState.gamePaused && !gameState.inMenu && !gameState.inCutscene) {
+                // Only unpause if game was previously paused by orientation change
+                if (gameState.gameStarted && gameState.gamePaused && !gameState.inMenu && !gameState.inCutscene && !gameState.inDialog) {
                     togglePause();
                 }
             }
@@ -1791,9 +1830,9 @@
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
             
+            initGlobalColors(); // Cores precisam estar disponíveis antes do carregamento de assets para o placeholder
             await loadAllAssets(); // NOVO: Carrega todos os assets (imagens e sons)
             
-            initGlobalColors();
             initChampionClasses();
             initEventListeners();
             initMobileControls();
@@ -1808,88 +1847,86 @@
             gameLoop(0);
         }
 
-        // Nova função para carregar todos os assets (imagens e sons)
+        // --- MODIFIED: Nova função para carregar todos os assets (imagens e sons) ---
         async function loadAllAssets() {
             const assetPromises = [];
+            
+            // Calculate total assets for loading progress (if you want a loading bar)
+            TOTAL_ASSETS_TO_LOAD = 0;
             for (const [key, path] of Object.entries(CONFIG.ASSET_PATHS)) {
-                if (path.endsWith('.gif') || path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+                if (Array.isArray(path)) { // For frame arrays
+                    TOTAL_ASSETS_TO_LOAD += path.length;
+                } else { // For single files
                     TOTAL_ASSETS_TO_LOAD++;
+                }
+            }
+
+            for (const [key, path] of Object.entries(CONFIG.ASSET_PATHS)) {
+                if (Array.isArray(path)) { // Handle arrays of frame paths
+                    CONFIG.ASSET_LOADED[key] = []; // Initialize as array for frames
+                    for (const framePath of path) {
+                        assetPromises.push(new Promise((resolve, reject) => {
+                            const img = new Image();
+                            img.src = framePath;
+                            img.onload = () => {
+                                CONFIG.ASSET_LOADED[key].push({ img: img, loaded: true }); 
+                                ASSETS_LOADED_COUNT++;
+                                // console.log(`Imagem carregada: ${framePath} (${ASSETS_LOADED_COUNT}/${TOTAL_ASSETS_TO_LOAD})`);
+                                resolve();
+                            };
+                            img.onerror = (e) => {
+                                console.error(`Erro ao carregar imagem '${key}' de '${framePath}':`, e);
+                                const placeholder = new Image();
+                                placeholder.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; // 1x1 transparent
+                                CONFIG.ASSET_LOADED[key].push({ img: placeholder, loaded: false }); // Store loaded: false
+                                ASSETS_LOADED_COUNT++;
+                                resolve(); 
+                            };
+                        }));
+                    }
+                } else if (path.endsWith('.gif') || path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg')) {
                     assetPromises.push(new Promise((resolve, reject) => {
                         const img = new Image();
                         img.src = path;
                         img.onload = () => {
-                            // AVISO MUITO IMPORTANTE SOBRE ANIMAÇÕES (LEIA COM ATENÇÃO):
-                            // O elemento HTML Canvas (onde o jogo é desenhado) NÃO é capaz de reproduzir GIFs animados.
-                            // Quando você desenha um arquivo .gif no Canvas, ele SEMPRE usa apenas o PRIMEIRO QUADRO (frame) desse GIF.
-                            // O sistema de AnimationManager implementado AQUI está PRONTO para animações,
-                            // mas ele precisa de MÚLTIPLOS ARQUIVOS DE IMAGEM ESTÁTICOS (ex: PNGs numerados) para cada frame da animação,
-                            // e NÃO um único arquivo .gif para a animação inteira.
-                            //
-                            // Exemplo: Para o personagem 'andar', em vez de 'escolhido-andando01.gif',
-                            // você precisaria de 'escolhido-andando-01.png', 'escolhido-andando-02.png', etc.
-                            // E ENTÃO, você carregaria ESSES MÚLTIPLOS PNGs na CONFIG.ASSET_PATHS e os passaria como um ARRAY para o AnimationManager.
-                            //
-                            // O CÓDIGO ABAIXO JÁ GEREA A LÓGICA de TRANSITION entre as animações (parado, andando, pulando, atacando).
-                            // A razão pela qual você vê "estático" é APENAS porque os assets fornecidos são GIFs de quadro único para o Canvas.
-                            //
-                            // Para ter ANIMAÇÃO REAL no Canvas, você precisaria de assets como:
-                            // CONFIG.ASSET_PATHS = {
-                            //    player_idle_frame1: 'assets/personagens/Escolhido/idle_01.png',
-                            //    player_idle_frame2: 'assets/personagens/Escolhido/idle_02.png',
-                            //    // ...
-                            //    player_walk_frame1: 'assets/personagens/Escolhido/walk_01.png',
-                            //    player_walk_frame2: 'assets/personagens/Escolhido/walk_02.png',
-                            //    // ... e assim por diante para todas as animações
-                            // };
-                            //
-                            // E inicializar o AnimationManager assim:
-                            // playerAnimation = {
-                            //    idle: new AnimationManager([
-                            //        CONFIG.ASSET_LOADED.player_idle_frame1,
-                            //        CONFIG.ASSET_LOADED.player_idle_frame2,
-                            //    ], 150),
-                            //    // ...
-                            // };
-                            //
-                            // Sem esses assets em múltiplos frames, o comportamento atual (troca da "pose" estática) é o máximo que o Canvas permite com um único arquivo GIF.
-                            CONFIG.ASSET_LOADED[key] = img; 
+                            CONFIG.ASSET_LOADED[key] = { img: img, loaded: true }; 
                             ASSETS_LOADED_COUNT++;
-                            console.log(`Imagem carregada: ${path} (${ASSETS_LOADED_COUNT}/${TOTAL_ASSETS_TO_LOAD})`);
+                            // console.log(`Imagem carregada: ${path} (${ASSETS_LOADED_COUNT}/${TOTAL_ASSETS_TO_LOAD})`);
                             resolve();
                         };
                         img.onerror = (e) => {
                             console.error(`Erro ao carregar imagem '${key}' de '${path}':`, e);
                             const placeholder = new Image();
                             placeholder.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; // 1x1 transparent
-                            CONFIG.ASSET_LOADED[key] = placeholder;
+                            CONFIG.ASSET_LOADED[key] = { img: placeholder, loaded: false };
                             ASSETS_LOADED_COUNT++;
-                            resolve(); // Resolve mesmo com erro para não travar o carregamento
+                            resolve(); 
                         };
                     }));
                 } else if (path.endsWith('.mp3') || path.endsWith('.wav')) {
-                    TOTAL_ASSETS_TO_LOAD++;
                     assetPromises.push(loadSound(key, path));
                 }
             }
             await Promise.all(assetPromises);
             console.log("Todos os assets carregados.");
 
-            // Inicializar os AnimationManagers após carregar todos os assets
+            // Inicializar os AnimationManagers após carregar todos os assets com os arrays de frames
             playerAnimation = {
-                idle: new AnimationManager(CONFIG.ASSET_LOADED.player_idle, 150),
-                walk: new AnimationManager(CONFIG.ASSET_LOADED.player_walk, 100),
-                jump: new AnimationManager(CONFIG.ASSET_LOADED.player_jump, 100, false), // Não loop
-                crouch: new AnimationManager(CONFIG.ASSET_LOADED.player_crouch, 100),
-                attack_u: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_u, 80, false).onFinish(() => gameState.currentAnimation = 'idle'),
-                attack_i: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_i, 100, false).onFinish(() => gameState.currentAnimation = 'idle'),
-                attack_o: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_o, 120, false).onFinish(() => gameState.currentAnimation = 'idle'),
-                ultimate: new AnimationManager(CONFIG.ASSET_LOADED.player_ultimate, 100).setLoop(true), // Loop enquanto estiver furioso
-                take_damage: new AnimationManager(CONFIG.ASSET_LOADED.player_damage, 200, false).onFinish(() => gameState.currentAnimation = 'idle')
+                idle: new AnimationManager(CONFIG.ASSET_LOADED.player_idle_frames, 150),
+                walk: new AnimationManager(CONFIG.ASSET_LOADED.player_walk_frames, 100),
+                jump: new AnimationManager(CONFIG.ASSET_LOADED.player_jump_frames, 100, false), 
+                crouch: new AnimationManager(CONFIG.ASSET_LOADED.player_crouch_frames, 100),
+                attack_u: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_u_frames, 80, false).onFinish(() => gameState.currentAnimation = 'idle'),
+                attack_i: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_i_frames, 100, false).onFinish(() => gameState.currentAnimation = 'idle'),
+                attack_o: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_o_frames, 120, false).onFinish(() => gameState.currentAnimation = 'idle'),
+                ultimate: new AnimationManager(CONFIG.ASSET_LOADED.player_ultimate_frames, 100).setLoop(true), /* Mantido para Chosen One */
+                take_damage: new AnimationManager(CONFIG.ASSET_LOADED.player_damage_frames, 200, false).onFinish(() => gameState.currentAnimation = 'idle')
             };
 
-            sentinelAnimation = new AnimationManager(CONFIG.ASSET_LOADED.sentinel_sprite, 150); // Single frame default
-            tarekAnimation = new AnimationManager(CONFIG.ASSET_LOADED.tarek_sprite, 150); // Single frame default
+            sentinelAnimation = new AnimationManager(CONFIG.ASSET_LOADED.sentinel_sprite_frames, 150); 
+            tarekAnimation = new AnimationManager(CONFIG.ASSET_LOADED.tarek_sprite_frames, 150); 
         }
+        // --- END MODIFIED ---
 
         /* Nova função: Pré-calcula cores CSS para acesso mais rápido */
         function initGlobalColors() {
@@ -1929,8 +1966,6 @@
             }
             validateMenuInputs();
 
-            // Object.assign(gameState, savedData); // Isso pode sobrescrever mais do que queremos no menu
-
             // Restaurar apenas os estados relevantes para o jogo, se já estiver iniciado
             if (savedData.gameStarted && !savedData.inMenu) {
                 // Restaurar estados específicos para evitar problemas
@@ -1946,7 +1981,7 @@
                 gameState.currentPhase = savedData.currentPhase;
                 gameState.currentCheckpoint = savedData.currentCheckpoint;
                 gameState.bossDefeated = savedData.bossDefeated;
-                gameState.abilitiesMaxCooldown = savedData.abilitiesMaxCooldown;
+                Object.assign(gameState.abilitiesMaxCooldown, savedData.abilitiesMaxCooldown);
                 CONFIG.MANA_REGEN_RATE = savedData.manaRegenRate;
                 gameState.tarekDialogCompleted = savedData.tarekDialogCompleted;
 
@@ -1974,7 +2009,7 @@
                     baseMana: 140,
                     baseSpeed: 4.5,
                     baseDamage: 12,
-                    abilitiesMaxCooldown: { U: 0.6, I: 5, O: 4, P: 8 },
+                    abilitiesMaxCooldown: { U: 0.6, I: 5, O: 4, P: 15 }, // Cooldown da ultimate alterado
                     manaRegenRate: 1.8,
                     abilities: [
                         {
@@ -2049,17 +2084,36 @@
                         },
                         {
                             key: 'P',
-                            name: 'Fúria de Umbra',
-                            description: 'Canaliza a energia de Umbra para amplificar poder.',
-                            damage: (base) => base,
-                            manaCost: 50,
-                            cooldown: 8, // Cooldown reduzido para a ultimate da classe
+                            name: 'Muralha de Umbra', // NOVO: Nome da Ultimate
+                            description: 'Invoca uma muralha de energia sombria que bloqueia projéteis inimigos e causa dano ao ser atravessada por inimigos. A muralha é destruída se um inimigo a atravessar.', // NOVO: Descrição
+                            damage: (base) => base * 2.5, // NOVO: Dano da muralha
+                            manaCost: 60, // NOVO: Custo de mana
+                            cooldown: 15, // NOVO: Cooldown
                             execute: function() {
                                 playSound('sfx_ability_p');
-                                gameState.isUmbraFurious = true;
-                                gameState.umbraFuryTimer = CONFIG.UMBRA_FURY_DURATION;
-                                gameState.currentAnimation = 'ultimate'; // Ativa animação
-                                playerAnimation.ultimate.reset();
+                                // Posição da muralha (50px de largura, centralizada no X, 100px mais alta que o jogador)
+                                const wallWidth = 50;
+                                const wallHeight = CONFIG.NORMAL_HEIGHT + 100; // Muralha é mais alta que o jogador
+                                const wallX = gameState.playerPosition.x + (gameState.facing === 'right' ? 80 : -80) - (wallWidth / 2);
+                                const wallY = gameState.playerPosition.y - 100; // Começa 100px acima do player Y
+
+                                addAbilityEffect({
+                                    type: 'umbraWall',
+                                    x: wallX,
+                                    y: wallY,
+                                    width: wallWidth,
+                                    height: wallHeight,
+                                    duration: 5000, // Muralha dura 5 segundos
+                                    damage: this.damage(gameState.playerDamage),
+                                    origin: 'player',
+                                    piercing: false, // Não é um projétil, é uma barreira
+                                    hitTargets: [], // Para rastrear inimigos atingidos (embora ela se autodestrua)
+                                    protective: true, // Indica que bloqueia projéteis
+                                    lifetimeDamageInterval: 500 // Intervalo para aplicar dano a inimigos que tentam atravessar
+                                });
+                                // Remove flags da ultimate antiga se ainda existirem
+                                gameState.isUmbraFurious = false;
+                                gameState.umbraFuryTimer = 0;
                             }
                         }
                     ]
@@ -2101,13 +2155,13 @@
             const menu = document.getElementById(menuElementId);
             if (menu) {
                 // Use 'flex' or 'block' based on how the menu is styled in CSS
-                menu.style.display = menu.classList.contains('cinematic-overlay') || menu.classList.contains('pause-menu') ? 'flex' : 'block';
+                menu.style.display = menu.classList.contains('cinematic-overlay') || menu.classList.contains('pause-menu') || menu.classList.contains('dialog-container') ? 'flex' : 'block';
                 menu.style.pointerEvents = 'auto'; // Explicitly enable pointer events
                 // Special case for level-up to apply its animation
                 if (menuElementId === 'level-up') {
                     menu.style.animation = 'levelUpAnimation 0.8s forwards';
                 }
-                console.log(`Menu activated: ${menuElementId}`);
+                // console.log(`Menu activated: ${menuElementId}`);
             } else {
                 console.warn(`Attempted to activate non-existent menu: ${menuElementId}`);
             }
@@ -2122,7 +2176,7 @@
                 if (menuElementId === 'level-up') {
                     menu.style.animation = '';
                 }
-                console.log(`Menu deactivated: ${menuElementId}`);
+                // console.log(`Menu deactivated: ${menuElementId}`);
             } else {
                 console.warn(`Attempted to deactivate non-existent menu: ${menuElementId}`);
             }
@@ -2152,7 +2206,7 @@
             document.getElementById('exit-btn').addEventListener('click', exitToMenu);
             document.getElementById('skip-btn').addEventListener('click', showNextSequenceStep); // Ligado à função global de avanço de cutscene
             
-            /* Habilidades desktop */
+            /* Habilidades desktop e mobile */
             document.querySelectorAll('.ability-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const key = e.currentTarget.dataset.key;
@@ -2338,7 +2392,6 @@
 
             /* Limpa todas as entidades */
             platforms = []; enemies = []; abilityEffects = []; particles = []; damageNumbers = []; checkpoints = []; fallingSpikes = [];
-            
             /* Garante que todos os menus são explicitamente desativados */
             deactivateOverlayMenu('pause-menu');
             deactivateOverlayMenu('level-up');
@@ -2356,7 +2409,6 @@
             document.getElementById('start-game-btn').disabled = true;
 
             updateAllUI(); /* Limpa os últimos valores para forçar atualização ao carregar */
-            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             stopMusic();
@@ -2563,7 +2615,6 @@
             gameState.inCutscene = true;
             activateOverlayMenu('cinematic-overlay'); // Ativa o overlay da cutscene
             document.getElementById('skip-btn').textContent = 'Próximo'; // Garante o texto do botão
-
             // Define a sequência da intro aqui. Ela será usada pela função showNextSequenceStep.
             introSequence = [
                 {
@@ -2574,7 +2625,7 @@
                 {
                     title: "O CORAÇÃO DE GELO",
                     text: "Em Tupãry, o Coração de Gelo guarda a metade maligna de Anhangá, o espírito que traz caos.",
-                    gif: CONFIG.ASSET_LOADED.cutscene_gif_1 // Adiciona o GIF aqui
+                    gif: CONFIG.ASSET_LOADED.cutscene_gif_1.img // Usar o objeto da imagem real
                 },
                 {
                     title: "A CONVOCAÇÃO",
@@ -2589,7 +2640,7 @@
             ];
             
             currentSequenceIndex = 0; // Reinicia o índice para cada nova cutscene
-            console.log("showIntroCutscene called. Starting cutscene sequence.");
+            // console.log("showIntroCutscene called. Starting cutscene sequence.");
             showNextSequenceStep(); // Exibe o primeiro passo da cutscene
         }
         
@@ -2598,7 +2649,7 @@
             const textElement = document.getElementById('cinematic-text');
             const gifElement = document.getElementById('cutscene-gif');
 
-            console.log(`showNextSequenceStep called. Current index: ${currentSequenceIndex}`);
+            // console.log(`showNextSequenceStep called. Current index: ${currentSequenceIndex}`);
 
             if (currentSequenceIndex < introSequence.length) {
                 const sequence = introSequence[currentSequenceIndex];
@@ -2618,23 +2669,23 @@
                 if (sequence.gif) {
                     gifElement.src = sequence.gif.src;
                     gifElement.style.display = 'block';
-                    console.log(`Displaying GIF: ${sequence.gif.src}`);
+                    // console.log(`Displaying GIF: ${sequence.gif.src}`);
                 } else {
                     gifElement.style.display = 'none';
                     gifElement.src = ''; // Limpa a URL para evitar que a imagem anterior persista
-                    console.log("No GIF for this sequence step.");
+                    // console.log("No GIF for this sequence step.");
                 }
                 
                 currentSequenceIndex++;
-                console.log(`currentSequenceIndex incremented to: ${currentSequenceIndex}`);
+                // console.log(`currentSequenceIndex incremented to: ${currentSequenceIndex}`);
             } else {
-                console.log("End of introSequence. Calling endIntro().");
+                // console.log("End of introSequence. Calling endIntro().");
                 endIntro(); // Termina a cutscene se todos os passos foram mostrados
             }
         }
 
         function endIntro() {
-            console.log("endIntro called. Hiding cinematic overlay and loading phase 1.");
+            // console.log("endIntro called. Hiding cinematic overlay and loading phase 1.");
             deactivateOverlayMenu('cinematic-overlay'); // Desativa o overlay da cutscene
             gameState.inCutscene = false;
             loadPhase(1); // Inicia a fase 1 do jogo
@@ -2643,7 +2694,7 @@
         // A função skipCutscene foi mantida mas não será mais chamada pelo botão "Próximo"
         // Ela pode ser usada por outras lógicas se você precisar de um "pular tudo" em algum momento
         function skipCutscene() {
-            console.log("skipCutscene called - this should only be called if a dedicated skip button existed.");
+            // console.log("skipCutscene called - this should only be called if a dedicated skip button existed.");
             deactivateOverlayMenu('cinematic-overlay'); // Desativa o overlay da cutscene
             gameState.inCutscene = false;
             
@@ -2733,7 +2784,6 @@
                 playerMaxHealth: gameState.playerMaxHealth,
                 playerMaxMana: gameState.playerMaxMana,
                 playerDamage: gameState.playerDamage,
-                playerSpeed: gameState.playerSpeed,
                 abilitiesMaxCooldown: gameState.abilitiesMaxCooldown,
                 manaRegenRate: CONFIG.MANA_REGEN_RATE,
                 tarekDialogCompleted: gameState.tarekDialogCompleted // NOVO: Salvar estado do diálogo Tarek
@@ -2759,7 +2809,6 @@
                     gameState.playerNextLevelXP = data.playerNextLevelXP; // NOVO: Carregar XP para próximo nível
                     gameState.playerClass = data.playerClass;
                     gameState.tarekDialogCompleted = data.tarekDialogCompleted; // NOVO: Carregar estado do diálogo Tarek
-
                     setupCharacter(data.playerClass, data.playerMaxHealth, data.playerMaxMana, data.playerDamage, data.playerSpeed, data.abilitiesMaxCooldown, data.manaRegenRate);
                     
                     loadPhase(data.phase);
@@ -2855,7 +2904,7 @@
             if (keys['d'] || keys['arrowright'] || mobileControls.right) moveX = 1;
             
             let currentSpeed = gameState.playerSpeed;
-            if (gameState.isUmbraFurious && currentChampion.id === 'chosenOne') {
+            if (currentChampion.id === 'chosenOne' && gameState.isUmbraFurious) { /* Lógica mantida para Escolhido Original */
                 currentSpeed *= CONFIG.UMBRA_FURY_SPEED_BOOST;
                 gameState.umbraFuryTimer -= deltaTime;
                 if (gameState.umbraFuryTimer <= 0) {
@@ -2892,9 +2941,11 @@
             
             gameState.playerVelocity.y += CONFIG.GRAVITY;
             
-            if (gameState.playerVelocity.y > 15) {
+            // --- MODIFIED: Limit falling speed ---
+            if (gameState.playerVelocity.y > 15) { 
                 gameState.playerVelocity.y = 15;
             }
+            // --- END MODIFIED ---
             
             gameState.playerPosition.x += gameState.playerVelocity.x;
             gameState.playerPosition.y += gameState.playerVelocity.y;
@@ -2954,12 +3005,16 @@
             return true;
         }
 
+        // --- MODIFIED: Refined Platform Collision Detection ---
         function checkPlatformCollisions() {
             gameState.isGrounded = false;
             const playerWidth = CONFIG.PLAYER_WIDTH;
             const playerHeight = gameState.isCrouching ? CONFIG.CROUCH_HEIGHT : CONFIG.NORMAL_HEIGHT;
             
+            let onPlatform = false;
+
             for (const platform of platforms) {
+                // Check for collision
                 if (gameState.playerPosition.x < platform.x + platform.width &&
                     gameState.playerPosition.x + playerWidth > platform.x &&
                     gameState.playerPosition.y < platform.y + platform.height &&
@@ -2967,39 +3022,47 @@
                     
                     if (platform.type === 'spike') {
                         takeDamage(10);
-                        continue;
+                        continue; // Continue to check for other collisions after taking spike damage
                     }
 
-                    if (gameState.playerVelocity.y > 0 && 
+                    // Collision from top (landing)
+                    if (gameState.playerVelocity.y >= 0 && 
                         gameState.playerPosition.y + playerHeight - gameState.playerVelocity.y <= platform.y) {
+                        
                         gameState.playerPosition.y = platform.y - playerHeight;
                         gameState.playerVelocity.y = 0;
-                        gameState.isGrounded = true;
+                        onPlatform = true; // Mark that player is on a platform
                         
-                        if (gameState.playerVelocity.y > 8) {
-                            addParticles('landDust', gameState.playerPosition.x + CONFIG.PLAYER_WIDTH / 2, gameState.playerPosition.y + playerHeight, 12);
+                        if (gameState.playerVelocity.y > 8) { // Only add dust if falling speed was significant
+                            addParticles('landDust', gameState.playerPosition.x + CONFIG.PLAYER_WIDTH / 2, gameState.playerPosition.y + playerHeight, 8);
                             screenShake(3, 150);
                         }
                         
                         if (platform.slippery && Math.abs(gameState.playerVelocity.x) > 0) {
-                            gameState.playerVelocity.x *= 1.2;
+                            gameState.playerVelocity.x *= 1.2; // Increase slide on slippery platforms
                         }
                     }
-                    else if (gameState.playerVelocity.y < 0) {
+                    // Collision from bottom (hitting head)
+                    else if (gameState.playerVelocity.y < 0 && 
+                            gameState.playerPosition.y - gameState.playerVelocity.y >= platform.y + platform.height) {
                         gameState.playerPosition.y = platform.y + platform.height;
                         gameState.playerVelocity.y = 0;
                     }
+                    // Collision from sides (horizontal)
                     else if (gameState.playerVelocity.x !== 0) {
-                        if (gameState.playerPosition.x < platform.x) {
+                        // Determine which side was hit and adjust position and velocity
+                        if (gameState.playerPosition.x + playerWidth - gameState.playerVelocity.x <= platform.x) { // Hit from left
                             gameState.playerPosition.x = platform.x - playerWidth;
-                        } else {
+                        } else if (gameState.playerPosition.x - gameState.playerVelocity.x >= platform.x + platform.width) { // Hit from right
                             gameState.playerPosition.x = platform.x + platform.width;
                         }
-                        gameState.playerVelocity.x = 0;
+                        gameState.playerVelocity.x = 0; // Stop horizontal movement
                     }
                 }
             }
+            gameState.isGrounded = onPlatform; // Update isGrounded based on whether any platform was hit from above
         }
+        // --- END MODIFIED ---
 
         function checkEnemyCollisions() {
             if (gameState.isInvincible) return;
@@ -3100,7 +3163,7 @@
                                 }
                             }
                             
-                            if (!effect.piercing && !effect.areaEffect) {
+                            if (!effect.piercing && !effect.areaEffect && effect.type !== 'umbraWall') { // NEW: Umbra Wall doesn't disappear on enemy hit, only if passed through
                                 effect.active = false;
                             }
                         }
@@ -3153,10 +3216,15 @@
                 // Manter animação de ataque se estiver em curso.
                 // gameState.currentAnimation já foi setado na função useAbility().
                 // Não sobrescrever se a animação de ataque ainda está rodando.
-            } else if (gameState.isUmbraFurious) {
+            } else if (currentChampion.id === 'chosenOne' && gameState.isUmbraFurious) { /* Lógica mantida para Chosen One */
                 if (gameState.currentAnimation !== 'ultimate') {
                     gameState.currentAnimation = 'ultimate';
                     playerAnimation.ultimate.reset();
+                }
+            } else if (gameState.isCrouching) {
+                if (gameState.currentAnimation !== 'crouch') {
+                    gameState.currentAnimation = 'crouch';
+                    playerAnimation.crouch.reset();
                 }
             } else if (!gameState.isGrounded) {
                 if (gameState.currentAnimation !== 'jump') {
@@ -3328,7 +3396,7 @@
                             }
                         }
                         if (effect.trapping && effect.active) {
-                            const playerInTrap = 
+                            const playerInTrap =
                                 gameState.playerPosition.x > effect.x - 20 &&
                                 gameState.playerPosition.x < effect.x + effect.width + 20 &&
                                 gameState.playerPosition.y > effect.y - 10 &&
@@ -3396,6 +3464,60 @@
                                     proj.active = false; /* Destrói o projétil inimigo */
                                 }
                             });
+                        }
+                        break;
+                    case 'umbraWall': // NEW: Lógica para a Muralha de Umbra
+                        // Bloquear projéteis inimigos
+                        for (let k = abilityEffects.length - 1; k >= 0; k--) {
+                            const otherEffect = abilityEffects[k];
+                            // Verifica se é um projétil inimigo e colide com a muralha
+                            if (otherEffect.origin === 'enemy' && (otherEffect.type.includes('Shot') || otherEffect.type.includes('Orb') || otherEffect.type.includes('Projectile')) && otherEffect.active !== false) {
+                                if (otherEffect.x < effect.x + effect.width &&
+                                    otherEffect.x + otherEffect.width > effect.x &&
+                                    otherEffect.y < effect.y + effect.height &&
+                                    otherEffect.y + otherEffect.height > effect.y) {
+                                    otherEffect.active = false; // Destrói o projétil
+                                    addParticles('hitSpark', otherEffect.x, otherEffect.y, 5, COLOR_ACCENT_ICE); // Feedback visual
+                                }
+                            }
+                        }
+
+                        // Causa dano e é destruída se um inimigo passar por ela
+                        if (effect.lastDamageTime === undefined) effect.lastDamageTime = Date.now();
+                        if (Date.now() - effect.lastDamageTime >= effect.lifetimeDamageInterval) {
+                            enemies.forEach(enemy => {
+                                const enemyWidth = enemy.type === 'boss' ? 70 : 50;
+                                const enemyHeight = enemy.type === 'boss' ? 70 : 50;
+                                // Checa colisão da muralha com o inimigo
+                                if (enemy.position.x < effect.x + effect.width &&
+                                    enemy.position.x + enemyWidth > effect.x &&
+                                    enemy.position.y < effect.y + effect.height &&
+                                    enemy.position.y + enemyHeight > effect.y) {
+                                    
+                                    enemy.health -= effect.damage; // Aplica dano ao inimigo
+                                    playSound('sfx_damage_enemy');
+                                    showDamageNumber(effect.damage, enemy.position.x + enemyWidth / 2, enemy.position.y);
+                                    addParticles('hitSpark', enemy.position.x + enemyWidth / 2, enemy.position.y + enemyHeight / 2, 10);
+                                    screenShake(3, 100);
+
+                                    effect.active = false; // Destrói a muralha
+                                    addParticles('explosion', effect.x + effect.width / 2, effect.y + effect.height / 2, 20, COLOR_UMBRA); // Animação de destruição
+                                    screenShake(5, 200);
+
+                                    if (enemy.health <= 0) {
+                                        gainXP(enemy.xpValue);
+                                        // Remove o inimigo do array
+                                        const enemyIndex = enemies.indexOf(enemy);
+                                        if (enemyIndex > -1) {
+                                            enemies.splice(enemyIndex, 1);
+                                        }
+                                        if (enemy.type === 'boss') {
+                                            defeatBoss(enemy);
+                                        }
+                                    }
+                                }
+                            });
+                            effect.lastDamageTime = Date.now();
                         }
                         break;
                 }
@@ -3512,7 +3634,7 @@
                 const spike = fallingSpikes[i];
                 
                 if (!spike.active && 
-                    gameState.playerPosition.x > spike.x - 100 && 
+                    gameState.playerPosition.x > spike.x - 100 &&
                     gameState.playerPosition.x < spike.x + spike.width + 100 &&
                     gameState.playerPosition.y > spike.y) {
                     spike.active = true;
@@ -3717,7 +3839,7 @@
             if (gameState.isInvincible) return;
             
             let finalDamage = amount;
-            if (currentChampion.id === 'chosenOne' && gameState.isUmbraFurious) {
+            if (currentChampion.id === 'chosenOne' && gameState.isUmbraFurious) { /* Lógica mantida para Chosen One */
                 finalDamage *= CONFIG.UMBRA_FURY_DAMAGE_REDUCTION;
             }
 
@@ -4164,9 +4286,9 @@
         function renderBackground() {
             // NOVO: Renderiza um plano de fundo estático se especificado pela fase
             if (backgroundLayers.length > 0 && backgroundLayers[0].type === 'image') {
-                const imgAsset = CONFIG.ASSET_LOADED[backgroundLayers[0].assetKey];
-                if (imgAsset) {
-                    ctx.drawImage(imgAsset, 0, 0, canvas.width, canvas.height);
+                const imgAssetData = CONFIG.ASSET_LOADED[backgroundLayers[0].assetKey];
+                if (imgAssetData && imgAssetData.loaded) { // Verifica se a imagem foi carregada
+                    ctx.drawImage(imgAssetData.img, 0, 0, canvas.width, canvas.height);
                     return; // Sai da função, não renderiza as camadas procedurais
                 }
             }
@@ -4290,9 +4412,12 @@
             }
 
             // NOVO: Usa o AnimationManager para obter o quadro atual
-            let playerImage = playerAnimation[gameState.currentAnimation].getCurrentFrame();
+            let currentFrameData = playerAnimation[gameState.currentAnimation].getCurrentFrame();
+            let playerImage = currentFrameData ? currentFrameData.img : null;
+            let imageLoaded = currentFrameData ? currentFrameData.loaded : false;
 
-            if (playerImage) {
+
+            if (playerImage && imageLoaded) {
                 ctx.save(); // Salva o estado atual do canvas
                 if (gameState.facing === 'left') {
                     ctx.translate(x + width, y);
@@ -4302,8 +4427,19 @@
                     ctx.drawImage(playerImage, x, y, width, height); // Desenha a imagem normalmente
                 }
                 ctx.restore(); // Restaura o estado anterior do canvas
+
+                 // --- NEW: Debug Animation Info (if enabled) ---
+                if (window.DEBUG_MODE && playerAnimation[gameState.currentAnimation] && playerAnimation[gameState.currentAnimation].frames.length > 1) {
+                    const debugInfoDiv = document.getElementById('debug-animation-info');
+                    debugInfoDiv.style.display = 'block';
+                    debugInfoDiv.textContent = `Anim: ${gameState.currentAnimation} [${playerAnimation[gameState.currentAnimation].getCurrentFrameIndex()}/${playerAnimation[gameState.currentAnimation].frames.length - 1}]`;
+                } else if (window.DEBUG_MODE) {
+                    document.getElementById('debug-animation-info').style.display = 'none';
+                }
+                // --- END NEW ---
+
             } else {
-                // Fallback: Desenha um retângulo colorido se o GIF não carregar
+                // Fallback: Desenha um retângulo colorido se o GIF não carregar ou se o frame for um placeholder
                 let playerColor;
                 if (currentChampion.id === 'chosenOne' && gameState.isUmbraFurious) {
                     playerColor = COLOR_ACCENT_GOLD;
@@ -4374,8 +4510,11 @@
 
         function renderSentinel(enemy, x, y, width, height) {
             // NOVO: Usa o AnimationManager para o sentinel
-            const sentinelImage = sentinelAnimation.getCurrentFrame();
-            if (sentinelImage) {
+            const sentinelFrameData = sentinelAnimation.getCurrentFrame();
+            const sentinelImage = sentinelFrameData ? sentinelFrameData.img : null;
+            const imageLoaded = sentinelFrameData ? sentinelFrameData.loaded : false;
+
+            if (sentinelImage && imageLoaded) {
                 ctx.drawImage(sentinelImage, x, y, width, height);
             } else {
                 ctx.fillStyle = '#78909c';
@@ -4402,8 +4541,11 @@
             }
             
             // NOVO: Usa o AnimationManager para o Tarek
-            const bossImage = tarekAnimation.getCurrentFrame();
-            if (bossImage) {
+            const bossFrameData = tarekAnimation.getCurrentFrame();
+            const bossImage = bossFrameData ? bossFrameData.img : null;
+            const imageLoaded = bossFrameData ? bossFrameData.loaded : false;
+
+            if (bossImage && imageLoaded) {
                 ctx.save();
                 if (enemy.facing === 'left') {
                     ctx.translate(bossX + bossWidth, bossY);
@@ -4474,6 +4616,18 @@
                         break;
                     case 'defensivePrison':
                         renderDefensivePrison(effect, x, y);
+                        break;
+                    case 'umbraWall': // NEW: Renderização da Muralha de Umbra
+                        ctx.fillStyle = 'rgba(123, 0, 153, 0.6)'; // Cor de Umbra com transparência
+                        ctx.fillRect(x, y, effect.width, effect.height);
+
+                        // Adicionar uma borda brilhante
+                        ctx.strokeStyle = COLOR_UMBRA; // Cor de Umbra sólida
+                        ctx.lineWidth = 3;
+                        ctx.shadowBlur = 15; // Efeito de brilho
+                        ctx.shadowColor = COLOR_UMBRA;
+                        ctx.strokeRect(x, y, effect.width, effect.height);
+                        ctx.shadowBlur = 0; // Resetar sombra para não afetar outros elementos
                         break;
                 }
             }
@@ -4641,11 +4795,11 @@
             const currentHealth = Math.round(gameState.playerHealth);
             const currentMaxHealth = gameState.playerMaxHealth;
 
-            if (currentHealth !== lastPlayerHealth || currentMaxHealth !== healthFill.dataset.maxHealth) {
+            if (currentHealth !== lastPlayerHealth || currentMaxHealth !== parseFloat(healthFill.dataset.maxHealth)) {
                 const percentage = (currentHealth / currentMaxHealth) * 100;
                 healthFill.style.width = percentage + '%';
                 healthText.textContent = `${currentHealth}/${currentMaxHealth}`;
-                healthFill.dataset.maxHealth = currentMaxHealth; /* Armazena o maxHealth no dataset para comparação futura */
+                healthFill.dataset.maxHealth = currentMaxHealth.toString(); /* Armazena o maxHealth no dataset para comparação futura */
                 lastPlayerHealth = currentHealth;
             }
         }
@@ -4657,11 +4811,11 @@
             const currentMana = Math.round(gameState.playerMana);
             const currentMaxMana = gameState.playerMaxMana;
 
-            if (currentMana !== lastPlayerMana || currentMaxMana !== manaFill.dataset.maxMana) {
+            if (currentMana !== lastPlayerMana || currentMaxMana !== parseFloat(manaFill.dataset.maxMana)) {
                 const percentage = (currentMana / currentMaxMana) * 100;
                 manaFill.style.width = percentage + '%';
                 manaText.textContent = `${currentMana}/${currentMaxMana}`;
-                manaFill.dataset.maxMana = currentMaxMana;
+                manaFill.dataset.maxMana = currentMaxMana.toString();
                 lastPlayerMana = currentMana;
             }
         }
@@ -4673,11 +4827,11 @@
             const currentXP = gameState.playerXP;
             const currentNextLevelXP = gameState.playerNextLevelXP;
 
-            if (currentXP !== lastPlayerXP || currentNextLevelXP !== xpFill.dataset.nextLevelXP) {
+            if (currentXP !== lastPlayerXP || currentNextLevelXP !== parseFloat(xpFill.dataset.nextLevelXP)) {
                 const percentage = (currentXP / currentNextLevelXP) * 100;
                 xpFill.style.width = percentage + '%';
                 xpText.textContent = `${currentXP}/${currentNextLevelXP}`;
-                xpFill.dataset.nextLevelXP = currentNextLevelXP;
+                xpFill.dataset.nextLevelXP = currentNextLevelXP.toString();
                 lastPlayerXP = currentXP;
             }
         }
@@ -4728,7 +4882,7 @@
             
             setTimeout(() => {
                 // Garante que todos os menus possíveis são fechados antes de mostrar o diálogo de game over
-                deactivateOverlayMenu('pause-menu'); 
+                deactivateOverlayMenu('pause-menu');
                 deactivateOverlayMenu('level-up');
                 deactivateOverlayMenu('cinematic-overlay');
                 // showDialog já ativa dialog-container com pointer-events auto
