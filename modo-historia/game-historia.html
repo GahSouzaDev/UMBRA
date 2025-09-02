@@ -61,8 +61,8 @@
             width: 100%;
             height: 100%;
             max-width: 1600px;
-            max-height: 770px;
-            overflow: hidden;
+            max-height: 770px; /* Mantém para desktop */
+            overflow: hidden; /* Default para desktop */
             border: 3px solid var(--accent-gold);
             border-radius: 8px;
             box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
@@ -133,6 +133,8 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            overflow-y: auto; /* Permite scroll no menu */
+            -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
         }
 
         .game-title {
@@ -271,6 +273,7 @@
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
             margin-top: 20px;
+            margin-bottom: 20px; /* Adiciona margem inferior para mobile */
         }
 
         .start-game-btn:hover {
@@ -1017,12 +1020,17 @@
                 max-height: none;
                 border: none;
                 border-radius: 0;
+                overflow: auto; /* Permite scroll no mobile */
+                -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
             }
 
             .main-menu {
-                padding: 10px;
-                justify-content: flex-start;
-                padding-top: 5vh;
+                position: relative; /* Muda para relative para permitir scroll */
+                min-height: 100vh; /* Garante que ocupe pelo menos a altura da tela */
+                height: auto; /* Altura automática baseada no conteúdo */
+                padding: 20px 10px; /* Reduz padding lateral */
+                justify-content: flex-start; /* Alinha conteúdo ao topo */
+                overflow: visible; /* Permite que o conteúdo transborde */
             }
 
             .game-title {
@@ -1037,8 +1045,8 @@
             .character-selection {
                 padding: 15px;
                 margin-bottom: 15px;
-                max-height: unset;
-                overflow-y: visible;
+                max-height: none; /* Remove limite de altura */
+                overflow-y: visible; /* Permite scrolling natural */
             }
 
             .class-selection {
@@ -1165,6 +1173,23 @@
                 width: 45px;
                 height: 45px;
                 font-size: 14px;
+            }
+            
+            /* Ajustes específicos para landscape no menu inicial */
+            .main-menu {
+                padding: 5px;
+                justify-content: flex-start;
+            }
+            
+            .character-selection {
+                max-height: 80vh; /* Limite menor para landscape */
+                overflow-y: auto; /* Scroll se necessário */
+            }
+            
+            .start-game-btn {
+                margin: 10px 0;
+                position: relative;
+                z-index: 100; /* Garante que fique visível */
             }
         }
     </style>
