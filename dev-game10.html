@@ -23,8 +23,8 @@
             --xp-color: var(--accent-gold);
             --shadow-dark: rgba(0, 0, 0, 0.8);
             --spike-color: #666666;
-            --umbra-color: #7b0099; /* Nova cor para Atirador(a) de Umbra */
-            --warrior-color: #66bb6a; /* Mantido por compatibilidade, mas a classe será removida */
+            --umbra-color: #7b0099;
+            --warrior-color: #66bb6a;
         }
 
         /* ===== RESET E BASE ===== */
@@ -42,7 +42,7 @@
         }
 
         body {
-            background: var(--primary-dark); /* Fundo totalmente preto */
+            background: var(--primary-dark);
             color: var(--text-light);
             overflow: hidden;
             height: 100vh;
@@ -61,9 +61,7 @@
             width: 100%;
             height: 100%;
             max-width: 1600px;
-            /* --- MODIFIED: Removed fixed max-height for better mobile scaling --- */
-            max-height: 770px; /* Keep for desktop aspect ratio */
-            /* --- END MODIFIED --- */
+            max-height: 770px;
             overflow: hidden;
             border: 3px solid var(--accent-gold);
             border-radius: 8px;
@@ -132,7 +130,7 @@
             z-index: 50;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* --- MODIFIED: Adjusted for better vertical alignment on mobile --- */
+            justify-content: center;
             align-items: center;
             padding: 20px;
         }
@@ -163,10 +161,8 @@
             margin-bottom: 30px;
             width: 100%;
             max-width: 700px;
-            /* --- MODIFIED: Ensure content fits and scrolls if necessary --- */
             overflow-y: auto;
-            max-height: 70vh; /* Allow scrolling for content if it gets too tall */
-            /* --- END MODIFIED --- */
+            max-height: 70vh;
         }
 
         .character-selection h3 {
@@ -234,7 +230,7 @@
         }
 
         .class-option.selected {
-            background: linear-gradient(45deg, rgba(123, 0, 153, 0.3), rgba(212, 175, 55, 0.3)); /* Umbra color highlight */
+            background: linear-gradient(45deg, rgba(123, 0, 153, 0.3), rgba(212, 175, 55, 0.3));
             border-color: var(--umbra-color);
             box-shadow: 0 0 20px rgba(123, 0, 153, 0.6);
             transform: scale(1.02);
@@ -274,9 +270,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-            /* --- MODIFIED: Ensure button is always visible below content --- */
-            margin-top: 20px; 
-            /* --- END MODIFIED --- */
+            margin-top: 20px;
         }
 
         .start-game-btn:hover {
@@ -299,7 +293,7 @@
             width: 100%;
             height: 100%;
             z-index: 2;
-            pointer-events: none; /* Allows clicks to pass through by default */
+            pointer-events: none;
         }
 
         /* ===== BARRAS DE STATUS ===== */
@@ -310,6 +304,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            z-index: 15; /* Acima do jogo, abaixo dos botões */
         }
 
         .status-bar {
@@ -396,6 +391,7 @@
             font-size: 14px;
             text-align: right;
             min-width: 150px;
+            z-index: 15; /* Acima do jogo, abaixo dos botões */
         }
 
         .stat-line {
@@ -425,7 +421,8 @@
             right: 15px;
             display: flex;
             gap: 12px;
-            pointer-events: auto; /* --- MODIFIED: Ensure buttons are always clickable --- */
+            pointer-events: auto;
+            z-index: 20; /* Acima da UI básica, abaixo de diálogos e cutscenes */
         }
 
         .ability-btn {
@@ -444,6 +441,7 @@
             position: relative;
             transition: all 0.2s;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 21; /* Acima do container */
         }
 
         .ability-btn:hover {
@@ -476,6 +474,8 @@
             border-radius: 50%;
             background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 0, 0, 0.8) 0deg);
             transition: background 0.1s linear;
+            z-index: 22; /* Acima do botão */
+            pointer-events: none; /* Permite cliques no botão mesmo durante cooldown */
         }
 
         .ability-tooltip {
@@ -491,7 +491,7 @@
             pointer-events: none;
             width: 200px;
             text-align: center;
-            z-index: 10;
+            z-index: 23; /* Acima de tudo quando visível */
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
 
@@ -530,7 +530,7 @@
             grid-template-rows: 1fr;
             gap: 5px;
             pointer-events: auto;
-            z-index: 5;
+            z-index: 15; /* Acima do jogo, abaixo dos botões */
             align-items: center;
         }
         .mobile-dpad {
@@ -585,8 +585,8 @@
             border-radius: 15px;
             padding: 20px;
             display: none;
-            pointer-events: none; /* Controlled by JS now */
-            z-index: 20;
+            pointer-events: none;
+            z-index: 30; /* Acima dos botões de habilidade */
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
@@ -641,9 +641,9 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 10, 0.95));
-            z-index: 30;
-            display: none; /* Controlled by JS now */
-            pointer-events: none; /* Controlled by JS now */
+            z-index: 40; /* Acima de diálogos e botões */
+            display: none;
+            pointer-events: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -651,13 +651,13 @@
         }
 
         .cinematic-overlay img.cutscene-gif {
-            display: none; /* Inicia oculto, será 'block' quando src é definido */
+            display: none;
             max-width: 80%;
             max-height: 40vh;
             margin-bottom: 20px;
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            object-fit: contain; /* Garante que a imagem se ajuste sem cortar */
+            object-fit: contain;
         }
 
         .cinematic-text {
@@ -691,9 +691,10 @@
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            pointer-events: auto; /* Always clickable if parent allows */
+            pointer-events: auto;
             transition: all 0.3s;
             font-weight: bold;
+            z-index: 41; /* Acima da cutscene */
         }
 
         .skip-btn:hover {
@@ -706,7 +707,7 @@
             position: absolute;
             top: 15px;
             right: 180px;
-            z-index: 10;
+            z-index: 25; /* Acima dos botões de habilidade, abaixo de diálogos */
             background: rgba(0, 0, 0, 0.7);
             border: 2px solid var(--accent-gold);
             color: var(--text-light);
@@ -734,9 +735,9 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.9);
-            z-index: 40;
-            display: none; /* Controlled by JS now */
-            pointer-events: none; /* Controlled by JS now */
+            z-index: 50; /* Acima de tudo */
+            display: none;
+            pointer-events: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -783,9 +784,9 @@
             border-radius: 15px;
             padding: 30px;
             text-align: center;
-            z-index: 35;
-            display: none; /* Controlled by JS now */
-            pointer-events: none; /* Controlled by JS now */
+            z-index: 45; /* Acima de cutscenes, abaixo do menu de pausa */
+            display: none;
+            pointer-events: none;
             min-width: 400px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
@@ -852,7 +853,7 @@
             border-radius: 10px;
             padding: 20px;
             text-align: center;
-            z-index: 25;
+            z-index: 35; /* Acima dos botões, abaixo de diálogos */
             display: none;
             animation: checkpointPulse 2s ease-in-out;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
@@ -920,9 +921,9 @@
             background: rgba(0, 0, 0, 0.8);
             border: 3px solid var(--accent-fire);
             border-radius: 10px;
-            display: none; /* Controlled by JS */
+            display: none;
             overflow: hidden;
-            z-index: 10;
+            z-index: 15; /* Acima do jogo, abaixo dos botões */
             box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
         }
 
@@ -955,8 +956,8 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            display: none; /* Controlled by JS */
-            z-index: 10;
+            display: none;
+            z-index: 15; /* Acima do jogo, abaixo dos botões */
         }
 
         /* ===== PARTÍCULAS E NÚMEROS ===== */
@@ -1007,22 +1008,21 @@
         }
         /* --- END NEW --- */
 
-
         /* ===== RESPONSIVIDADE ===== */
         @media (max-width: 800px) {
             #game-container {
                 width: 100vw;
                 height: 100vh;
                 max-width: none;
-                max-height: none; /* --- MODIFIED --- */
+                max-height: none;
                 border: none;
                 border-radius: 0;
             }
 
             .main-menu {
                 padding: 10px;
-                justify-content: flex-start; /* --- MODIFIED: Push content to top on mobile --- */
-                padding-top: 5vh; /* --- NEW: Add some top padding --- */
+                justify-content: flex-start;
+                padding-top: 5vh;
             }
 
             .game-title {
@@ -1037,8 +1037,8 @@
             .character-selection {
                 padding: 15px;
                 margin-bottom: 15px;
-                max-height: unset; /* --- MODIFIED: Allow character selection to take necessary height --- */
-                overflow-y: visible; /* --- MODIFIED: Let content flow naturally --- */
+                max-height: unset;
+                overflow-y: visible;
             }
 
             .class-selection {
@@ -1057,8 +1057,8 @@
                 bottom: 10px; 
                 right: 10px;
                 gap: 8px;
-                flex-wrap: wrap; /* --- NEW: Allow abilities to wrap if many --- */
-                justify-content: flex-end; /* --- NEW: Align to right --- */
+                flex-wrap: wrap;
+                justify-content: flex-end;
             }
 
             .mobile-controls {
@@ -1195,7 +1195,7 @@
                     <div class="class-option" data-class="umbraArcher">
                         <div class="class-name">Atirador(a) de Umbra</div>
                         <div class="class-description">Especialista em ataques à distância e mobilidade. Utiliza a energia de Umbra para manifestar projéteis poderosos e manipular o campo de batalha.</div>
-                        <div class="class-abilities">Habilidades: Tiro Sombrio (U) • Sombra Ágil (I) • Orbe Etéreo (O) • Fúria de Umbra (P)</div>
+                        <div class="class-abilities">Habilidades: Tiro Sombrio (U) • Sombra Ágil (I) • Orbe Etéreo (O) • Muralha de Umbra (P)</div>
                     </div>
                     <!-- Removido: Guerreiro do Gelo -->
                 </div>
@@ -1300,9 +1300,9 @@
                     P
                     <div class="cooldown-overlay"></div>
                     <div class="ability-tooltip">
-                        <div class="tooltip-name" id="tooltip-p-name">Fúria de Umbra</div>
-                        <div class="tooltip-description" id="tooltip-p-desc">Canaliza a energia de Umbra para amplificar poder.</div>
-                        <div class="tooltip-cost" id="tooltip-p-cost">Custo: 50 Mana</div>
+                        <div class="tooltip-name" id="tooltip-p-name">Muralha de Umbra</div>
+                        <div class="tooltip-description" id="tooltip-p-desc">Invoca uma muralha de energia sombria que bloqueia projéteis inimigos e causa dano ao ser atravessada por inimigos.</div>
+                        <div class="tooltip-cost" id="tooltip-p-cost">Custo: 45 Mana</div>
                     </div>
                 </div>
             </div>
@@ -1319,7 +1319,6 @@
                     <div class="dpad-btn dpad-right" id="mobile-right">▶</div>
                     <div class="dpad-btn dpad-down" id="mobile-down">▼</div>
                 </div>
-                <!-- mobile-action-buttons REMOVIDOS - habilidades desktop funcionam diretamente -->
             </div>
             
             <!-- Sistema de Diálogo -->
@@ -1436,6 +1435,12 @@
                 sentinel_sprite_frames: Array.from({length: 2}, (_, i) => `assets/inimigos/sentinela-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for sentinel frames
                 tarek_sprite_frames: Array.from({length: 2}, (_, i) => `assets/bosses/tarek-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for tarek frames
                 tarek_background: 'assets/fundos/gelo/muralhas-gelo.png', 
+                
+                // NOVO: Camadas de fundo para o efeito parallax
+                // ATENÇÃO: Substitua esses caminhos pelos caminhos reais das suas imagens!
+                background_layer_1: 'assets/fundos/gelo/abismo-gelo-1.png', // A mais distante, menor velocidade
+                background_layer_2: 'assets/backgrounds/fundo_camada_2.png', // Camada do meio
+                background_layer_3: 'assets/backgrounds/fundo_camada_3.png', // A mais próxima, maior velocidade
 
                 projectile_i: 'assets/sprites/effects/projectile_i.gif', // Original GIFs can still be used for static images or single-frame effects
                 explosion_o: 'assets/sprites/effects/explosion_o.gif', 
@@ -1607,7 +1612,7 @@
         // Arrays de entidades
         let platforms = [];
         let particles = [];
-        let backgroundLayers = [];
+        let backgroundLayers = []; // MODIFIED: Will now store image asset keys and parallax speeds
         let enemies = [];
         let abilityEffects = [];
         let damageNumbers = [];
@@ -2051,8 +2056,8 @@
                                 playerAnimation.attack_i.reset();
                                 gameState.playerVelocity.x = (gameState.facing === 'right' ? 12 : -12);
                                 gameState.isInvincible = true;
-                                gameState.invincibilityTimer = 300;
-                                addParticles('dashUmbra', gameState.playerPosition.x + 25, gameState.playerPosition.y + 25, 20); // Partículas de Umbra
+                                gameState.invincibilityTimer = 1000;
+                                addParticles('dashUmbra', gameState.playerPosition.x + 25, gameState.playerPosition.y + 25, 200); // Partículas de Umbra
                             }
                         },
                         {
@@ -2086,9 +2091,9 @@
                             key: 'P',
                             name: 'Muralha de Umbra', // NOVO: Nome da Ultimate
                             description: 'Invoca uma muralha de energia sombria que bloqueia projéteis inimigos e causa dano ao ser atravessada por inimigos. A muralha é destruída se um inimigo a atravessar.', // NOVO: Descrição
-                            damage: (base) => base * 2.5, // NOVO: Dano da muralha
-                            manaCost: 60, // NOVO: Custo de mana
-                            cooldown: 15, // NOVO: Cooldown
+                            damage: (base) => base * 3.5, // NOVO: Dano da muralha
+                            manaCost: 45, // NOVO: Custo de mana
+                            cooldown: 10, // NOVO: Cooldown
                             execute: function() {
                                 playSound('sfx_ability_p');
                                 // Posição da muralha (50px de largura, centralizada no X, 100px mais alta que o jogador)
@@ -2531,11 +2536,14 @@
                 { x: 4000, y: 350, width: 50, height: 50, name: 'checkpoint3', description: 'Terceiro Checkpoint' },
             ];
             
+            // MODIFIED: Configuração das camadas de fundo com imagens para parallax
             backgroundLayers = [
-                { color: '#1a237e', speed: 0.1, type: 'sky' },
-                { color: '#283593', speed: 0.3, type: 'mountains' },
-                { color: '#3949ab', speed: 0.5, type: 'hills' },
-                { color: '#5c6bc0', speed: 0.7, type: 'foreground' }
+                // type: 'parallax_image' indica que esta camada é para o novo sistema de parallax
+                // assetKey deve corresponder a uma chave em CONFIG.ASSET_PATHS
+                // parallaxSpeed determina quão rápido a camada se move em relação à câmera
+                { type: 'parallax_image', assetKey: 'background_layer_1', parallaxSpeed: 0.1, yOffset: 0 }, // Fundo mais distante, Y 0 = topo do canvas
+                { type: 'parallax_image', assetKey: 'background_layer_2', parallaxSpeed: 0.3, yOffset: -50 }, // Meio, um pouco abaixo
+                { type: 'parallax_image', assetKey: 'background_layer_3', parallaxSpeed: 0.7, yOffset: -100 } // Frente, mais abaixo
             ];
 
             CONFIG.WORLD_WIDTH = 6000;
@@ -3209,7 +3217,7 @@
                 // Animação de dano tem prioridade visualmente.
                 // Se não estiver já na animação de dano ou se ela tiver terminado, ativa.
                 if (gameState.currentAnimation !== 'take_damage' || !playerAnimation.take_damage.isPlaying) {
-                     gameState.currentAnimation = 'take_damage';
+                    gameState.currentAnimation = 'take_damage';
                      playerAnimation.take_damage.reset();
                 }
             } else if (playerAnimation.attack_u.isPlaying || playerAnimation.attack_i.isPlaying || playerAnimation.attack_o.isPlaying) {
@@ -4284,42 +4292,48 @@
         }
 
         function renderBackground() {
-            // NOVO: Renderiza um plano de fundo estático se especificado pela fase
+            const cameraX = (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x);
+            const cameraY = (gameState.fixedCamera ? gameState.fixedCameraTarget.y : gameState.cameraOffset.y);
+
+            // Se for um background estático (como o do Tarek), renderiza e sai
             if (backgroundLayers.length > 0 && backgroundLayers[0].type === 'image') {
                 const imgAssetData = CONFIG.ASSET_LOADED[backgroundLayers[0].assetKey];
-                if (imgAssetData && imgAssetData.loaded) { // Verifica se a imagem foi carregada
+                if (imgAssetData && imgAssetData.loaded) {
                     ctx.drawImage(imgAssetData.img, 0, 0, canvas.width, canvas.height);
-                    return; // Sai da função, não renderiza as camadas procedurais
+                    return;
                 }
             }
-
-            // Renderização de plano de fundo procedural padrão
+            
+            // Fundo degradê padrão se não houver imagens de parallax ou se não estiverem carregadas
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--primary-dark'));
             gradient.addColorStop(0.3, getComputedStyle(document.documentElement).getPropertyValue('--primary-medium'));
             gradient.addColorStop(0.7, getComputedStyle(document.documentElement).getPropertyValue('--primary-light'));
             gradient.addColorStop(1, '#2c3e50');
-            
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            backgroundLayers.forEach((layer, index) => {
-                const parallaxOffset = (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x) * layer.speed;
-                
-                ctx.fillStyle = layer.color;
-                ctx.globalAlpha = 0.6 - (index * 0.1);
-                
-                ctx.beginPath();
-                ctx.moveTo(-parallaxOffset, canvas.height);
-                
-                for (let x = -200; x < canvas.width + 200; x += 50 + Math.random() * 20) {
-                    const height = 100 + Math.sin((x + parallaxOffset) * 0.01) * 50 + Math.sin((x + parallaxOffset) * 0.003) * 100;
-                    ctx.lineTo(x - parallaxOffset, canvas.height - height - (index * 30));
+
+            // NOVO: Renderiza as camadas de fundo com parallax usando imagens
+            backgroundLayers.forEach(layer => {
+                if (layer.type === 'parallax_image') {
+                    const imgAssetData = CONFIG.ASSET_LOADED[layer.assetKey];
+                    if (imgAssetData && imgAssetData.loaded) {
+                        const img = imgAssetData.img;
+                        const parallaxX = (cameraX * layer.parallaxSpeed) % img.width; // Offset X para o parallax
+                        const imgY = layer.yOffset; // Ajuste vertical da imagem (opcional)
+
+                        // Desenha a imagem várias vezes para cobrir toda a largura do mundo (tiling)
+                        // Calcula quantas vezes a imagem precisa ser desenhada para preencher a tela
+                        const numTiles = Math.ceil(canvas.width / img.width) + 1; // +1 para garantir que não haja lacunas no scroll
+                        for (let i = 0; i < numTiles; i++) {
+                            // Calcula a posição X para desenhar cada "tile" da imagem
+                            // Subtrai parallaxX para simular o movimento da câmera
+                            // Adiciona img.width * i para posicionar os tiles lado a lado
+                            const drawX = -parallaxX + (img.width * i);
+                            ctx.drawImage(img, drawX, imgY, img.width, canvas.height - imgY); // Ajusta a altura da imagem para preencher até a parte inferior
+                        }
+                    }
                 }
-                
-                ctx.lineTo(canvas.width + 200, canvas.height);
-                ctx.closePath();
-                ctx.fill();
             });
             
             ctx.globalAlpha = 1;
@@ -4436,8 +4450,6 @@
                 } else if (window.DEBUG_MODE) {
                     document.getElementById('debug-animation-info').style.display = 'none';
                 }
-                // --- END NEW ---
-
             } else {
                 // Fallback: Desenha um retângulo colorido se o GIF não carregar ou se o frame for um placeholder
                 let playerColor;
@@ -4923,7 +4935,6 @@
             gifElement.src = '';
             
             activateOverlayMenu('cinematic-overlay'); // Ativa o overlay de cutscene para a tela de vitória
-            
             titleElement.textContent = "VITÓRIA!";
             textElement.innerHTML = `
                 <p>Parabéns, ${gameState.playerName}!</p>
