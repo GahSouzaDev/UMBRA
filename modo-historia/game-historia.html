@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Tupãry: O Reino Congelado</title>
-    <style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+<style>
     /* ===== VARIÁVEIS CSS ===== */
     :root {
         --primary-dark: #000000;
@@ -41,14 +43,6 @@
         user-select: none;
     }
 
-    /* Novo meta viewport para melhor controle em mobile */
-    @viewport {
-        width: device-width;
-        zoom: 1.0;
-        min-zoom: 0.25;
-        max-zoom: 2;
-    }
-
     body {
         background: var(--primary-dark);
         color: var(--text-light);
@@ -70,8 +64,8 @@
         width: 100%;
         height: 100%;
         max-width: 1600px;
-        max-height: 770px; /* Mantém para desktop */
-        overflow: hidden; /* Default para desktop */
+        max-height: 770px;
+        overflow: hidden;
         border: 3px solid var(--accent-gold);
         border-radius: 8px;
         box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
@@ -86,6 +80,7 @@
         height: 100%;
         z-index: 1;
         background: transparent;
+        transition: transform 0.5s ease;
     }
 
     /* ===== AVISO DE ORIENTAÇÃO MOBILE ===== */
@@ -142,8 +137,8 @@
         justify-content: center;
         align-items: center;
         padding: 20px;
-        overflow-y: auto; /* Permite scroll no menu */
-        -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .game-title {
@@ -282,7 +277,7 @@
         letter-spacing: 1px;
         box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         margin-top: 20px;
-        margin-bottom: 20px; /* Adiciona margem inferior para mobile */
+        margin-bottom: 20px;
     }
 
     .start-game-btn:hover {
@@ -316,7 +311,7 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
-        z-index: 15; /* Acima do jogo, abaixo dos botões */
+        z-index: 15;
     }
 
     .status-bar {
@@ -403,7 +398,7 @@
         font-size: 14px;
         text-align: right;
         min-width: 150px;
-        z-index: 15; /* Acima do jogo, abaixo dos botões */
+        z-index: 15;
     }
 
     .stat-line {
@@ -434,7 +429,7 @@
         display: flex;
         gap: 12px;
         pointer-events: auto;
-        z-index: 20; /* Acima da UI básica, abaixo de diálogos e cutscenes */
+        z-index: 20;
     }
 
     .ability-btn {
@@ -453,7 +448,7 @@
         position: relative;
         transition: all 0.2s;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        z-index: 21; /* Acima do container */
+        z-index: 21;
     }
 
     .ability-btn:hover {
@@ -486,8 +481,8 @@
         border-radius: 50%;
         background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 0, 0, 0.8) 0deg);
         transition: background 0.1s linear;
-        z-index: 22; /* Acima do botão */
-        pointer-events: none; /* Permite cliques no botão mesmo durante cooldown */
+        z-index: 22;
+        pointer-events: none;
     }
 
     .ability-tooltip {
@@ -503,7 +498,7 @@
         pointer-events: none;
         width: 200px;
         text-align: center;
-        z-index: 23; /* Acima de tudo quando visível */
+        z-index: 23;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     }
 
@@ -542,7 +537,7 @@
         grid-template-rows: 1fr;
         gap: 5px;
         pointer-events: auto;
-        z-index: 15; /* Acima do jogo, abaixo dos botões */
+        z-index: 15;
         align-items: center;
     }
     .mobile-dpad {
@@ -598,7 +593,7 @@
         padding: 20px;
         display: none;
         pointer-events: none;
-        z-index: 30; /* Acima dos botões de habilidade */
+        z-index: 30;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
@@ -653,7 +648,7 @@
         width: 100%;
         height: 100%;
         background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 10, 0.95));
-        z-index: 40; /* Acima de diálogos и botões */
+        z-index: 40;
         display: none;
         pointer-events: none;
         flex-direction: column;
@@ -706,7 +701,7 @@
         pointer-events: auto;
         transition: all 0.3s;
         font-weight: bold;
-        z-index: 41; /* Acima da cutscene */
+        z-index: 41;
     }
 
     .skip-btn:hover {
@@ -719,7 +714,7 @@
         position: absolute;
         top: 15px;
         right: 180px;
-        z-index: 25; /* Acima dos botões de habilidade, abaixo de diálogos */
+        z-index: 25;
         background: rgba(0, 0, 0, 0.7);
         border: 2px solid var(--accent-gold);
         color: var(--text-light);
@@ -747,7 +742,7 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.9);
-        z-index: 50; /* Acima de tudo */
+        z-index: 50;
         display: none;
         pointer-events: none;
         flex-direction: column;
@@ -797,7 +792,7 @@
         border-radius: 15px;
         padding: 30px;
         text-align: center;
-        z-index: 45; /* Acima de cutscenes, abaixo do menu de pausa */
+        z-index: 45;
         display: none;
         pointer-events: none;
         min-width: 400px;
@@ -867,7 +862,7 @@
         border-radius: 10px;
         padding: 20px;
         text-align: center;
-        z-index: 35; /* Acima dos botões, abaixo de diálogos */
+        z-index: 35;
         display: none;
         animation: checkpointPulse 2s ease-in-out;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
@@ -940,7 +935,7 @@
         border-radius: 10px;
         display: none;
         overflow: hidden;
-        z-index: 15; /* Acima do jogo, abaixo dos botões */
+        z-index: 15;
         box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
     }
 
@@ -974,7 +969,7 @@
         letter-spacing: 2px;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
         display: none;
-        z-index: 15; /* Acima do jogo, abaixo dos botões */
+        z-index: 15;
     }
 
     /* ===== PARTÍCULAS E NÚMEROS ===== */
@@ -1010,21 +1005,6 @@
         100% { opacity: 0; transform: translateY(-30px) scale(1.2); }
     }
 
-    /* --- NEW: Debug Animation Info --- */
-    .debug-animation-info {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background: rgba(0, 0, 0, 0.7);
-        color: limegreen;
-        font-family: monospace;
-        font-size: 12px;
-        padding: 5px;
-        border-radius: 3px;
-        z-index: 100;
-    }
-    /* --- END NEW --- */
-
     /* ===== RESPONSIVIDADE ===== */
     @media (max-width: 800px) {
         #game-container {
@@ -1034,17 +1014,17 @@
             max-height: none;
             border: none;
             border-radius: 0;
-            overflow: auto; /* Permite scroll no mobile */
-            -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .main-menu {
-            position: relative; /* Muda para relative para permitir scroll */
-            min-height: 100vh; /* Garante que ocupe pelo menos a altura da tela */
-            height: auto; /* Altura automática baseada no conteúdo */
-            padding: 20px 10px; /* Reduz padding lateral */
-            justify-content: flex-start; /* Alinha conteúdo ao topo */
-            overflow: visible; /* Permite que o conteúdo transborde */
+            position: relative;
+            min-height: 100vh;
+            height: auto;
+            padding: 20px 10px;
+            justify-content: flex-start;
+            overflow: visible;
         }
 
         .game-title {
@@ -1059,8 +1039,8 @@
         .character-selection {
             padding: 15px;
             margin-bottom: 15px;
-            max-height: none; /* Remove limite de altura */
-            overflow-y: visible; /* Permite scrolling natural */
+            max-height: none;
+            overflow-y: visible;
         }
 
         .class-selection {
@@ -1230,7 +1210,6 @@
             margin-left: 10px;
         }
 
-        /* Ajusta a posição dos botões de habilidade no mobile landscape */
         .abilities-container {
             bottom: 10px;
             right: 10px;
@@ -1242,24 +1221,22 @@
             font-size: 14px;
         }
         
-        /* Ajustes específicos para landscape no menu inicial */
         .main-menu {
             padding: 5px;
             justify-content: flex-start;
         }
         
         .character-selection {
-            max-height: 80vh; /* Limite menor para landscape */
-            overflow-y: auto; /* Scroll se necessário */
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
         .start-game-btn {
             margin: 10px 0;
             position: relative;
-            z-index: 100; /* Garante que fique visível */
+            z-index: 100;
         }
         
-        /* Ajustes específicos para batalha com boss em landscape */
         .boss-battle .abilities-container {
             bottom: 5px;
             right: 5px;
@@ -1299,19 +1276,86 @@
         overflow: hidden;
     }
     
-    /* Ajuste de zoom para batalha com boss em dispositivos móveis */
+    /* Ajuste de zoom para batalha com boss em dispositivos móveis - MODIFICAÇÃO PRINCIPAL */
     @media (max-width: 800px) {
         .boss-battle #game-canvas {
+            transform: scale(0.75) translateY(-5%);
+            transform-origin: center top;
+        }
+        
+        .boss-battle .ui-layer {
             transform: scale(0.9);
-            transform-origin: center 30%;
+            transform-origin: center top;
+        }
+        
+        /* Botão para ajustar zoom durante a batalha */
+        .zoom-control {
+            position: absolute;
+            bottom: 160px;
+            right: 15px;
+            z-index: 25;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            pointer-events: auto;
+            font-size: 20px;
+            font-weight: bold;
         }
     }
     
     @media (max-height: 500px) and (orientation: landscape) {
         .boss-battle #game-canvas {
-            transform: scale(0.8);
-            transform-origin: center 40%;
+            transform: scale(0.7) translateY(-10%);
+            transform-origin: center top;
         }
+        
+        .boss-battle .ui-layer {
+            transform: scale(0.85);
+            transform-origin: center top;
+        }
+    }
+
+    /* Novo: Controle de zoom para batalhas */
+    .zoom-controls {
+        position: absolute;
+        right: 15px;
+        bottom: 210px;
+        z-index: 25;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: auto;
+    }
+
+    .zoom-btn {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid var(--accent-gold);
+        color: var(--text-light);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    /* Estado de visibilidade melhorada */
+    .improved-visibility #game-canvas {
+        transform: scale(0.65) translateY(-15%);
+    }
+    
+    .improved-visibility .ui-layer {
+        transform: scale(0.8);
     }
 </style>
 </head>
