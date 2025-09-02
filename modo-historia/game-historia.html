@@ -1422,7 +1422,7 @@
             // --- MODIFIED: CAMINHOS DE RECURSOS (AGORA COM SUPORTE A ANIMAÇÕES BASEADAS EM QUADROS) ---
             ASSET_PATHS: {
                 // Para player_idle, você precisaria de player_idle_00.png, player_idle_01.png, etc.
-                player_idle_frames: Array.from({length: 6}, (_, i) => `assets/personagens/Escolhido/escolhido-parado-${String(i).padStart(2, '0')}.png`), // NEW: Array of frame paths
+                player_idle_frames: Array.from({length: 6}, (_, i) => `../assets/personagens/Escolhido/escolhido-parado-${String(i).padStart(2, '0')}.png`), // NEW: Array of frame paths
                 player_walk_frames: Array.from({length: 8}, (_, i) => `assets/personagens/Escolhido/walk/escolhido-andando-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for walk frames
                 player_jump_frames: Array.from({length: 1}, (_, i) => `assets/personagens/Escolhido/jump/escolhido-salto-00.png`), // NEW: Placeholder for jump frames
                 player_crouch_frames: Array.from({length: 1}, (_, i) => `assets/personagens/Escolhido/crouch/escolhido-abaixar-00.png`), // NEW: Placeholder for crouch frames
@@ -1438,7 +1438,7 @@
                 
                 // NOVO: Camadas de fundo para o efeito parallax
                 // ATENÇÃO: Substitua esses caminhos pelos caminhos reais das suas imagens!
-                background_layer_1: 'assets/fundos/gelo/abismo-gelo-1.png', // A mais distante, menor velocidade
+                background_layer_1: '../assets/fundos/gelo/abismo-gelo-1.png', // A mais distante, menor velocidade
                 background_layer_2: 'assets/backgrounds/fundo_camada_2.png', // Camada do meio
                 background_layer_3: 'assets/backgrounds/fundo_camada_3.png', // A mais próxima, maior velocidade
 
@@ -1447,7 +1447,7 @@
                 tarek_ice_orb: 'assets/sprites/effects/tarek_ice_orb.gif', 
                 tarek_prison: 'assets/sprites/effects/tarek_prison.gif',
 
-                cutscene_gif_1: 'assets/animacoes/AislinsVsFayra.gif', 
+                cutscene_gif_1: '../assets/animacoes/AislinsVsFayra.gif', 
 
                 music_menu: 'assets/audio/music/menu.mp3',
                 music_platforming: 'assets/audio/music/platforming.mp3',
