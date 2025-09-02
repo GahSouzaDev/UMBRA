@@ -1279,7 +1279,7 @@
     /* Ajuste de zoom para batalha com boss em dispositivos móveis - MODIFICAÇÃO PRINCIPAL */
     @media (max-width: 800px) {
         .boss-battle #game-canvas {
-            transform: scale(0.75) translateY(-5%);
+            transform: scale(0.75) translateY(-15%);
             transform-origin: center top;
         }
         
