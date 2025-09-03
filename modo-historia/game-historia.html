@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -24,7 +23,7 @@
         --mana-color: var(--accent-blue);
         --xp-color: var(--accent-gold);
         --shadow-dark: rgba(0, 0, 0, 0.8);
-        --spike-color: #8bc5ffea;
+        --spike-color: #666666;
         --umbra-color: #7b0099;
         --warrior-color: #66bb6a;
     }
@@ -81,6 +80,7 @@
         z-index: 1;
         background: transparent;
         transition: transform 0.5s ease;
+        transform-origin: center top; /* Added for consistent scaling origin */
     }
 
     /* ===== AVISO DE ORIENTAÇÃO MOBILE ===== */
@@ -301,6 +301,7 @@
         height: 100%;
         z-index: 2;
         pointer-events: none;
+        transform-origin: center top; /* Added for consistent scaling origin */
     }
 
     /* ===== BARRAS DE STATUS ===== */
@@ -365,7 +366,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(90deg, transparent 0%, rgba(213, 5, 5, 0.3) 50%, transparent 100%);
+        background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
         animation: shimmer 2s infinite;
     }
 
@@ -735,6 +736,31 @@
         transform: scale(1.1);
     }
 
+    .fullscreen-btn { /* NEW: Fullscreen button */
+        position: absolute;
+        top: 15px;
+        right: 120px; /* Positioned next to pause button */
+        z-index: 25;
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid var(--accent-gold);
+        color: var(--text-light);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: all 0.3s;
+        font-size: 16px;
+    }
+
+    .fullscreen-btn:hover {
+        background: rgba(212, 175, 55, 0.2);
+        transform: scale(1.1);
+    }
+
     .pause-menu {
         position: absolute;
         top: 0;
@@ -863,7 +889,7 @@
         padding: 20px;
         text-align: center;
         z-index: 35;
-        display: none;
+        display: none; /* Hidden by default - notification removed */
         animation: checkpointPulse 2s ease-in-out;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     }
@@ -1019,28 +1045,41 @@
         }
 
         .main-menu {
-            position: relative;
             min-height: 100vh;
-            height: auto;
-            padding: 20px 10px;
-            justify-content: flex-start;
+            height: 100vh; /* Explicitly set height for better fit */
+            padding: 10px; /* Reduced overall padding */
+            justify-content: center; /* Center content vertically */
             overflow: visible;
         }
 
         .game-title {
-            font-size: 36px;
+            font-size: 32px; /* Smaller title */
         }
 
         .game-subtitle {
-            font-size: 18px;
-            margin-bottom: 20px;
+            font-size: 16px; /* Smaller subtitle */
+            margin-bottom: 15px; /* Reduced margin */
         }
 
         .character-selection {
-            padding: 15px;
+            padding: 10px; /* Reduced padding */
             margin-bottom: 15px;
-            max-height: none;
-            overflow-y: visible;
+            max-height: calc(100vh - 180px); /* Adjust based on expected total height of other elements */
+            overflow-y: auto;
+        }
+
+        .character-selection h3 {
+            font-size: 18px; /* Smaller heading */
+            margin-bottom: 15px;
+        }
+
+        .name-input-group label {
+            font-size: 16px; /* Smaller label */
+            margin-bottom: 10px;
+        }
+
+        .name-input {
+            padding: 10px; /* Smaller input padding */
         }
 
         .class-selection {
@@ -1051,7 +1090,23 @@
         .class-option {
             min-width: unset;
             width: 100%;
-            padding: 15px;
+            padding: 10px; /* Reduced padding */
+        }
+        .class-name {
+            font-size: 18px; /* Smaller class name */
+        }
+        .class-description {
+            font-size: 13px; /* Smaller description */
+        }
+        .class-abilities {
+            font-size: 11px; /* Smaller abilities text */
+        }
+
+        .start-game-btn {
+            padding: 12px 30px; /* Smaller button padding */
+            font-size: 16px; /* Smaller button font */
+            margin-top: 15px; /* Reduced margin */
+            margin-bottom: 15px;
         }
 
         .abilities-container {
@@ -1088,6 +1143,14 @@
         .pause-btn {
             top: 10px;
             right: 140px;
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .fullscreen-btn { /* NEW: Mobile adjustment for fullscreen button */
+            top: 10px;
+            right: 90px;
             width: 40px;
             height: 40px;
             font-size: 14px;
@@ -1178,6 +1241,13 @@
         .boss-battle .pause-btn {
             top: 5px;
             right: 110px;
+            width: 35px;
+            height: 35px;
+        }
+
+        .boss-battle .fullscreen-btn { /* NEW: Boss battle mobile adjustment for fullscreen button */
+            top: 5px;
+            right: 70px;
             width: 35px;
             height: 35px;
         }
@@ -1279,84 +1349,38 @@
     /* Ajuste de zoom para batalha com boss em dispositivos móveis - MODIFICAÇÃO PRINCIPAL */
     @media (max-width: 800px) {
         .boss-battle #game-canvas {
-            transform: scale(0.75) translateY(-15%);
-            transform-origin: center top;
+            transform: scale(0.85) translateY(-10%); /* Adjusted scale and position */
+            transform-origin: center center; /* Changed origin to center */
         }
         
         .boss-battle .ui-layer {
-            transform: scale(0.9);
-            transform-origin: center top;
+            transform: scale(0.95); /* Adjusted scale */
+            transform-origin: center center;
         }
         
-        /* Botão para ajustar zoom durante a batalha */
-        .zoom-control {
-            position: absolute;
-            bottom: 160px;
-            right: 15px;
-            z-index: 25;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid var(--accent-gold);
-            color: var(--text-light);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            pointer-events: auto;
-            font-size: 20px;
-            font-weight: bold;
-        }
+        /* Botão para ajustar zoom durante a batalha - Removed as it's not used */
+        /* .zoom-control { ... } */
     }
     
     @media (max-height: 500px) and (orientation: landscape) {
         .boss-battle #game-canvas {
-            transform: scale(0.7) translateY(-10%);
-            transform-origin: center top;
+            transform: scale(0.8) translateY(-5%); /* Adjusted scale and position */
+            transform-origin: center center;
         }
         
         .boss-battle .ui-layer {
-            transform: scale(0.85);
-            transform-origin: center top;
+            transform: scale(0.9); /* Adjusted scale */
+            transform-origin: center center;
         }
     }
 
-    /* Novo: Controle de zoom para batalhas */
-    .zoom-controls {
-        position: absolute;
-        right: 15px;
-        bottom: 210px;
-        z-index: 25;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        pointer-events: auto;
-    }
+    /* Novo: Controle de zoom para batalhas - Removed as it's not used */
+    /* .zoom-controls { ... } */
+    /* .zoom-btn { ... } */
 
-    .zoom-btn {
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        background: rgba(0, 0, 0, 0.7);
-        border: 2px solid var(--accent-gold);
-        color: var(--text-light);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 20px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    /* Estado de visibilidade melhorada */
-    .improved-visibility #game-canvas {
-        transform: scale(0.65) translateY(-15%);
-    }
-    
-    .improved-visibility .ui-layer {
-        transform: scale(0.8);
-    }
+    /* Estado de visibilidade melhorada - Removed as it's not used */
+    /* .improved-visibility #game-canvas { ... } */
+    /* .improved-visibility .ui-layer { ... } */
 </style>
 </head>
 <body>
@@ -1387,7 +1411,6 @@
                         <div class="class-description">Especialista em ataques à distância e mobilidade. Utiliza a energia de Umbra para manifestar projéteis poderosos e manipular o campo de batalha.</div>
                         <div class="class-abilities">Habilidades: Tiro Sombrio (U) • Sombra Ágil (I) • Orbe Etéreo (O) • Muralha de Umbra (P)</div>
                     </div>
-                    <!-- Removido: Guerreiro do Gelo -->
                 </div>
             </div>
             
@@ -1499,6 +1522,8 @@
             
             <!-- Botão de Pausa -->
             <div class="pause-btn" id="pause-btn">⏸️</div>
+            <!-- NEW: Fullscreen Button -->
+            <div class="fullscreen-btn" id="fullscreen-btn">↔️</div>
             
             <!-- Controles Mobile (D-pad) -->
             <div class="mobile-controls" id="mobile-controls">
@@ -1628,9 +1653,9 @@
                 
                 // NOVO: Camadas de fundo para o efeito parallax
                 // ATENÇÃO: Substitua esses caminhos pelos caminhos reais das suas imagens!
-                background_layer_1: '../assets/fundos/gelo/fase1/fase1-gelo.png', // A mais distante, menor velocidade
-                background_layer_2: 'assets/backgrounds/fundo_camada_2.png', // Camada do meio
-                background_layer_3: 'assets/backgrounds/fundo_camada_3.png', // A mais próxima, maior velocidade
+                background_layer_1: '../assets/fundos/gelo/fase1/fase1-1gelo.png', // A mais distante, menor velocidade
+                background_layer_2: '../assets/fundos/gelo/fase1/fase1-nuvens-gelo.png', // Camada do meio
+                background_layer_3: '', // A mais próxima, maior velocidade
 
                 projectile_i: 'assets/sprites/effects/projectile_i.gif', // Original GIFs can still be used for static images or single-frame effects
                 explosion_o: 'assets/sprites/effects/explosion_o.gif', 
@@ -1639,9 +1664,9 @@
 
                 cutscene_gif_1: '../assets/animacoes/AislinsVsFayra.gif', 
 
-                music_menu: 'assets/audio/music/menu.mp3',
-                music_platforming: 'assets/audio/music/platforming.mp3',
-                music_boss_tarek: 'assets/audio/music/tarek_boss.mp3',
+                music_menu: '../assets/musicas/gelo/inicio.mp3',
+                music_platforming: '../assets/musicas/gelo/batalha na neve.mp3',
+                music_boss_tarek: '../assets/musicas/gelo/batalha contra Tarek.mp3',
                 sfx_jump: 'assets/audio/sfx/jump.mp3',
                 sfx_attack_u: 'assets/audio/sfx/attack_u.mp3',
                 sfx_ability_i: 'assets/audio/sfx/ability_i.mp3',
@@ -2111,11 +2136,11 @@
                 walk: new AnimationManager(CONFIG.ASSET_LOADED.player_walk_frames, 100),
                 jump: new AnimationManager(CONFIG.ASSET_LOADED.player_jump_frames, 100, false), 
                 crouch: new AnimationManager(CONFIG.ASSET_LOADED.player_crouch_frames, 100),
-                attack_u: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_u_frames, 60, false).onFinish(() => gameState.currentAnimation = 'idle'),
+                attack_u: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_u_frames, 80, false).onFinish(() => gameState.currentAnimation = 'idle'),
                 attack_i: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_i_frames, 100, false).onFinish(() => gameState.currentAnimation = 'idle'),
-                attack_o: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_o_frames, 60, false).onFinish(() => gameState.currentAnimation = 'idle'),
+                attack_o: new AnimationManager(CONFIG.ASSET_LOADED.player_attack_o_frames, 120, false).onFinish(() => gameState.currentAnimation = 'idle'),
                 ultimate: new AnimationManager(CONFIG.ASSET_LOADED.player_ultimate_frames, 100).setLoop(true), /* Mantido para Chosen One */
-                take_damage: new AnimationManager(CONFIG.ASSET_LOADED.player_damage_frames, 100, false).onFinish(() => gameState.currentAnimation = 'idle')
+                take_damage: new AnimationManager(CONFIG.ASSET_LOADED.player_damage_frames, 200, false).onFinish(() => gameState.currentAnimation = 'idle')
             };
 
             sentinelAnimation = new AnimationManager(CONFIG.ASSET_LOADED.sentinel_sprite_frames, 150); 
@@ -2381,6 +2406,7 @@
         function initEventListeners() {
             /* Menu Principal */
             document.getElementById('player-name').addEventListener('input', validateMenuInputs);
+            document.getElementById('player-name').addEventListener('keydown', handlePlayerNameEnter); /* NEW: Handle Enter key on name input */
             document.querySelectorAll('.class-option').forEach(option => {
                 option.addEventListener('click', (e) => {
                     const className = e.currentTarget.dataset.class;
@@ -2395,6 +2421,7 @@
             
             /* Botões da UI */
             document.getElementById('pause-btn').addEventListener('click', togglePause);
+            document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen); /* NEW: Fullscreen button listener */
             document.getElementById('resume-btn').addEventListener('click', togglePause);
             document.getElementById('restart-btn').addEventListener('click', restartFromCheckpoint);
             document.getElementById('save-btn').addEventListener('click', saveProgress);
@@ -2422,6 +2449,17 @@
                     applyUpgrade(upgrade);
                 });
             });
+        }
+
+        /* NEW: Handle Enter key press on player name input */
+        function handlePlayerNameEnter(e) {
+            if (e.key === 'Enter' && gameState.inMenu) {
+                const startBtn = document.getElementById('start-game-btn');
+                if (!startBtn.disabled) {
+                    startGame();
+                    e.preventDefault(); // Prevent default Enter behavior
+                }
+            }
         }
 
         function handleKeyDown(e) {
@@ -2722,8 +2760,7 @@
 
             checkpoints = [
                 { x: 1000, y: 350, width: 50, height: 50, name: 'checkpoint1', description: 'Primeiro Checkpoint' },
-                { x: 2500, y: 350, width: 50, height: 50, name: 'checkpoint2', description: 'Segundo Checkpoint' },
-                { x: 4000, y: 350, width: 50, height: 50, name: 'checkpoint3', description: 'Terceiro Checkpoint' },
+                // Removed original checkpoint2 and checkpoint3 based on user request
             ];
             
             // MODIFIED: Configuração das camadas de fundo com imagens para parallax
@@ -2731,7 +2768,7 @@
                 // type: 'parallax_image' indica que esta camada é para o novo sistema de parallax
                 // assetKey deve corresponder a uma chave em CONFIG.ASSET_PATHS
                 // parallaxSpeed determina quão rápido a camada se move em relação à câmera
-                { type: 'parallax_image', assetKey: 'background_layer_1', parallaxSpeed: 0.1, yOffset: 0 }, // Fundo mais distante, Y 0 = topo do canvas
+                { type: 'parallax_image', assetKey: 'background_layer_1', parallaxSpeed: 0.1, yOffset: 0 }, // Fundo mais distante, menor velocidade
                 { type: 'parallax_image', assetKey: 'background_layer_2', parallaxSpeed: 0.3, yOffset: -50 }, // Meio, um pouco abaixo
                 { type: 'parallax_image', assetKey: 'background_layer_3', parallaxSpeed: 0.7, yOffset: -100 } // Frente, mais abaixo
             ];
@@ -2988,7 +3025,8 @@
             };
             
             setCookie('tupary_checkpoint', JSON.stringify(checkpointData));
-            showCheckpointNotification('Checkpoint Salvo', `Progresso salvo em: ${getCheckpointDescription(checkpointName)}`);
+            // showCheckpointNotification('Checkpoint Salvo', `Progresso salvo em: ${getCheckpointDescription(checkpointName)}`); /* REMOVED: No visual notification */
+            console.log(`Checkpoint Salvo: ${getCheckpointDescription(checkpointName)}`); /* NEW: Log to console instead */
         }
 
         function loadCheckpoint() {
@@ -3008,7 +3046,6 @@
                     gameState.playerClass = data.playerClass;
                     gameState.tarekDialogCompleted = data.tarekDialogCompleted; // NOVO: Carregar estado do diálogo Tarek
                     setupCharacter(data.playerClass, data.playerMaxHealth, data.playerMaxMana, data.playerDamage, data.playerSpeed, data.abilitiesMaxCooldown, data.manaRegenRate);
-                    
                     loadPhase(data.phase);
                     updateAllUI();
                     return true;
@@ -3025,26 +3062,16 @@
         }
 
         function showCheckpointNotification(title, description) {
-            const notification = document.getElementById('checkpoint-notification');
-            const titleEl = notification.querySelector('.checkpoint-text');
-            const descEl = notification.querySelector('.checkpoint-description');
-            
-            titleEl.textContent = title;
-            descEl.textContent = description;
-            
-            notification.style.display = 'block';
-            notification.style.animation = 'checkpointPulse 2s ease-in-out';
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 2000);
+            // Function body intentionally left empty to suppress visual notification
+            console.log(`Checkpoint Notification Suppressed: ${title} - ${description}`);
         }
 
         function restartFromCheckpoint() {
             togglePause(); // Primeiro despausa o jogo para que a lógica de "loadPhase" possa ser executada
             
             if (loadCheckpoint()) {
-                showCheckpointNotification('Checkpoint Carregado', 'Retornando ao último checkpoint salvo...');
+                // showCheckpointNotification('Checkpoint Carregado', 'Retornando ao último checkpoint salvo...'); /* REMOVED: No visual notification */
+                console.log('Checkpoint Carregado: Retornando ao último checkpoint salvo...'); /* NEW: Log to console */
             } else {
                 // Se não houver checkpoint, apenas reinicia a fase atual com vida cheia
                 loadPhase(gameState.currentPhase);
@@ -3208,7 +3235,6 @@
             gameState.isGrounded = false;
             const playerWidth = CONFIG.PLAYER_WIDTH;
             const playerHeight = gameState.isCrouching ? CONFIG.CROUCH_HEIGHT : CONFIG.NORMAL_HEIGHT;
-            
             let onPlatform = false;
 
             for (const platform of platforms) {
@@ -3226,7 +3252,6 @@
                     // Collision from top (landing)
                     if (gameState.playerVelocity.y >= 0 && 
                         gameState.playerPosition.y + playerHeight - gameState.playerVelocity.y <= platform.y) {
-                        
                         gameState.playerPosition.y = platform.y - playerHeight;
                         gameState.playerVelocity.y = 0;
                         onPlatform = true; // Mark that player is on a platform
@@ -3624,7 +3649,7 @@
                                 width: 90,
                                 height: 90,
                                 duration: 400,
-                                damage: effect.damage * 1.5,
+                                damage: effect.damage,
                                 origin: effect.origin
                             });
                             playSound('sfx_ability_o'); /* Som de explosão (ou som customizado para orbe) */
@@ -4037,7 +4062,7 @@
             if (gameState.isInvincible) return;
             
             let finalDamage = amount;
-            if (currentChampion.id === 'chosenOne' && gameState.isUmbraFurious) { /* Lógica mantida para Chosen One */
+            if (currentChampion.id === 'chosenOne' && gameState.isUmbraFurious) { /* Lógica mantida para Escolhido Original */
                 finalDamage *= CONFIG.UMBRA_FURY_DAMAGE_REDUCTION;
             }
 
@@ -4533,7 +4558,6 @@
             for (const platform of platforms) {
                 const x = platform.x - (gameState.fixedCamera ? gameState.fixedCameraTarget.x : gameState.cameraOffset.x);
                 const y = platform.y - (gameState.fixedCamera ? gameState.fixedCameraTarget.y : gameState.cameraOffset.y);
-                
                 if (x + platform.width < -50 || x > canvas.width + 50 || 
                     y + platform.height < -50 || y > canvas.height + 50) {
                     continue;
@@ -5073,6 +5097,17 @@
                 } else {
                     playMusic('music_platforming', true);
                 }
+            }
+        }
+
+        /* NEW: Fullscreen Toggle */
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
+                });
+            } else {
+                document.exitFullscreen();
             }
         }
 
