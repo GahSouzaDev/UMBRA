@@ -1653,9 +1653,9 @@
                 
                 // NOVO: Camadas de fundo para o efeito parallax
                 // ATENÇÃO: Substitua esses caminhos pelos caminhos reais das suas imagens!
-                background_layer_1: '../assets/fundos/gelo/fase1/fase1-gelo.png', // A mais distante, menor velocidade
-                background_layer_2: 'assets/backgrounds/fundo_camada_2.png', // Camada do meio
-                background_layer_3: 'assets/backgrounds/fundo_camada_3.png', // A mais próxima, maior velocidade
+                background_layer_1: '../assets/fundos/gelo/fase1/fase1-1gelo.png', // A mais distante, menor velocidade
+                background_layer_2: '../assets/fundos/gelo/fase1/fase1-nuvens-gelo.png', // Camada do meio
+                background_layer_3: '', // A mais próxima, maior velocidade
 
                 projectile_i: 'assets/sprites/effects/projectile_i.gif', // Original GIFs can still be used for static images or single-frame effects
                 explosion_o: 'assets/sprites/effects/explosion_o.gif', 
@@ -1664,9 +1664,9 @@
 
                 cutscene_gif_1: '../assets/animacoes/AislinsVsFayra.gif', 
 
-                music_menu: 'assets/audio/music/menu.mp3',
-                music_platforming: 'assets/audio/music/platforming.mp3',
-                music_boss_tarek: 'assets/audio/music/tarek_boss.mp3',
+                music_menu: '../assets/musicas/gelo/inicio.mp3',
+                music_platforming: '../assets/musicas/gelo/batalha na neve.mp3',
+                music_boss_tarek: '../assets/musicas/gelo/batalha contra Tarek.mp3',
                 sfx_jump: 'assets/audio/sfx/jump.mp3',
                 sfx_attack_u: 'assets/audio/sfx/attack_u.mp3',
                 sfx_ability_i: 'assets/audio/sfx/ability_i.mp3',
