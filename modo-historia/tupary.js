@@ -288,7 +288,7 @@ try {
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
     audioSources[name] = audioBuffer;
 } catch (error) {
-    console.error(`Erro ao carregar o áudio '${name}':`, error);
+    //console.error(`Erro ao carregar o áudio '${name}':`, error);
     audioSources[name] = audioContext.createBuffer(2, 22050, 44100); /* Buffer vazio para evitar erros */
 } finally {
     ASSETS_LOADED_COUNT++; // Incrementa o contador de assets carregados
@@ -297,7 +297,7 @@ try {
 
 function playSound(name, volume = 1.0) {
 if (!audioSources[name]) {
-    console.warn(`Áudio '${name}' não carregado.`);
+    //console.warn(`Áudio '${name}' não carregado.`);
     return;
 }
 try {
@@ -308,7 +308,7 @@ try {
     source.connect(gainNode).connect(audioContext.destination);
     source.start(0);
 } catch (error) {
-    console.error("Erro ao reproduzir som:", error);
+    //.error("Erro ao reproduzir som:", error);
 }
 }
 
@@ -317,13 +317,13 @@ if (currentMusic) {
     try {
         currentMusic.stop();
     } catch (error) {
-        console.error("Erro ao parar música anterior:", error);
+        //console.error("Erro ao parar música anterior:", error);
     }
     currentMusic = null;
 }
 
 if (!audioSources[name]) {
-    console.warn(`Música '${name}' não carregada.`);
+    //console.warn(`Música '${name}' não carregada.`);
     return;
 }
 
@@ -337,7 +337,7 @@ try {
     source.start(0);
     currentMusic = source;
 } catch (error) {
-    console.error("Erro ao reproduzir música:", error);
+    //console.error("Erro ao reproduzir música:", error);
 }
 }
 
@@ -346,7 +346,7 @@ if (currentMusic) {
     try {
         currentMusic.stop();
     } catch (error) {
-        console.error("Erro ao parar música:", error);
+        //console.error("Erro ao parar música:", error);
     }
     currentMusic = null;
 }
@@ -436,7 +436,7 @@ if (saveData) {
         const data = JSON.parse(saveData);
         return data;
     } catch (e) {
-        console.error('Erro ao carregar save:', e);
+        //console.error('Erro ao carregar save:', e);
     }
 }
 return null;
@@ -497,7 +497,7 @@ for (const [key, path] of Object.entries(CONFIG.ASSET_PATHS)) {
                     resolve();
                 };
                 img.onerror = (e) => {
-                    console.error(`Erro ao carregar imagem '${key}' de '${framePath}':`, e);
+                    //console.error(`Erro ao carregar imagem '${key}' de '${framePath}':`, e);
                     const placeholder = new Image();
                     placeholder.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; // 1x1 transparent
                     CONFIG.ASSET_LOADED[key].push({ img: placeholder, loaded: false }); // Store loaded: false
@@ -517,7 +517,7 @@ for (const [key, path] of Object.entries(CONFIG.ASSET_PATHS)) {
                 resolve();
             };
             img.onerror = (e) => {
-                console.error(`Erro ao carregar imagem '${key}' de '${path}':`, e);
+                //console.error(`Erro ao carregar imagem '${key}' de '${path}':`, e);
                 const placeholder = new Image();
                 placeholder.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; // 1x1 transparent
                 CONFIG.ASSET_LOADED[key] = { img: placeholder, loaded: false };
@@ -530,7 +530,7 @@ for (const [key, path] of Object.entries(CONFIG.ASSET_PATHS)) {
     }
 }
 await Promise.all(assetPromises);
-console.log("Todos os assets carregados.");
+//console.log("Todos os assets carregados.");
 
 // Inicializar os AnimationManagers após carregar todos os assets com os arrays de frames
 playerAnimation = {
@@ -785,7 +785,7 @@ if (menu) {
     }
     // console.log(`Menu activated: ${menuElementId}`);
 } else {
-    console.warn(`Attempted to activate non-existent menu: ${menuElementId}`);
+    //console.warn(`Attempted to activate non-existent menu: ${menuElementId}`);
 }
 }
 
@@ -800,7 +800,7 @@ if (menu) {
     }
     // console.log(`Menu deactivated: ${menuElementId}`);
 } else {
-    console.warn(`Attempted to deactivate non-existent menu: ${menuElementId}`);
+    //console.warn(`Attempted to deactivate non-existent menu: ${menuElementId}`);
 }
 }
 
@@ -1435,7 +1435,7 @@ const checkpointData = {
 
 setCookie('tupary_checkpoint', JSON.stringify(checkpointData));
 // showCheckpointNotification('Checkpoint Salvo', `Progresso salvo em: ${getCheckpointDescription(checkpointName)}`); /* REMOVED: No visual notification */
-console.log(`Checkpoint Salvo: ${getCheckpointDescription(checkpointName)}`); /* NEW: Log to console instead */
+//console.log(`Checkpoint Salvo: ${getCheckpointDescription(checkpointName)}`); /* NEW: Log to console instead */
 }
 
 function loadCheckpoint() {
@@ -1459,7 +1459,7 @@ if (checkpointData) {
         updateAllUI();
         return true;
     } catch (e) {
-        console.error('Erro ao carregar checkpoint:', e);
+        //console.error('Erro ao carregar checkpoint:', e);
     }
 }
 return false;
@@ -1472,7 +1472,7 @@ return checkpoint ? checkpoint.description : 'Localização Desconhecida';
 
 function showCheckpointNotification(title, description) {
 // Function body intentionally left empty to suppress visual notification
-console.log(`Checkpoint Notification Suppressed: ${title} - ${description}`);
+//console.log(`Checkpoint Notification Suppressed: ${title} - ${description}`);
 }
 
 function restartFromCheckpoint() {
@@ -1480,7 +1480,7 @@ togglePause(); // Primeiro despausa o jogo para que a lógica de "loadPhase" pos
 
 if (loadCheckpoint()) {
     // showCheckpointNotification('Checkpoint Carregado', 'Retornando ao último checkpoint salvo...'); /* REMOVED: No visual notification */
-    console.log('Checkpoint Carregado: Retornando ao último checkpoint salvo...'); /* NEW: Log to console */
+    //console.log('Checkpoint Carregado: Retornando ao último checkpoint salvo...'); /* NEW: Log to console */
 } else {
     // Se não houver checkpoint, apenas reinicia a fase atual com vida cheia
     loadPhase(gameState.currentPhase);
@@ -1660,20 +1660,24 @@ for (const platform of platforms) {
 
         // Collision from top (landing)
         if (gameState.playerVelocity.y >= 0 && 
-            gameState.playerPosition.y + playerHeight - gameState.playerVelocity.y <= platform.y) {
-            gameState.playerPosition.y = platform.y - playerHeight;
-            gameState.playerVelocity.y = 0;
-            onPlatform = true; // Mark that player is on a platform
-            
-            if (gameState.playerVelocity.y > 8) { // Only add dust if falling speed was significant
-                addParticles('landDust', gameState.playerPosition.x + CONFIG.PLAYER_WIDTH / 2, gameState.playerPosition.y + playerHeight, 8);
-                screenShake(3, 150);
-            }
-            
-            if (platform.slippery && Math.abs(gameState.playerVelocity.x) > 0) {
-                gameState.playerVelocity.x *= 1.2; // Increase slide on slippery platforms
-            }
-        }
+    gameState.playerPosition.y + playerHeight - gameState.playerVelocity.y <= platform.y) {
+    
+    const fallSpeed = gameState.playerVelocity.y; // guarda velocidade da queda
+    
+    gameState.playerPosition.y = platform.y - playerHeight;
+    gameState.playerVelocity.y = 0;
+    onPlatform = true;
+    
+    if (fallSpeed > 8) { // agora funciona corretamente
+        addParticles('landDust', gameState.playerPosition.x + CONFIG.PLAYER_WIDTH / 2, gameState.playerPosition.y + playerHeight, 8);
+        screenShake(3, 150);
+    }
+    
+    if (platform.slippery && Math.abs(gameState.playerVelocity.x) > 0) {
+        gameState.playerVelocity.x *= 1.2;
+    }
+}
+
         // Collision from bottom (hitting head)
         else if (gameState.playerVelocity.y < 0 && 
                 gameState.playerPosition.y - gameState.playerVelocity.y >= platform.y + platform.height) {
@@ -3513,7 +3517,7 @@ if (gameState.gamePaused) {
 function toggleFullscreen() {
 if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
+        //console.error(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
     });
 } else {
     document.exitFullscreen();
@@ -3619,7 +3623,7 @@ load: function() {
             const settings = JSON.parse(saved);
             Object.assign(this, settings);
         } catch (e) {
-            console.error('Erro ao carregar configurações:', e);
+            //console.error('Erro ao carregar configurações:', e);
         }
     }
 },
