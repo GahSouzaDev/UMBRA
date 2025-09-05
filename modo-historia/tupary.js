@@ -41,7 +41,7 @@ ASSET_PATHS: {
     // Para player_idle, você precisaria de player_idle_00.png, player_idle_01.png, etc.
     player_idle_frames: Array.from({length: 6}, (_, i) => `../assets/personagens/Escolhido/escolhido-parado-${String(i).padStart(2, '0')}.png`), // NEW: Array of frame paths
     player_walk_frames: Array.from({length: 6}, (_, i) => `../assets/personagens/Escolhido/escolhido-andando-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for walk frames
-    player_jump_frames: Array.from({length: 1}, (_, i) => `assets/personagens/Escolhido/jump/escolhido-salto-00.png`), // NEW: Placeholder for jump frames
+    player_jump_frames: Array.from({length: 6}, (_, i) => `../assets/personagens/Escolhido/escolhido-andando-`), // NEW: Placeholder for jump frames
     player_crouch_frames: Array.from({length: 1}, (_, i) => `assets/personagens/Escolhido/crouch/escolhido-abaixar-00.png`), // NEW: Placeholder for crouch frames
     player_attack_u_frames: Array.from({length: 3}, (_, i) => `../assets/personagens/Escolhido/escolhido-ataq-U-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for attack u frames
     player_attack_i_frames: Array.from({length: 4}, (_, i) => `../assets/personagens/Escolhido/escolhido-ataq-I-${String(i).padStart(2, '0')}.png`), // NEW: Placeholder for attack i frames
